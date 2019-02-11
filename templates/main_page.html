@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+</main>
+<div id="mySidepanel" class="sidepanel">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+    <a href="{{ url_for('index') }}">Home</a>
+    <a href="{{ url_for('user', username=current_user.username) }}">Profile</a>
+    <a href="">Services</a>
+    <a href="">Clients</a>
+    <a href="">Contact</a>
+</div>
+<button class="openbtn" onclick="openNav()">☰ Grants Menu</button>
+<main>
+<div style="clear:both"></div>
+<div class="row3">
+    <div class="dc-morph-btns">
+        <ul>
+            <li><a id="icon-profile" href="{{ url_for('user', username=current_user.username) }}"></a><span>Profile</span></li>
+            <li><a id="icon-APA" href=""></a><span>Applications Pending Action</span></li>
+            <li><a id="icon-SRPA" href=""></a><span>Scientific Reports Pending Action</span></li>
+            <li><a id="icon-FRPA" href=""></a><span>Financial Reports Pending Action</span></li>
+            <li><a id="icon-BPA" href=""></a><span>Budgets Pending Action</span></li>
+            <li><a id="icon-PAARPA" href=""></a><span>Pre Award Applicant Response Pending Action</span></li>
+            <li><a id="icon-OIPA" href=""></a><span>Other Items Pending Action</span></li>
+        </ul>
+    </div>
+</div>
+
+        <!--<div class="container">
+            {% for comment in comments %}
+                <div class="row" style="margin-bottom: 1ex">
+                    <div>
+                        {{ comment.content }}
+                    </div>
+                    <div>
+                        <small>
+                            Posted
+                            {% if comment.posted %}
+                                {{ comment.posted.strftime("%A, %d %B %Y at %H:%M") }}
+                            {% else %}
+                                at an unknown time
+                            {% endif %}
+                            by
+                            {% if comment.commenter %}
+                                {{ comment.commenter.username }}
+                            {% else %}
+                                anonymous
+                            {% endif %}
+                        </small>
+                    </div>
+                </div>
+            {% endfor %}
+
+            {% if current_user.is_authenticated %}
+                <div class="row">
+                    <form action="." method="POST">
+                        <textarea name="contents" placeholder="Enter a comment" class="form-control"></textarea>
+                        <input type="submit" class="btn btn-success" value="Post comment">
+                    </form>
+                </div>
+            {% endif %}
+        </div><!-- /.container-->
+
+{% endblock %}

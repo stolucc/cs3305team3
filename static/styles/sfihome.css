@@ -1,0 +1,455 @@
+
+
+html{
+	position: relative;
+    min-height: 100%;
+}
+
+body {
+margin: 0 0 100px;
+text-align: center;
+display: inline;
+font-family: Arial, Helvetica, sans-serif;
+}
+
+p, h1, h2{
+font-family: "Times New Roman", Times;
+font-size: 1em;
+}
+
+button{
+background: white;
+margin: 1.5em;
+}
+.container2{
+    margin: 0em;
+}
+
+.jumbotron{
+padding: 0em;
+background: white;
+margin: 0em;
+}
+
+.row button{
+background: white;
+color: black;
+display:inline-block ;
+}
+
+form{
+    background: white;
+}
+
+a.button {
+    -webkit-appearance: button;
+    -moz-appearance: button;
+    appearance: button;
+
+    text-decoration: none;
+    color: initial;
+    padding: 1em;
+}
+
+a.Fbutton {
+    -webkit-appearance: button;
+    -moz-appearance: button;
+    appearance: button;
+
+    text-decoration: none;
+    color: initial;
+    padding: 1em;
+    margin: 1em;
+    background: #7EB6F7;
+}
+
+a.Sbutton {
+    -webkit-appearance: button;
+    -moz-appearance: button;
+    appearance: button;
+
+    text-decoration: none;
+    color: initial;
+    padding: 1em;
+    margin: 1em 0em;
+}
+
+a.active-page
+{
+    -webkit-appearance: button;
+    -moz-appearance: button;
+    appearance: button;
+
+    text-decoration: none;
+    color: initial;
+    padding: 1em;
+    margin: 1em 0em;
+    background-color:#CAC5C5;
+}
+
+footer{
+
+color: white;
+background-color: #0073e6 !important;
+width: 100%;
+margin: 0em;
+}
+
+footer a {
+color:white;
+}
+
+i:hover {
+  -ms-transform: scale(1.8, 1.8); /* IE 9 */
+  -webkit-transform: scale(1.8, 1.8); /* Safari 3-8 */
+  transform: scale(1.8, 1.8);
+  color: white;
+}
+
+/*
+nav, header{
+    font-family: "Courier New", Courier, monospace;
+
+}*/
+
+.container {
+  background-image: url("../images/labwoman.png");
+  min-height: 400px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  box-shadow: 0 0 4px 4px white inset;
+}
+
+.box {
+  position: absolute;
+  right: 30%;
+  left: 30%;
+  margin-top: 25px;
+  padding: 16px;
+  background:rgba(48,48,48,0.85);
+  border-radius: 15px;
+}
+
+#help {
+  display: none;
+  position: absolute;
+  border: 3px solid #f1f1f1;
+  z-index: 9;
+  padding: 10px;
+  background-color: lightgrey;
+  color: black;
+  //top: 60%;
+  //left: 50%;
+  right: 0;
+  transform: translate(-50%, -50%);
+  height: 30%;
+  width: 50%;
+  text-align: left;
+  border-radius: 12px;
+}
+
+main {
+  margin: 2em;
+}
+
+article {
+  background: white;
+  border: 1px solid white;
+  border-radius: 12px;
+  margin: 1em;
+  padding: 1em;
+}
+
+/*
+body {
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+}*/
+
+.footer{
+position:absolute;
+bottom:0;
+overflow: hidden;
+}
+
+.sidepanel  {
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  height: 20em;
+  top: 14em;
+  left: 0;
+  background-color: #D221AF;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+}
+
+.sidepanel a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: white;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidepanel a:hover {
+  color: #f1f1f1;
+}
+
+.sidepanel .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+}
+
+.openbtn {
+  font-size: 20px;
+  cursor: pointer;
+  background-color: cornflowerblue;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+}
+
+.openbtn:hover {
+  background-color:orange;
+}
+
+/* #DC Morph Buttons
+=======================*/
+
+.dc-morph-btns {
+  position: absolute;
+  left:50%;
+  top:60%;
+  transform: translateX(-50%) translateY(-60%);
+	width:45em;
+        height:20em;
+	font-size: 1.4em;
+	line-height: 0.9em;
+	color: #444;
+	text-align: center;
+}
+.dc-morph-btns li {
+	position: relative;
+	width: 5em;
+	height: 5em;
+	display: inline-block;
+	margin: 2em;
+	overflow: visible;
+
+}
+.dc-morph-btns li a {
+
+	z-index: 1;
+	background: #fff;
+	border: 1.5px solid #ccc;
+	text-indent:0;
+	display:inline-block;
+	color:cornflowerblue;
+	font-size:12px;
+	font-weight: 400;
+	text-decoration:none;
+	text-align:center;
+	text-transform: uppercase;
+	width: 5em;
+	height:5em;
+	transition: all 600ms cubic-bezier(0.190,1.000,0.220,1.000);
+	box-sizing: content-box;
+	border-radius: 50px;
+	background-clip: padding-box;
+
+
+}
+
+.dc-morph-btns li #icon-profile{
+        background: url("../images/profile.png");
+        background-size: contain;
+}
+
+.dc-morph-btns li #icon-APA{
+        background: url('../images/APA.png');
+        background-size: contain;
+}
+.dc-morph-btns li #icon-SRPA{
+        background: url('../images/SRPA.png');
+        background-size: contain;
+}
+.dc-morph-btns li #icon-FRPA{
+        background: url('../images/FRPA.png');
+        background-size: contain;
+}
+.dc-morph-btns li #icon-BPA{
+        background: url('../images/BPA.png');
+        background-size: contain;
+}
+.dc-morph-btns li #icon-PAARPA{
+        background: url('../images/PAARPA.png');
+        background-size: contain;
+}
+.dc-morph-btns li #icon-OIPA{
+        background: url('../images/OIPA.png');
+        background-size: contain;
+}
+
+.dc-morph-btns li a:hover {
+	border: 1.5px solid orange;
+	background-clip: padding-box;
+	border-top-left-radius:40px;
+	border-top-right-radius:2px;
+	border-bottom-left-radius:40px;
+	border-bottom-right-radius:40px;
+	transform: rotate(-15deg);
+}
+
+
+
+.dc-morph-btns ul li span {
+	position: absolute;
+	width: 10em;
+	left:-1.5em;
+	display: block;
+	color: cornflowerblue;
+	opacity:1;
+	font-size: 0.7em;
+	text-align: center;
+	transition: all 0.5s;
+}
+
+.dc-morph-btns ul li:hover span {
+	color: orange;
+	opacity:1;
+}
+
+.dc-morph-btns ul li.selected span {
+	color: cornflowerblue;
+	opacity:1;
+}
+
+.dc-morph-btns ul li.selected:hover span {
+	color: orange;
+	opacity:1;
+}
+
+.dc-morph-btns ul li.selected:hover a {
+	border: 1.5px solid orange;
+	background-clip: padding-box;
+	border-top-left-radius:40px;
+	border-top-right-radius:2px;
+	border-bottom-left-radius:40px;
+	border-bottom-right-radius:40px;
+	transform: rotate(-15deg);
+}
+
+.dc-morph-btns li.selected a{
+	border: 1.5px solid cornflowerblue;
+	background-clip: padding-box;
+	border-top-left-radius:40px;
+	border-top-right-radius:2px;
+	border-bottom-left-radius:40px;
+	border-bottom-right-radius:40px;
+	transform: rotate(-15deg);
+}
+
+.dc-morph-btns ul{
+    padding:0em;
+
+}
+
+
+
+#researchHeading {
+
+    text-align: left;
+
+}
+
+
+
+.accordion {
+
+    background-color: #eee;
+
+    color: #444;
+
+    cursor: pointer;
+
+    padding: 18px;
+
+    width: 65%;
+
+    border: none;
+
+    text-align: left;
+
+    outline: none;
+
+    font-size: 15px;
+
+    transition: 0.4s;
+
+}
+
+
+
+.active, .accordion:hover {
+
+    background-color: #ccc;
+
+}
+
+
+
+
+.accordion:after {
+
+    content: '\002B';
+
+    color: #777;
+
+    font-weight: bold;
+
+    float: right;
+
+    margin-left: 5px;
+
+}
+
+
+
+main .active:after {
+
+    content: "\2212";
+
+}
+
+
+
+.panel {
+
+    padding: 0 18px;
+
+    background-color: white;
+
+    max-height: 0;
+
+    overflow: hidden;
+
+    transition: max-height 0.2s ease-out;
+
+}
+
+
+
+input{
+
+    margin: 1em;
+
+    width: 65%;
+
+}
+

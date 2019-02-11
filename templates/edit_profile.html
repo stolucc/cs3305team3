@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+</main>
+<div id="mySidepanel" class="sidepanel">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+    <a href="{{ url_for('index') }}">Home</a>
+    <a href="{{ url_for('user', username=current_user.username) }}">Profile</a>
+    <a href="#">Services</a>
+    <a href="#">Clients</a>
+    <a href="#">Contact</a>
+</div>
+<button class="openbtn" onclick="openNav()">☰ Grants Menu</button>
+<main>
+    <center><h1>Edit Profile</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.username.label }}<br>
+            {{ form.username(size=32) }}<br>
+            {% for error in form.username.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.about_me.label }}<br>
+            {{ form.about_me(cols=50, rows=4) }}<br>
+            {% for error in form.about_me.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.my_education.label }}<br>
+            {{ form.my_education(cols=50, rows=4) }}<br>
+            {% for error in form.my_education.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form></center>
+{% endblock %}

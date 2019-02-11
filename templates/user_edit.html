@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block content %}
+</main>
+<div id="mySidepanel" class="sidepanel">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+    <a href="{{ url_for('index') }}">Home</a>
+    <a href="{{ url_for('user', username=current_user.username) }}">Profile</a>
+    <a href="#">Services</a>
+    <a href="#">Clients</a>
+    <a href="#">Contact</a>
+</div>
+<button class="openbtn" onclick="openNav()">☰ Grants Menu</button>
+<main>
+    <h3 id="researchHeading">Edit {{ user.username }}&#39;s Profile </h3>
+    <hr>
+
+        <button class="accordion">Education</button>
+
+            <div class="panel">
+
+                <input type="text" value="">
+
+            </div>
+
+
+
+        <button class="accordion">Employment</button>
+
+            <div class="panel">
+
+                <input type="text" value="">
+
+            </div>
+
+
+
+        <button class="accordion">Professional Societies</button>
+
+            <div class="panel">
+
+                <input type="text" value="">
+
+            </div>
+
+
+        <button class="accordion">Significant Distinctions/Awards</button>
+
+            <div class="panel">
+
+                <input type="text" value="">
+
+            </div>
+
+
+        <button class="accordion">Funding Diversification</button>
+
+            <div class="panel">
+
+                <input type="text" value="">
+
+            </div>
+
+
+        <button class="accordion">Team Members</button>
+
+            <div class="panel">
+
+                <input type="text" value="">
+
+            </div>
+
+
+        <button class="accordion">Impacts</button>
+
+            <div class="panel">
+
+                <input type="text" value="">
+
+            </div>
+
+
+        <button class="accordion">Innovation &amp; Commercialisation Activities</button>
+
+            <div class="panel">
+
+                <input type="text" value="">
+
+            </div>
+
+
+        <button class="accordion">Publications &amp; Proceedings</button>
+
+            <div class="panel">
+
+                <input type="text" value="">
+
+            </div>
+
+
+        <button class="accordion">Presentations</button>
+
+            <div class="panel">
+
+                <input type="text" value="">
+
+            </div>
+
+
+        <button class="accordion">Academic Collaboration</button>
+
+            <div class="panel">
+
+                <input type="text" value="">
+
+            </div>
+
+
+        <button class="accordion">Non Academic Collaborations</button>
+
+            <div class="panel">
+
+                <input type="text" value="">
+
+            </div>
+
+
+        <button class="accordion">Conferences / Workshops / Seminars Organised</button>
+
+            <div class="panel">
+
+                <input type="text" value="">
+
+            </div>
+
+
+        <button class="accordion">Communications Overview</button>
+
+            <div class="panel">
+
+                <input type="text" value="">
+
+            </div>
+
+
+        <button class="accordion">SFI Funding Ratio</button>
+
+            <div class="panel">
+
+                <input type="text" value="">
+
+            </div>
+
+
+        <button class="accordion">Education &amp; Public Engagement (EPE)</button>
+
+            <div class="panel">
+
+                <input type="text" value="">
+
+            </div>
+
+
+        <button class="accordion">Technical Reports</button>
+
+            <div class="panel">
+
+                <input type="text" value="">
+
+            </div>
+
+
+        <button type="button"><span class="fa fa-save"> Save Changes</button>
+
+        <a href="{{ url_for('user', username=current_user.username) }}"><button type="button"><span class="glyphicon glyphicon-remove"> Cancel</button></a>
+
+<div style="height:140px;display:block;"></div>
+
+        <script>
+
+            var acc = document.getElementsByClassName("accordion");
+
+            var i;
+
+
+
+            for (i = 0; i < acc.length; i++) {
+
+                acc[i].addEventListener("click", function() {
+
+                    this.classList.toggle("active");
+
+                    var panel = this.nextElementSibling;
+
+                    if (panel.style.maxHeight) {
+
+                        panel.style.maxHeight = null;
+
+                    } else {
+
+                        panel.style.maxHeight = panel.scrollHeight + "px";
+
+                    }
+                });
+
+            }
+
+        </script>
+{% endblock %}

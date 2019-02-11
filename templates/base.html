@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% if title %}
+            <title>SFI - {{ title }}</title>
+        {% else %}
+            <title>SFI</title>
+        {% endif %}
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+        <link id ="stylesheet" rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/sfihome.css') }}"
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                $('.dc-morph-btns li').on('click', function() {
+                    $('.dc-morph-btns li').removeClass("selected");
+                    $(this).toggleClass("selected");
+                });
+
+            });
+
+            function openNav() {
+                document.getElementById("mySidepanel").style.width = "250px";
+            }
+
+            function closeNav() {
+                document.getElementById("mySidepanel").style.width = "0";
+            }
+        </script>
+    </head>
+    <body>
+        <header>
+            <div class="jumbotron text-center">
+                <div class="text-right">
+                    <form class="form-inline">
+                        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"/>
+                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                    </form>
+                </div>
+                <!-- class="col-sm-9 col-md-9" in img -->
+                <img src="https://www.techcentral.ie/wp-content/uploads/2014/07/SFI_Logo-620x350.jpg" alt="SFI logo" style="width: 15%;height:10%"/>
+                <br><br>
+            </div>
+        </header>
+
+        <nav class="navbar">
+            <div class="container-fluid">
+                <ul class="nav nav-tabs">
+                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    <li><a href="">Applications</a></li>
+                    <li><a href="">Funding</a></li>
+                    <li><a href="">Engagement</a></li>
+                    <li><a href="">Events</a></li>
+                    <li><a href="">Research</a></li>
+                    <li><a href="">Centres</a></li>
+                    <li><a href="">About</a></li>
+                    <li><a href="">Subscribe</a></li>
+                    {% if current_user.is_authenticated %}
+                        <li class="active navbar-right"><a href="{{ url_for('logout') }}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                    {% else %}
+                        <li class="active navbar-right"><a href="{{ url_for('login') }}"><span class="glyphicon glyphicon-log-in"></span> Log in</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+
+        <main>
+
+        {% block content %}{% endblock %}
+
+        </main>
+        <div style="clear:both;"></div>
+        <footer class="blur footer">
+        <p>#BelieveInScience</p>
+        <p><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span><small> Wilton Park House, Wilton Place, D02 NT99, Ireland</small></p>
+        <p><span class="glyphicon glyphicon-phone-alt" aria-hidden="true"></span><small> +353 (0)1 607 3200 </small></p>
+        <p><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span><small> info@sfi.ie</small></p>
+	<p><a class="hi" href="https://www.facebook.com/ScienceFoundationIreland/"><i style="font-size:24px" class="fa">&#xf082;</i></a> <a href="https://twitter.com/scienceirel"><i style="font-size:24px" class="fa">&#xf081;</i></a> <a href="https://www.linkedin.com/company/science-foundation-ireland"><i style="font-size:24px" class="fa">&#xf08c;</i></a> <a href="https://www.instagram.com/scienceireland/"><i style="font-size:24px" class="fa">&#xf16d;</i></a> <a href="https://www.flickr.com/photos/sciencefoundationireland/"><i style="font-size:24px" class="fa">&#xf16e;</i></a> <a href="https://www.youtube.com/ScienceFoundationIreland"><i style="font-size:24px" class="fa">&#xf16a;</i></a></p>
+    </footer>
+
+    </body>
+</html>

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="blur">
+    <h3>Login Form</h3>
+        <div class="container">
+
+            <div class="row">
+                <form class="box" action="" method="POST" novalidate>
+                  <div class="form-group">
+                    <label style="color:white;" for="username">Username:</label>
+                    <input class="form-control" id="username" name="username" placeholder="Enter your username">
+                  </div>
+                  <div class="form-group">
+                    <label style="color:white;" for="password">Password:</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password">
+                  </div>
+                  <button type="submit" >Log in</button>
+                  <label  style="color:white;">
+                  <input type="checkbox" checked="checked" name="remember"> Remember me
+                  </label>
+                  <br>
+                  <button onclick="popUp()" type="button">Help</button>
+                  <span class="psw" style="color:white">Forgot <a href="" >password?</a></span><br>
+                  {% if error %}
+                    <div class="alert alert-warning" role="alert">
+                        Incorrect username or password
+                    </div>
+                  {% endif %}
+                </form>
+            </div>
+        </div>
+</div>
+
+<div class="row pre-scrollable" id="help">
+    <span onclick="closePopUp()" class="close" title="Close">&times;</span><br>
+    <article>
+        <h1>Science Foundation Ireland (SFI)</h1>
+        <p>SESAME support is available weekdays between 9AM-5:30PM (Dublin local time). <b>Helpdesk tickets</b> can be raised by <b>clicking the Helpdesk "quick link"</b> on your Workbench.</p>
+        <p>If you are having <b>login issues</b>, please <b>click "Forgot Password?"</b>. If the issue persists please contact <i>sesame@sfi.ie</i>.</p>
+    </article>
+
+    <article>
+        <h1>Please ensure:</h1>
+        <ul>
+            <li>To use <b>Firefox, Internet Explorer or Chrome</b> for optimum SESAME compatibility.</li>
+            <li><b>Pop-ups are ENABLED</b> in your browser configuration.</li>
+            <li><b>To not use</b> the browser <b>BACK</b> button when navigating SESAME.</li>
+        </ul>
+    </article>
+</div>
+<div style="height:140px;display:block;"></div>
+<script>
+    var modal = document.getElementById('help');
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+            var classes = document.getElementsByClassName('blur');
+            for (var i=0; i < classes.length; i++) {
+                classes[i].style.filter='blur(0px)';
+            }
+        }
+    }
+
+function popUp() {
+    document.getElementById('help').style.display='block';
+    var classes = document.getElementsByClassName('blur');
+    for (var i=0; i < classes.length; i++) {
+        classes[i].style.filter='blur(1.5px)';
+    }
+}
+
+function closePopUp() {
+    document.getElementById('help').style.display='none'
+    var classes = document.getElementsByClassName('blur');
+    for (var i=0; i < classes.length; i++) {
+        classes[i].style.filter='blur(0px)';
+    }
+}
+</script>
+
+{% endblock %}

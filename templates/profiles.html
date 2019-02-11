@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3 id="researchHeading">Research Page</h3>
+
+        <button class="accordion">Education</button>
+
+            <div class="panel">
+
+                <p>Lorem ipsum...</p>
+
+            </div>
+
+
+
+        <button class="accordion">Employment</button>
+
+            <div class="panel">
+
+                <p>Lorem ipsum...</p>
+
+            </div>
+
+
+
+        <button class="accordion">Professional Societies</button>
+
+            <div class="panel">
+
+                <p>Lorem ipsum...</p>
+
+            </div>
+
+
+        <button class="accordion">Significant Distinctions/Awards</button>
+
+            <div class="panel">
+
+                <p>Lorem ipsum...</p>
+
+            </div>
+
+
+        <button class="accordion">Funding Diversification</button>
+
+            <div class="panel">
+
+                <p>Lorem ipsum...</p>
+
+            </div>
+
+
+        <button class="accordion">Team Members</button>
+
+            <div class="panel">
+
+                <p>Lorem ipsum...</p>
+
+            </div>
+
+
+        <button class="accordion">Impacts</button>
+
+            <div class="panel">
+
+                <p>Lorem ipsum...</p>
+
+            </div>
+
+
+            <button class="accordion">Innovation &; Commercialisation Activities</button>
+
+            <div class="panel">
+
+                <p>Lorem ipsum...</p>
+
+            </div>
+
+
+            <button class="accordion">Publications &; Proceedings</button>
+
+            <div class="panel">
+
+                <p>Lorem ipsum...</p>
+
+            </div>
+
+
+        <button class="accordion">Presentations</button>
+
+            <div class="panel">
+
+                <p>Lorem ipsum...</p>
+
+            </div>
+
+
+        <button class="accordion">Academic Collaboration</button>
+
+            <div class="panel">
+
+                <p>Lorem ipsum...</p>
+
+            </div>
+
+
+        <button class="accordion">Non Academic Collaborations</button>
+
+            <div class="panel">
+
+                <p>Lorem ipsum...</p>
+
+            </div>
+
+
+        <button class="accordion">Conferences / Workshops / Seminars Organised</button>
+
+            <div class="panel">
+
+                <p>Lorem ipsum...</p>
+
+            </div>
+
+
+        <button class="accordion">Communications Overview</button>
+
+            <div class="panel">
+
+                <p>Lorem ipsum...</p>
+
+            </div>
+
+
+        <button class="accordion">SFI Funding Ratio</button>
+
+            <div class="panel">
+
+                <p>Lorem ipsum...</p>
+
+            </div>
+
+
+        <button class="accordion">Education & Public Engagement (EPE)</button>
+
+            <div class="panel">
+
+                <p>Lorem ipsum...</p>
+
+            </div>
+
+
+        <button class="accordion">Technical Reports</button>
+
+            <div class="panel">
+
+                <p>Lorem ipsum...</p>
+
+            </div>
+
+
+        <a href="researchProfileEdit.html"><button type="button"><span class="glyphicon glyphicon-edit"> Edit</button></a>
+
+
+        <script>
+
+            var acc = document.getElementsByClassName("accordion");
+
+            var i;
+
+
+
+            for (i = 0; i < acc.length; i++) {
+
+                acc[i].addEventListener("click", function() {
+
+                    this.classList.toggle("active");
+
+                    var panel = this.nextElementSibling;
+
+                    if (panel.style.maxHeight) {
+
+                        panel.style.maxHeight = null;
+
+                    } else {
+
+                        panel.style.maxHeight = panel.scrollHeight + "px";
+
+                    }
+                });
+
+            }
+
+        </script>
+        
+{% endblock %}
