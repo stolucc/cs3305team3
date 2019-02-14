@@ -24,6 +24,7 @@ migrate = Migrate(app, db)
 app.secret_key = "ewlnzibewwlxshfkwmsi"
 login_manager = LoginManager()
 login_manager.init_app(app)
+login_manager.login_view = 'login'
 
 class SFIAdmin(UserMixin, db.Model):
 
@@ -77,12 +78,10 @@ class Research_Centre(UserMixin, db.Model):
 
     __tablename__ = "research_centre"
 
-    researcher_centre_id = db.Column(db.Integer, primary_key=True)
+    research_centre_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(128))
     password_hash = db.Column(db.String(128))
     online = db.Column(db.BOOLEAN)
-    user_profile_id = db.Column(db.Integer, db.ForeignKey('user_profile.user_id'), nullable=True)
-    research_centre = db.relationship('Research_Centre', foreign_keys=user_profile_id)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -98,8 +97,6 @@ class User_Profile(UserMixin, db.Model):
     username = db.Column(db.String(128))
     password_hash = db.Column(db.String(128))
     online = db.Column(db.BOOLEAN)
-    login_id = db.Column(db.Integer, db.ForeignKey('researcher.researcher_id'), nullable=True)
-    researcher = db.relationship('Researcher', foreign_keys=login_id)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -121,22 +118,9 @@ class User(UserMixin, db.Model):
     def get_id(self):
         return self.username
 
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.filter_by(username=user_id).first()
-
-
-class Comment(db.Model):
-
-    __tablename__ = "comments"
-
-    id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.String(4096))
-    posted = db.Column(db.DateTime, default=datetime.now)
-    commenter_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
-    commenter = db.relationship('User', foreign_keys=commenter_id)
-
 
 @app.route("/")
 @app.route("/index")
@@ -190,3 +174,14 @@ def user_edit(username):
 @login_required
 def edit_profile():
     return render_template('edit_profile.html', title='Edit Profile')
+
+#Redundant class
+class Comment(db.Model):
+
+    __tablename__ = "comments"
+
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.String(4096))
+    posted = db.Column(db.DateTime, default=datetime.now)
+    commenter_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    commenter = db.relationship('User', foreign_keys=commenter_id)
