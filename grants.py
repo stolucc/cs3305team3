@@ -89,6 +89,21 @@ class Research_Centre(UserMixin, db.Model):
     def get_id(self):
         return self.username
 
+class Research_Centre_Profile(UserMixin, db.Model):
+
+    __tablename__ = "research_centre_profile"
+
+    research_centre_profile_id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(128))
+    password_hash = db.Column(db.String(128))
+    online = db.Column(db.BOOLEAN)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def get_id(self):
+        return self.username
+
 class User_Profile(UserMixin, db.Model):
 
     __tablename__ = "user_profile"
