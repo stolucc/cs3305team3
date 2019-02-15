@@ -41,6 +41,8 @@ class SFIAdmin(UserMixin, db.Model):
     sfi_admin_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(128))
     password_hash = db.Column(db.String(128))
+    loginID = db.Column(db.Integer, db.ForeignKey('login_account.login_account_id'), nullable=True)
+    loginDetails = db.relationship('Login_Account', foreign_keys=loginID)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -56,6 +58,8 @@ class Reviewer(UserMixin, db.Model):
     username = db.Column(db.String(128))
     password_hash = db.Column(db.String(128))
     email = db.Column(db.String(80))
+    loginID = db.Column(db.Integer, db.ForeignKey('login_account.login_account_id'), nullable=True)
+    loginDetails = db.relationship('Login_Account', foreign_keys=loginID)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -78,6 +82,8 @@ class Researcher_Account(UserMixin, db.Model):
     def get_id(self):
         return self.username
 
+
+
 class Research_Centre_Admin(UserMixin, db.Model):
 
     __tablename__ = "research_centre_admin"
@@ -87,26 +93,8 @@ class Research_Centre_Admin(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     research_profile = db.Column(db.Integer)
     online = db.Column(db.BOOLEAN)
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
-    def get_id(self):
-        return self.username
-
-class Researcher_Profile(UserMixin, db.Model):
-
-    __tablename__ = "researcher_profile"
-
-    researcher_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(128))
-    password_hash = db.Column(db.String(128))
-    f_name = db.Column(db.String(64))
-    l_name = db.Column(db.String(64))
-    job_title = db.Column(db.String(4))
-    email = db.Column(db.String(80))
-    ORCID = db.Column(db.Integer)
-    login_id = db.Column(db.Integer)
+    loginID = db.Column(db.Integer, db.ForeignKey('login_account.login_account_id'), nullable=True)
+    loginDetails = db.relationship('Login_Account', foreign_keys=loginID)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -128,6 +116,85 @@ class Login_Account(UserMixin, db.Model):
 
     def get_id(self):
         return self.username
+
+
+class Researcher_Profile(UserMixin, db.Model):
+
+    __tablename__ = "researcher_profile"
+
+    researcher_id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(128))
+    password_hash = db.Column(db.String(128))
+    f_name = db.Column(db.String(64))
+    l_name = db.Column(db.String(64))
+    job_title = db.Column(db.String(4))
+    email = db.Column(db.String(80))
+    ORCID = db.Column(db.Integer)
+    login_id = db.Column(db.Integer)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def get_id(self):
+        return self.username
+
+
+
+
+
+
+
+
+class Engagements(UserMixin, db.Model):
+
+    __tablename__ = "engagements"
+
+    engagement_id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(128))
+    password_hash = db.Column(db.String(128))
+    f_name = db.Column(db.String(64))
+    l_name = db.Column(db.String(64))
+    job_title = db.Column(db.String(4))
+    email = db.Column(db.String(80))
+    ORCID = db.Column(db.Integer)
+    login_id = db.Column(db.Integer)
+    research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
+    researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
+
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def get_id(self):
+        return self.username
+
+
+
+class Presentations(UserMixin, db.Model):
+
+    __tablename__ = "presentations"
+
+    presentation_id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(128))
+    password_hash = db.Column(db.String(128))
+    year = db.Column(db.Integer)
+    type = db.Column(db.String(64))
+    title = db.Column(db.String(20))
+    organizing_body = db.Column(db.String(40))
+    location = db.Column(db.String(40))
+    research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
+    researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
+
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def get_id(self):
+        return self.username
+
+
+
+
 
 class User(UserMixin, db.Model):
 
