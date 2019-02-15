@@ -194,6 +194,142 @@ class Presentations(UserMixin, db.Model):
 
 
 
+class FundingRatio(UserMixin, db.Model):
+
+    __tablename__ = "funding_ratio"
+
+    funding_ratio_id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(128))
+    password_hash = db.Column(db.String(128))
+    year = db.Column(db.Integer)
+    percentage = db.Column(db.Integer)
+    research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
+    researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
+
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def get_id(self):
+        return self.username
+
+
+class TeamMembers(UserMixin, db.Model):
+
+    __tablename__ = "team_members"
+
+    team_member_id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(128))
+    password_hash = db.Column(db.String(128))
+    start_date = db.Column(db.DateTime)
+    departure_date = db.Column(db.DateTime)
+    position = db.Column(db.String(64))
+    name = db.Column(db.String(20))
+    grant_number = db.Column(db.Integer)
+    position = db.Column(db.String(30))
+    research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
+    researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
+
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def get_id(self):
+        return self.username
+
+
+class Impacts(UserMixin, db.Model):
+
+    __tablename__ = "impacts"
+
+    impact_id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(128))
+    password_hash = db.Column(db.String(128))
+    impact_title = db.Column(db.String(38))
+    impact_category = db.Column(db.String(38))
+    primary_beneficiary = db.Column(db.String(38))
+    primary_attribution = db.Column(db.Integer)
+    research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
+    researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
+
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def get_id(self):
+        return self.username
+
+
+class Funding_Diversification(UserMixin, db.Model):
+    __tablename__ = "funding_diversifications"
+
+    funding_id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(128))
+    password_hash = db.Column(db.String(128))
+    start_date = db.Column(db.DateTime)
+    end_date = db.Column(db.DateTime)
+    funding_amount = db.Column(db.Integer)
+    funding_body = db.Column(db.String(64))
+    funding_programme = db.Column(db.String(64))
+    status = db.Column(db.String(20))
+    primary_attribution = db.Column(db.Integer)
+    research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
+    researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
+
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def get_id(self):
+        return self.username
+
+
+
+class EmploymentDB(UserMixin, db.Model):
+
+    __tablename__ = "employment_db"
+
+    employment_id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(128))
+    password_hash = db.Column(db.String(128))
+    institution = db.Column(db.String(25))
+    location = db.Column(db.String(21))
+    year = db.Column(db.Integer)
+    research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
+    researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
+
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def get_id(self):
+        return self.username
+
+
+class AwardsDB(UserMixin, db.Model):
+
+    __tablename__ = "awards_db"
+
+    awards_id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(128))
+    password_hash = db.Column(db.String(128))
+    awarding_body = db.Column(db.String(21))
+    awarding_details = db.Column(db.String(100))
+    member_name = db.Column(db.String(21))
+    year = db.Column(db.Integer)
+    research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
+    researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
+
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def get_id(self):
+        return self.username
+
+
+
+
 
 
 class User(UserMixin, db.Model):
