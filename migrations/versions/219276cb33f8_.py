@@ -1,9 +1,7 @@
 """empty message
-
 Revision ID: 219276cb33f8
 Revises: dff61051b3ec
 Create Date: 2019-02-13 17:49:32.369035
-
 """
 from alembic import op
 import sqlalchemy as sa

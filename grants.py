@@ -26,6 +26,14 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.filter_by(username=user_id).first()
+
+"""
+    ** Database Tables **
+"""
+
 class SFIAdmin(UserMixin, db.Model):
 
     __tablename__ = "sfiAdmin"
@@ -55,9 +63,40 @@ class Reviewer(UserMixin, db.Model):
     def get_id(self):
         return self.username
 
-class Researcher(UserMixin, db.Model):
+class Researcher_Account(UserMixin, db.Model):
 
-    __tablename__ = "researcher"
+    __tablename__ = "researcher_account"
+
+    researcher_id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(128))
+    password_hash = db.Column(db.String(128))
+
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def get_id(self):
+        return self.username
+
+class Research_Centre_Admin(UserMixin, db.Model):
+
+    __tablename__ = "research_centre_admin"
+
+    research_centre_id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(128))
+    password_hash = db.Column(db.String(128))
+    research_profile = db.Column(db.Integer)
+    online = db.Column(db.BOOLEAN)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def get_id(self):
+        return self.username
+
+class Researcher_Profile(UserMixin, db.Model):
+
+    __tablename__ = "researcher_profile"
 
     researcher_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(128))
@@ -67,6 +106,7 @@ class Researcher(UserMixin, db.Model):
     job_title = db.Column(db.String(4))
     email = db.Column(db.String(80))
     ORCID = db.Column(db.Integer)
+    login_id = db.Column(db.Integer)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -74,44 +114,14 @@ class Researcher(UserMixin, db.Model):
     def get_id(self):
         return self.username
 
-class Research_Centre(UserMixin, db.Model):
+class Login_Account(UserMixin, db.Model):
 
-    __tablename__ = "research_centre"
+    __tablename__ = "login_account"
 
-    research_centre_id = db.Column(db.Integer, primary_key=True)
+    login_account_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(128))
     password_hash = db.Column(db.String(128))
-    online = db.Column(db.BOOLEAN)
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
-    def get_id(self):
-        return self.username
-
-class Research_Centre_Profile(UserMixin, db.Model):
-
-    __tablename__ = "research_centre_profile"
-
-    research_centre_profile_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(128))
-    password_hash = db.Column(db.String(128))
-    online = db.Column(db.BOOLEAN)
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
-    def get_id(self):
-        return self.username
-
-class User_Profile(UserMixin, db.Model):
-
-    __tablename__ = "user_profile"
-
-    user_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(128))
-    password_hash = db.Column(db.String(128))
-    online = db.Column(db.BOOLEAN)
+    user_type = db.Column(db.String(128))
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -133,9 +143,9 @@ class User(UserMixin, db.Model):
     def get_id(self):
         return self.username
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.filter_by(username=user_id).first()
+"""
+    ** Routes **
+"""
 
 @app.route("/")
 @app.route("/index")
@@ -190,7 +200,10 @@ def user_edit(username):
 def edit_profile():
     return render_template('edit_profile.html', title='Edit Profile')
 
-#Redundant class
+"""
+    ** Redundant Class **
+"""
+
 class Comment(db.Model):
 
     __tablename__ = "comments"
