@@ -558,6 +558,21 @@ class ResearcherEducation(UserMixin, db.Model):
 
 
 
+class CFP(UserMixin, db.Model):
+
+    __tablename__ = "call_for_proposals"
+    call_id = db.Column(db.Integer, primary_key=True)
+    text_of_call= db.Column(db.String(300))
+    target_audience= db.Column(db.String(30))
+    eligibility_criteria= db.Column(db.String(60))
+    duration_of_award= db.Column(db.String(30))
+    reporting_guidelines= db.Column(db.String(30))
+    start_date= db.Column(db.DateTime)
+
+
+
+
+
 
 
 
