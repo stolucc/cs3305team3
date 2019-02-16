@@ -495,6 +495,45 @@ class Innovations(UserMixin, db.Model):
 
 
 
+class AnnualReports(UserMixin, db.Model):
+    __tablename__ = "annual_reports"
+
+    annual_report_id = db.Column(db.Integer, primary_key=True)
+    research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
+    researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
+
+
+    publication_id = db.Column(db.Integer, db.ForeignKey('publications.publication_id'), nullable=True)
+    publication = db.relationship('Publications', foreign_keys=publication_id)
+
+
+
+    academic_collab_id = db.Column(db.Integer, db.ForeignKey('academic_collaborations.collaboration_id'), nullable=True)
+    collaborations = db.relationship('AcademicCollabs', foreign_keys=academic_collab_id)
+
+
+
+    education_id = db.Column(db.Integer, db.ForeignKey('researcher_education.researcher_education_id'), nullable=True)
+    researcher_education = db.relationship('ResearcherEducation', foreign_keys=education_id)
+
+
+    non_academic_collab_id = db.Column(db.Integer, db.ForeignKey('non_academic_collaborations.non_academic_collaboration_id'), nullable=True)
+    non_academic_collabs = db.relationship('NonAcademicCollabs', foreign_keys=non_academic_collab_id)
+
+
+
+    impact_id = db.Column(db.Integer, db.ForeignKey('impacts.impact_id'), nullable=True)
+    impacts = db.relationship('Impacts', foreign_keys=impact_id)
+
+
+    innovations_id = db.Column(db.Integer, db.ForeignKey('innovations.innovation_id'), nullable=True)
+    innovations = db.relationship('Innovations', foreign_keys=innovations_id)
+
+
+
+
+
+
 class ResearcherEducation(UserMixin, db.Model):
     __tablename__ = "researcher_education"
 
