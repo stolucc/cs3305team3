@@ -9,10 +9,10 @@ app = Flask(__name__)
 app.config["DEBUG"] = True
 
 SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
-    username="cs3305team3",
+    username="teamprojectac19",
     password="team3pass",
-    hostname="cs3305team3.mysql.pythonanywhere-services.com",
-    databasename="cs3305team3$comments",
+    hostname="teamprojectac19.mysql.pythonanywhere-services.com",
+    databasename="teamprojectac19$cs3305",
 )
 app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
 app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
@@ -117,7 +117,6 @@ class Login_Account(UserMixin, db.Model):
     def get_id(self):
         return self.username
 
-
 class Researcher_Profile(UserMixin, db.Model):
 
     __tablename__ = "researcher_profile"
@@ -137,13 +136,6 @@ class Researcher_Profile(UserMixin, db.Model):
 
     def get_id(self):
         return self.username
-
-
-
-
-
-
-
 
 class Engagements(UserMixin, db.Model):
 
@@ -168,8 +160,6 @@ class Engagements(UserMixin, db.Model):
     def get_id(self):
         return self.username
 
-
-
 class Presentations(UserMixin, db.Model):
 
     __tablename__ = "presentations"
@@ -185,14 +175,11 @@ class Presentations(UserMixin, db.Model):
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
 
-
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
     def get_id(self):
         return self.username
-
-
 
 class FundingRatio(UserMixin, db.Model):
 
@@ -206,13 +193,11 @@ class FundingRatio(UserMixin, db.Model):
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
 
-
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
     def get_id(self):
         return self.username
-
 
 class TeamMembers(UserMixin, db.Model):
 
@@ -562,18 +547,13 @@ class CFP(UserMixin, db.Model):
 
     __tablename__ = "call_for_proposals"
     call_id = db.Column(db.Integer, primary_key=True)
+    deadline= db.Column(db.DateTime)
     text_of_call= db.Column(db.String(300))
     target_audience= db.Column(db.String(30))
     eligibility_criteria= db.Column(db.String(60))
     duration_of_award= db.Column(db.String(30))
     reporting_guidelines= db.Column(db.String(30))
     start_date= db.Column(db.DateTime)
-
-
-
-
-
-
 
 
 
@@ -647,6 +627,10 @@ def user_edit(username):
 @login_required
 def edit_profile():
     return render_template('edit_profile.html', title='Edit Profile')
+
+@app.route('/proposals')
+def proposals():
+    return render_template('call_for_proposals.html', title='Proposals', user=user)
 
 """
     ** Redundant Class **
