@@ -3,9 +3,9 @@
 {% block content %}
 <div class="blur">
     <h3>Login Form</h3>
-        <div class="container">
+        <div id="login-background" class="container">
 
-            <div class="row">
+            <div id="login" class="row">
                 <form class="box" action="" method="POST" novalidate>
                   <div class="form-group">
                     <label style="color:white;" for="username">Username:</label>
@@ -19,12 +19,9 @@
                   <label  style="color:white;">
                   <input type="checkbox" checked="checked" name="remember"> Remember me
                   </label>
-
-
-
                   <br>
                   <button onclick="popUp()" type="button">Help</button>
-                  <span class="psw" style="color:white">Forgot <a href="" >password?</a></span><br>
+                  <span class="psw" style="color:white">Forgot <a href="{{ url_for('reset_password_request') }}" >password?</a></span><br>
                   {% if error %}
                     <div class="alert alert-warning" role="alert">
                         Incorrect username or password

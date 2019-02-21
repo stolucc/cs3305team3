@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block content %}
+</main>
+<div id="mySidepanel" class="sidepanel">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+    <a href="{{ url_for('index') }}">Home</a>
+    <a href="{{ url_for('user', username=current_user.username) }}">Profile</a>
+    <a href="#">Services</a>
+    <a href="#">Clients</a>
+    <a href="#">Contact</a>
+</div>
+<button class="openbtn" onclick="openNav()">☰ Admin Menu</button>
+<main>
+
+<div class="blur">
+    <h3>Add Call for Proposals</h3>
+
+            <div class="row">
+                <center>
+                <form action="" method=POST" style="width:70%" novalidate>
+                  <div class="form-group">
+                    <label style="color:white;" for="text_of_call">Text of call:</label>
+                    <input type="text" maxlength="300" class="form-control" id="text_of_call" name="text_of_call" placeholder="Enter the text of the call" required>
+                  </div>
+                  <div class="form-group">
+                    <label style="color:white;" for="target_audience">Target Audience:</label>
+                    <input type="text" maxlength="30" class="form-control" id="target_audience" name="target_audience" placeholder="e.g. Research Body, 3rd-Level, Computer Scientists" required>
+                  </div>
+                  <div class="form-group">
+                    <label style="color:white;" for="eligibility_criteria">Target Audience:</label>
+                    <input type="text" maxlength="60" class="form-control" id="eligibility_criteria" name="eligibility_criteria" placeholder="Proven track record, Univerity, researcher, research centre, etc." required>
+                  </div>
+                  <div class="form-group">
+                    <label style="color:white;" for="duration_of_award">Target Audience:</label>
+                    <input type="text" maxlength="30" class="form-control" id="duration_of_award" name="duration_of_award" placeholder="Number of months" required>
+                  </div>
+                  <div class="form-group">
+                    <label style="color:white;" for="reporting_guidelines">Target Audience:</label>
+                    <input type="text" maxlength="30" class="form-control" id="reporting_guidelines" name="reporting_guidelines" placeholder="Annual/Monthly reports" required>
+                  </div>
+                  <div class="form-group">
+                    <label style="color:white;" for="start_date">Target Audience:</label>
+                    <input class="form-control" id="start_date" name="start_date" placeholder="YYYY-MM-DD HH:MM:SS" required>
+                  </div>
+                  <div class="form-group">
+                    <label style="color:white;" for="deadline">Target Audience:</label>
+                    <input class="form-control" id="deadline" name="deadline" placeholder="YYYY-MM-DD HH:MM:SS" required>
+                  </div>
+                  <button type="submit" >Publish</button>
+
+                    <br>
+                  {% if error %}
+                    <div class="alert alert-warning" role="alert">
+                        Incorrect form entries
+                    </div>
+                  {% endif %}
+                </form>
+                </center>
+            </div>
+
+</div>
+<!--<h3 id="researchHeading">Call for proposals: {{ user.username }}</h3>
+<hr>
+        {% for call in calls %}
+        <button class="accordion">{{ call.target_audience }}</button>
+
+            <div class="panel">
+
+                <p><strong>Call for proposal: </strong>{{ call.text_of_call }}</p>
+                <p><strong>Eligibility Criteria: </strong>{{ call.eligibility_criteria }}</p>
+                <p><strong>Reporting Guidelines: </strong>{{ call.reporting_guidelines }}</p>
+                <p><strong>Start Date: </strong>{{ call.start_date }}</p>
+                <p><strong>Duration of Award: </strong>{{ call.duration_of_award }}</p>
+
+            </div>
+        {% endfor %}
+
+        <a href="{{ url_for('user_edit', username=current_user.username) }}"><button type="button"><span class="glyphicon glyphicon-edit"> Edit</button></a>
+-->
+<div style="height:140px;display:block;"></div>
+
+        <script>
+
+            var acc = document.getElementsByClassName("accordion");
+
+            var i;
+
+
+
+            for (i = 0; i < acc.length; i++) {
+
+                acc[i].addEventListener("click", function() {
+
+                    this.classList.toggle("active");
+
+                    var panel = this.nextElementSibling;
+
+                    if (panel.style.maxHeight) {
+
+                        panel.style.maxHeight = null;
+
+                    } else {
+
+                        panel.style.maxHeight = panel.scrollHeight + "px";
+
+                    }
+                });
+
+            }
+
+        </script>
+
+
+{% endblock %}

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>SFI Funding Home</title>
+        <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+                    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+                        <link id ="stylesheet" rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/sfihome.css') }}"/>
+                            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+                            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+                            <script type="text/javascript">
+                                var fileobj;
+                                function upload_file(e) {
+                                    e.preventDefault();
+                                    for (i = 0; i < e.dataTransfer.files.length; i++) {
+                                        fileobj = e.dataTransfer.files[i];
+                                        ajax_file_upload(fileobj);
+                                    }
+                                }
+
+                            function file_explorer() {
+                                document.getElementById('selectfile').click();
+                                document.getElementById('selectfile').onchange = function() {
+                                    fileobj = document.getElementById('selectfile').files[0];
+                                    ajax_file_upload(fileobj);
+                                };
+                            }
+
+                            function ajax_file_upload(file_obj) {
+                                if(file_obj != undefined) {
+                                    var form_data = new FormData();
+                                    form_data.append('file', file_obj);
+                                    $.ajax({
+                                           type: 'POST',
+                                           url: 'ajax.php',
+                                           contentType: false,
+                                           processData: false,
+                                           data: form_data,
+                                           success:function(response) {
+                                           alert(response);
+                                           $('#selectfile').val('');
+                                           }
+                                           });
+                                }
+                            }
+                            </script>
+                            <script>
+                                function openNav() {
+                                    document.getElementById("mySidepanel").style.width = "250px";
+                                }
+                            function closeNav() {
+                                document.getElementById("mySidepanel").style.width = "0";
+                            }
+                            </script>
+    </head>
+    <body>
+        <header>
+            <div class="jumbotron text-center">
+                <div class="text-right">
+                    <form class="form-inline">
+                        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"/>
+                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                    </form>
+                </div>
+                <!-- class="col-sm-9 col-md-9" in img -->
+                <img src="https://www.techcentral.ie/wp-content/uploads/2014/07/SFI_Logo-620x350.jpg" alt="SFI logo" style="width: 15%;height:10%"/>
+                <br><br>
+                    </div>
+        </header>
+
+        <nav class="navbar">
+            <div class="container-fluid">
+                <ul class="nav nav-tabs">
+                    <li><a href="Working.html">Home</a></li>
+                    <li><a href="Working.html">Applications</a></li>
+                    <li><a href="Working.html">Funding</a></li>
+                    <li><a href="Working.html">Engagement</a></li>
+                    <li><a href="Working.html">Events</a></li>
+                    <li><a href="Working.html">Research</a></li>
+                    <li><a href="Working.html">Centres</a></li>
+                    <li><a href="Working.html">About</a></li>
+                    <li><a href="Working.html">Subscribe</a></li>
+                    <li class="active navbar-right"><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <div id="mySidepanel" class="sidepanel">
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+            <a href="#">About</a>
+            <a href="#">Services</a>
+            <a href="#">Clients</a>
+            <a href="#">Contact</a>
+        </div>
+
+        <button class="openbtn" onclick="openNav()">☰ Toggle Sidepanel</button>
+        <main>
+
+            <div id="drop_file_zone" ondrop="upload_file(event)" ondragover="return false">
+                <div id="drag_upload_file">
+                    <p>Drop file here</p>
+                    <p>or</p>
+                    <p><input type="button" value="Select File" onclick="file_explorer();"></p>
+                        <input type="file" id="selectfile">
+                            </div>
+            </div>
+
+        </main>
+        <footer class="footer">
+            <p>#BelieveInScience</p>
+            <p><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span><small> Wilton Park House, Wilton Place, D02 NT99, Ireland</small></p>
+            <p><span class="glyphicon glyphicon-phone-alt" aria-hidden="true"></span><small> +353 (0)1 607 3200 </small></p>
+            <p><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span><small> info@sfi.ie</small></p>
+            <p><a class="hi" href="https://www.facebook.com/ScienceFoundationIreland/"><i style="font-size:24px" class="fa">&#xf082;</i></a> <a href="https://twitter.com/scienceirel"><i style="font-size:24px" class="fa">&#xf081;</i></a> <a href="https://www.linkedin.com/company/science-foundation-ireland"><i style="font-size:24px" class="fa">&#xf08c;</i></a> <a href="https://www.instagram.com/scienceireland/"><i style="font-size:24px" class="fa">&#xf16d;</i></a> <a href="https://www.flickr.com/photos/sciencefoundationireland/"><i style="font-size:24px" class="fa">&#xf16e;</i></a> <a href="https://www.youtube.com/ScienceFoundationIreland"><i style="font-size:24px" class="fa">&#xf16a;</i></a></p>
+        </footer>
+    </body>
+</html>

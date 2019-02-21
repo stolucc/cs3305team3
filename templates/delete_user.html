@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+</style>
+
+<h3 id="researchHeading">Delete User</h3>
+<hr>
+
+        {% from "_formhelpers.html" import render_field %}
+        <form method=post>
+            <dl>
+                <div class="form-group">
+                    {{ render_field(form.user_id) }}
+                </div>
+            </dl>
+            <p><input type=submit value=Delete User></p>
+        </form>
+
+
+                <table>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Username</th>
+                        <th>User Type</th>
+                        <th>Email</th>
+                    </tr>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.user_type }}</td>
+                        <td>{{ user.email }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+
+<div style="height:140px;display:block;"></div>
+
+        <script>
+
+            var acc = document.getElementsByClassName("accordion");
+
+            var i;
+
+
+
+            for (i = 0; i < acc.length; i++) {
+
+                acc[i].addEventListener("click", function() {
+
+                    this.classList.toggle("active");
+
+                    var panel = this.nextElementSibling;
+
+                    if (panel.style.maxHeight) {
+
+                        panel.style.maxHeight = null;
+
+                    } else {
+
+                        panel.style.maxHeight = panel.scrollHeight + "px";
+
+                    }
+                });
+
+            }
+
+        </script>
+
+
+{% endblock %}
