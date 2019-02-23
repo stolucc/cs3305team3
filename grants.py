@@ -10,6 +10,7 @@ from flask_mail import Mail
 #from email1 import send_password_reset_email
 from time import time
 import jwt
+from forms import ResetPasswordRequestForm, ResetPasswordForm, DeletionForm, RegistrationForm, AddProposalForm, ProfileForm
 from wtforms import Form, IntegerField, StringField, PasswordField, BooleanField, SubmitField, validators
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
 from flask_dropzone import Dropzone
@@ -175,19 +176,6 @@ class Researcher_Profile(UserMixin, db.Model):
     def get_id(self):
         return self.username
 
-class ProfileForm(Form):
-    #Education
-    orcid = StringField('ORCID', [validators.Length(min=19, max=19)])
-    degree = StringField('Degree', [validators.Length(min=4, max=30)])
-    field_of_study = StringField('Field of Study', [validators.Length(min=4, max=30)])
-    institution = StringField('Institution', [validators.Length(min=2, max=30)])
-    location = StringField('Location', [validators.Length(min=2, max=30)])
-    year_of_degree_award = StringField('Year Degree Awarded', [validators.Length(min=2, max=30)])
-    #Employment
-    employment_faculty = StringField('Place of Employment', [validators.Length(min=1, max=30)])
-    location = StringField('Location', [validators.Length(min=1, max=30)])
-    years_of_employment = StringField('Years of Employment', [validators.Length(min=1, max=30)])
-
 @app.route('/user/<username>', methods=['GET', 'POST'])
 #@login_required
 #@login_required_advanced(role="researcher")
@@ -198,18 +186,6 @@ def user(username):
         researcher = Researcher_Profile(ORCID=form.orcid.data)
 
     return render_template('user.html', title='Profile', user=user, form=form)
-
-#@app.route('/register', methods=['GET', 'POST'])
-#def register():
- #   form = RegistrationForm(request.form)
-  #  if request.method == 'POST' and form.validate():
-      #              password_hash=generate_password_hash(form.password.data))
-       # db.session.add(user)
-   ###     user = User(username=form.username.data, email=form.email.data, user_type=form.user_type.data,
-        #db.session.commit()
-        #flash('Thanks for registering')
-        #return redirect(url_for('login'))
-    #return render_template('register.html', form=form)
 
 class Engagements(UserMixin, db.Model):
 
@@ -630,13 +606,6 @@ class CFP(UserMixin, db.Model):
 
 
 
-
-class ResetPasswordRequestForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    submit = SubmitField('Request Password Reset')
-
-
-
 class User(UserMixin, db.Model):
 
     __tablename__ = "users"
@@ -791,34 +760,6 @@ def reset_password_request():
                            title='Reset Password', form=form)
 
 
-class ResetPasswordForm(FlaskForm):
-    password = PasswordField('Password', validators=[DataRequired()])
-    password2 = PasswordField(
-        'Repeat Password', validators=[DataRequired(), EqualTo('password')])
-    submit = SubmitField('Request Password Reset')
-
-
-
-#@app.route('/reset_password)
-#reset_password<token>', methods=['GET', 'POST'])
-#def reset_password(token):
-    #if current_user.is_authenticated:
-        #return redirect(url_for('index'))
-    #user = User.verify_reset_password_token(token)
-    #if not user:
-        #return redirect(url_for('index'))
-    #form = ResetPasswordForm()
-    #if form.validate_on_submit():
-        #user.set_password(form.password.data)
-        #db.session.commit()
-        #flash('Your password has been reset.')
-        #return redirect(url_for('login'))
-   # return render_template('email/reset_password.html', form=form)
-
-
-
-
-
 @app.route('/reset_password<token>', methods=['GET', 'POST'])#was /reset_password)reset_password<token>
 def reset_password(token):
     if current_user.is_authenticated:
@@ -839,14 +780,21 @@ def reset_password(token):
 @app.route('/add_proposals', methods=["GET", "POST"])
 @login_required_advanced(role="sfiAdmin")
 def add_proposals():
-    call=CFP(text_of_call=request.form.get("text_of_call",False),target_audience=request.form.get("target_audience",False),eligibility_criteria=request.form.get("eligibility_criteria",False),duration_of_award=request.form.get("duration_of_award",False),reporting_guidelines=request.form.get("reporting_guidelines",False),start_date=request.form.get("start_date",False),deadline=request.form.get("deadline",False))
-
-    #text_of_call=request.form["text_of_call"]
-    db.session.add(call)
-
-    db.session.commit()
-    """calls=CFP.query.all()"""
-    return render_template('add_proposals.html', title='Proposals', user=user)
+    form = AddProposalForm(request.form)
+    if request.method == 'POST' and form.validate():
+        call=CFP(
+            text_of_call=form.text_of_call.data,
+            target_audience=form.target_audience.data,
+            eligibility_criteria=form.eligibility_criteria.data,
+            duration_of_award=form.duration_of_award.data,
+            reporting_guidelines=form.reporting_guidelines.data,
+            start_date=form.start_date.data,
+            deadline=form.deadline.data
+        )
+        db.session.add(call)
+        db.session.commit()
+        return redirect(url_for('proposals'))
+    return render_template('add_proposals.html', title='Proposals', user=user, form=form)
 
 @app.route('/admin_main')
 @login_required_advanced(role="sfiAdmin")
@@ -859,7 +807,6 @@ def admin_main():
 def research_centre_main():
     return render_template('research_centre_main_page.html', title='Research Centre', user=current_user)
 
-
 @app.route('/reviewer_main')
 @login_required_advanced(role="reviewer")
 def reviewer_main():
@@ -869,9 +816,6 @@ def reviewer_main():
 @login_required_advanced(role="institution")
 def institute_main():
     return render_template('institute_main.html', title='Insititution', user=current_user)
-
-
-
 
 @app.route('/proposals')
 def proposals():
@@ -896,17 +840,12 @@ def delete_user():
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     if request.method == 'POST':
-        for key, f in request.files.items():
             if key.startswith('file'):
                 #save_as = f.filename + current_user.get_id()
                 #directory = current_user.get_id()
                 f.save(os.path.join(app.config['UPLOADED_PATH'], str(current_user.get_id())))
     return render_template('drag_and_drop.html', title='Proposals', user=user)
 
-
-
-class DeletionForm(Form):
-    user_id = IntegerField('User ID', [validators.NumberRange(min=0, max=999)])
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -918,38 +857,7 @@ def register():
         db.session.commit()
         flash('Thanks for registering')
         return redirect(url_for('login'))
-    return render_template('register.html', form=form)
-
-class RegistrationForm(Form):
-    username = StringField('Username', [validators.Length(min=4, max=25)])
-    email = StringField('Email Address', [validators.Length(min=6, max=45)])
-    user_type = StringField('User Type', [validators.Length(min=6, max=30)])
-    password = PasswordField('New Password', [
-        validators.DataRequired(),
-        validators.EqualTo('confirm', message='Passwords must match')
-    ])
-    confirm = PasswordField('Repeat Password')
-    accept_tos = BooleanField
-
-
-
-
-
-
-#@app.route('/register', methods=["GET", "POST"])
-#def register():
-
-    #user_password=str(request.form.get("password",False))
-    #hashed_password=getPasswordHash(user_password)
-
-    #user = User(username=request.form.get("uname",False), password_hash = hashed_password, user_type=request.form.get("user_type",False),email=request.form.get("email",False))
-
-    #db.session.add(user)
-    #userExists = load_user(request.form.get("uname",False))
-    #if userExists is None:
-        #return render_template("login_page.html", error=True)
-    #db.session.commit()
-    #return render_template('register.html', title='Register')
+    return render_template('register.html', title='Register', form=form)
 
 @app.route('/submit_proposals')
 #@login_required_advanced(role="sfiAdmin")
