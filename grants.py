@@ -12,9 +12,9 @@ from time import time
 import jwt
 from wtforms import Form, IntegerField, StringField, PasswordField, BooleanField, SubmitField, validators
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
-from flask_wtf import FlaskForm
 import os
-
+import requests
+import xml.dom.minidom
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
@@ -163,7 +163,41 @@ class Researcher_Profile(UserMixin, db.Model):
     def get_id(self):
         return self.username
 
+class ProfileForm(Form):
+    #Education
+    orcid = StringField('ORCID', [validators.Length(min=19, max=19)])
+    degree = StringField('Degree', [validators.Length(min=4, max=30)])
+    field_of_study = StringField('Field of Study', [validators.Length(min=4, max=30)])
+    institution = StringField('Institution', [validators.Length(min=2, max=30)])
+    location = StringField('Location', [validators.Length(min=2, max=30)])
+    year_of_degree_award = StringField('Year Degree Awarded', [validators.Length(min=2, max=30)])
+    #Employment
+    employment_faculty = StringField('Place of Employment', [validators.Length(min=1, max=30)])
+    location = StringField('Location', [validators.Length(min=1, max=30)])
+    years_of_employment = StringField('Years of Employment', [validators.Length(min=1, max=30)])
 
+@app.route('/user/<username>', methods=['GET', 'POST'])
+#@login_required
+#@login_required_advanced(role="researcher")
+def user(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    form = ProfileForm(request.form)
+    if request.method == 'POST' and form.validate():
+        researcher = Researcher_Profile(ORCID=form.orcid.data)
+
+    return render_template('user.html', title='Profile', user=user, form=form)
+
+#@app.route('/register', methods=['GET', 'POST'])
+#def register():
+ #   form = RegistrationForm(request.form)
+  #  if request.method == 'POST' and form.validate():
+      #              password_hash=generate_password_hash(form.password.data))
+       # db.session.add(user)
+   ###     user = User(username=form.username.data, email=form.email.data, user_type=form.user_type.data,
+        #db.session.commit()
+        #flash('Thanks for registering')
+        #return redirect(url_for('login'))
+    #return render_template('register.html', form=form)
 
 class Engagements(UserMixin, db.Model):
 
@@ -646,7 +680,7 @@ def login_required_advanced(role="ANY"):
     def wrapper(fn):
         @wraps(fn)
         def decorated_view(*args, **kwargs):
-            if not current_user.is_authenticated():
+            if not current_user.is_authenticated:#current_user.is_authenticated()
                 return render_template("login_page.html", error=True)
             urole = current_user.get_user_type()
             if ( (urole != role) and (role != "ANY")):
@@ -658,11 +692,14 @@ def login_required_advanced(role="ANY"):
 @app.route("/")
 @app.route("/index")
 def index():
+    dom = xml.dom.minidom.parseString(requests.get('https://pub.sandbox.orcid.org/v3.0_rc1/0000-0002-9227-8514').text)
+    eles = dom.documentElement
+    zmin = eles.getElementsByTagName("personal-details:credit-name")[0].firstChild.data
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
 
     if request.method == "GET":
-        return render_template("main_page.html", title="Home", comments=Comment.query.all())
+        return render_template("main_page.html", title="Home", comments=Comment.query.all(), zmin=zmin)
 
     comment = Comment(content=request.form["contents"], commenter=current_user)
     db.session.add(comment)
@@ -691,17 +728,17 @@ def login():
     if urole=="sfiAdmin":
         return redirect(url_for('admin_main'))
 
-        #return render_template('admin_main_page.html', title='Test',urole=urole)
-        #login_user(user)
-
-    ##Search db for the type of user associated with this username:
-    ##If user is associated with  login redirect login home page:
-    else:
+    elif urole=="researcher":
         return redirect(url_for('index'))
-        #return render_template('index.html', title='Test',urole=urole)
-        #login_user(user)
 
+    elif urole=="researchCentre":
+        return redirect(url_for('research_centre_main'))
 
+    elif urole=="reviewer":
+        return redirect(url_for('reviewer_main'))
+
+    else:#user=institution:
+        return redirect(url_for('institute_main'))
 
 
 @app.route("/logout/")
@@ -712,26 +749,16 @@ def logout():
 
 
 @app.route("/home")
-#@login_required
 def home():
     return render_template('home.html', title='Profile')
 
-@app.route('/user/<username>')
-#@login_required
-#@login_required_advanced(role="researcher")
-def user(username):
-    user = User.query.filter_by(username=username).first_or_404()
-    return render_template('user.html', title='Profile', user=user)
-
 @app.route('/user_edit/<username>', methods=['GET', 'POST'])
-#@login_required
 @login_required_advanced(role="researcher")
 def user_edit(username):
     user = User.query.filter_by(username=username).first_or_404()
     return render_template('user_edit.html', title='Edit Profile', user=user)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
-#@login_required
 def edit_profile():
     return render_template('edit_profile.html', title='Edit Profile')
 
@@ -798,7 +825,7 @@ def reset_password(token):
 
 
 @app.route('/add_proposals', methods=["GET", "POST"])
-#@login_required_advanced(role="sfiAdmin")
+@login_required_advanced(role="sfiAdmin")
 def add_proposals():
     call=CFP(text_of_call=request.form.get("text_of_call",False),target_audience=request.form.get("target_audience",False),eligibility_criteria=request.form.get("eligibility_criteria",False),duration_of_award=request.form.get("duration_of_award",False),reporting_guidelines=request.form.get("reporting_guidelines",False),start_date=request.form.get("start_date",False),deadline=request.form.get("deadline",False))
 
@@ -810,10 +837,29 @@ def add_proposals():
     return render_template('add_proposals.html', title='Proposals', user=user)
 
 @app.route('/admin_main')
-#@login_required_advanced(role="sfiAdmin")
+@login_required_advanced(role="sfiAdmin")
 def admin_main():
-    calls=CFP.query.all()
-    return render_template('admin_main_page.html', title='Proposals', user=user, calls=calls)
+    return render_template('admin_main_page.html', title='Proposals', user=current_user)#Delete user=user
+
+
+@app.route('/research_centre_main')
+@login_required_advanced(role="researchCentre")
+def research_centre_main():
+    return render_template('research_centre_main_page.html', title='Research Centre', user=current_user)
+
+
+@app.route('/reviewer_main')
+@login_required_advanced(role="reviewer")
+def reviewer_main():
+    return render_template('reviewer_main.html', title='Reviewer', user=current_user)
+
+@app.route('/institute_main')
+@login_required_advanced(role="institution")
+def institute_main():
+    return render_template('institute_main.html', title='Insititution', user=current_user)
+
+
+
 
 @app.route('/proposals')
 def proposals():
@@ -824,7 +870,7 @@ def getPasswordHash(password):
     return generate_password_hash(password)
 
 @app.route('/delete_user', methods=['GET', 'POST'])
-#@login_required_advanced(role="sfiAdmin")
+@login_required_advanced(role="sfiAdmin")
 def delete_user():
     form = DeletionForm(request.form)
     users=User.query.all()
@@ -858,7 +904,12 @@ class RegistrationForm(Form):
         validators.EqualTo('confirm', message='Passwords must match')
     ])
     confirm = PasswordField('Repeat Password')
-    accept_tos = BooleanField('I accept the TOS', [validators.DataRequired()])
+    accept_tos = BooleanField
+
+
+
+
+
 
 #@app.route('/register', methods=["GET", "POST"])
 #def register():
@@ -879,6 +930,40 @@ class RegistrationForm(Form):
 #@login_required_advanced(role="sfiAdmin")
 def submit_proposals():
     return render_template('submit_proposals.html', title='Proposals', user=user)
+
+@app.route('/user/education_form', methods=['GET', 'POST'])
+#@login_required_advanced(role="sfiAdmin")
+def education_form():
+    form = EducationForm(request.form)
+    if request.method == 'POST' and form.validate():
+        makeAssignment="makeAssignmentHere"
+    return render_template('forms/education_form.html', title='Education', user=user, form=form)
+
+@app.route('/user/general_form', methods=['GET', 'POST'])
+#@login_required_advanced(role="sfiAdmin")
+def general_form():
+    form = GeneralForm(request.form)
+    if request.method == 'POST' and form.validate():
+        anotherEmptyAssignment="anotherEmptyAssignmentHere"
+    return render_template('forms/general_form.html', title='Education', user=user, form=form)
+
+class GeneralForm(Form):
+    fName = StringField('Firstname', [validators.Length(min=4, max=30)])
+    lName = StringField('Lastname', [validators.Length(min=4, max=30)])
+    jobTitle = StringField('Job Title', [validators.Length(min=2, max=30)])
+    prefix = StringField('Prefix', [validators.Length(min=2, max=30)])
+    suffix = StringField('Suffix', [validators.Length(min=2, max=30)])
+    phone = StringField('Phone', [validators.Length(min=2, max=30)])
+    phoneExtension = StringField('Phone Extension', [validators.Length(min=2, max=30)])
+    email = StringField('Email', [validators.Length(min=2, max=30)])
+    orcid= StringField('ORCID', [validators.Length(min=19, max=19)])
+
+class EducationForm(Form):
+    degree = StringField('Degree', [validators.Length(min=4, max=30)])
+    field_of_study = StringField('Field of Study', [validators.Length(min=4, max=30)])
+    institution = StringField('Institution', [validators.Length(min=2, max=30)])
+    location = StringField('Location', [validators.Length(min=2, max=30)])
+    year_degree_awarded = StringField('Year Degree Awarded', [validators.Length(min=2, max=30)])
 
 """
     ** Redundant Class **

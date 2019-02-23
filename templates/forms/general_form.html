@@ -1,0 +1,19 @@
+{% extends "user.html" %}
+{% block content %}
+        <form method=post>
+            <dl>
+                <div class="form-group">
+                    {{ render_field(form.fName) }}
+                    {{ render_field(form.lName) }}
+                    {{ render_field(form.jobTitle) }}
+                    {{ render_field(form.prefix) }}
+                    {{ render_field(form.suffix) }}
+                    {{ render_field(form.phone) }}
+                    {{ render_field(form.phoneExtension) }}
+                    {{ render_field(form.email) }}
+                    {{ render_field(form.orcid) }}
+                </div>
+            </dl>
+            <p><input type=submit value=Update></p>
+        </form>
+{% endblock %}

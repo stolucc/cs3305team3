@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+</main>
+<div id="mySidepanel" class="sidepanel">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+    <a href="">Home</a>
+    <a href="">Services</a>
+    <a href="">Clients</a>
+    <a href="">Contact</a>
+</div>
+<button class="openbtn" onclick="openNav()">☰ Admin Menu</button>
+<main>
+
+<div style="clear:both"></div>
+<div class="row3">
+    <h2> <b>Welcome {{ user.username }}</b> </h2>
+    <h2> <b>You are using the research centre admin account</b></h2>
+    <img src="https://www.spilasers.com/wp-content/uploads/2015/09/aerospace-research-centre.jpg"/>
+    <div class="dc-morph-btns">
+        <ul>
+            <li><a id="icon-APA" href=""></a><span>Update User Profiles</span></li>
+            <li><a id="icon-profile" href=""></a><span>Register a New User Profile</span></li>
+            <li><a id="icon-delete-profile" href=""></a><span>Delete a User Profile</span></li>
+        </ul>
+    </div>
+</div>
+<div style="clear:both;"></div>
+
+{% endblock %}

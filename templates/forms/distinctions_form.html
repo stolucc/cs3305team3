@@ -1,0 +1,14 @@
+{% extends "user.html" %}
+{% block content %}
+        <form method=post>
+            <dl>
+                <div class="form-group">
+                    {{ render_field(form.year) }}
+                    {{ render_field(form.awardingBody) }}
+                    {{ render_field(form.awardDetails) }}
+                    {{ render_field(form.teamMemberName) }}
+                </div>
+            </dl>
+            <p><input type=submit value=Update></p>
+        </form>
+{% endblock %}
