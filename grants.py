@@ -12,9 +12,12 @@ from time import time
 import jwt
 from wtforms import Form, IntegerField, StringField, PasswordField, BooleanField, SubmitField, validators
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
+from flask_dropzone import Dropzone
+#from flask_wtf.csrf import CSRFProtect, CSRFError
 import os
 import requests
 import xml.dom.minidom
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
@@ -29,20 +32,29 @@ app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
 app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SECRET_KEY"] = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
-
+#csrf = CSRFProtect(app)
+#@app.errorhandler(CSRFError)
+#def csrf_error(e):
+#    return e.description, 400
 app.config.update(
                     DEBUG=True,
                     MAIL_SERVER='smtp.gmail.com',
                     MAIL_PORT=587,
                     MAIL_USE_TLS=1,
                     MAIL_USERNAME = 'sfigroup3@gmail.com',
-                    MAIL_PASSWORD = 'sglarzpjdohssrpu'
+                    MAIL_PASSWORD = 'sglarzpjdohssrpu',
+                    UPLOADED_PATH=os.path.join(basedir, 'uploads'),
+                    DROPZONE_ALLOWED_FILE_CUSTOM = True,
+                    DROPZONE_ALLOWED_FILE_TYPE = '.pdf, .txt',
+                    #DROPZONE_ENABLE_CSRF = True,
+                    DROPZONE_UPLOAD_ON_CLICK=True,
 
                     )
 
 mail = Mail(app)
 
 from email1 import send_password_reset_email
+dropzone = Dropzone(app)
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -879,6 +891,19 @@ def delete_user():
         db.session.commit()
         return redirect(url_for('delete_user'))
     return render_template('delete_user.html', title='Delete User', users=users, form=form)
+
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    if request.method == 'POST':
+        for key, f in request.files.items():
+            if key.startswith('file'):
+                #save_as = f.filename + current_user.get_id()
+                #directory = current_user.get_id()
+                f.save(os.path.join(app.config['UPLOADED_PATH'], str(current_user.get_id())))
+    return render_template('drag_and_drop.html', title='Proposals', user=user)
+
+
 
 class DeletionForm(Form):
     user_id = IntegerField('User ID', [validators.NumberRange(min=0, max=999)])

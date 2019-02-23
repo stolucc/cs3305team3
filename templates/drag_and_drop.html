@@ -1,0 +1,83 @@
+
+{% extends "base.html" %}
+
+
+{% block content %}
+
+<!--
+<script>
+    function initialisation(){
+        if(window.File && window.FileList && window.FileReader){
+           //document.getElementById( 'textbox' ).value ="Please drop your submission in here"
+           var dropTarget = document.getElementById( 'dropArea' );
+           dropTarget.addEventListener("dragover",dragOver,false);
+           dropTarget.addEventListener("drop",dropFile,false);
+           dropTarget.addEventListener("dragleave",dragLeave,false);
+        }else{
+            document.getElementById( 'textbox' ).value = "Drag and drop not supported on this platorm."
+
+        }
+
+    }
+
+    function dragOver(evt){
+        evt.stopPropagation();
+        evt.preventDefault();
+        document.getElementById("textbox").style.backgroundColor = "white";
+    }
+
+    function dragLeave(evt){
+        evt.stopPropagation();
+        evt.preventDefault();
+        //var divBackgroundCol = document.getElementById("dropArea");
+        //BackgroundCol.style.backgroundColor = "red";
+        document.getElementById("textbox").style.backgroundColor = "#EEF";
+    }
+
+    function dropFile(evt){
+        evt.stopPropagation();
+        evt.preventDefault();
+        var file = evt.dataTransfer.files.item(0);
+        var myTextArea = document.getElementById( 'textbox' );
+        myTextArea.value = file.name;
+    }
+
+</script>
+
+-->
+ {{ dropzone.style('border: 2px dashed #0087F7; margin: 10%; min-height: 400px;') }}
+
+<body > <!--onload="initialisation()" -->
+
+
+     <button id="upload">Upload</button>
+    {{ dropzone.create(action=url_for('upload')) }}
+
+
+    {{ dropzone.load_js() }}
+    {{ dropzone.config() }}
+
+
+    <!--
+    <div id="dropArea" style="display:block;border:5px solid blue;backgroundColor:lightblue;
+        width:40%;margin-left:auto;margin-right:auto;">
+
+
+
+        <textarea id="textbox" style="-moz-box-sizing:border-box;
+        -webkit-box-sizing:border-box;
+        box-sizing:border-box;
+        display:block;/*reset from inline*/
+        width:100%;
+        margin:0;/*remove defaults*/
+        padding:4px;
+        background:#EEF;
+        border:2px solid #333;
+        overflow-y:auto;/*resets IE*/
+        overflow-x:hidden;/*resets IE*/"></textarea>
+    </div>
+    -->
+
+
+</body>
+{% endblock %}
