@@ -3,16 +3,14 @@ from flask import Flask, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, LoginManager, logout_user, UserMixin
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from flask_wtf import FlaskForm
 from werkzeug.security import check_password_hash, generate_password_hash
 from functools import wraps #ADDED for login
 from flask_mail import Mail
 #from email1 import send_password_reset_email
 from time import time
 import jwt
-from forms import ResetPasswordRequestForm, ResetPasswordForm, DeletionForm, RegistrationForm, AddProposalForm, ProfileForm
-from wtforms import Form, IntegerField, StringField, PasswordField, BooleanField, SubmitField, validators
-from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
+from forms import ResetPasswordRequestForm, ResetPasswordForm, DeletionForm, RegistrationForm, AddProposalForm, ProfileForm, EducationForm, GeneralForm
+from wtforms.validators import ValidationError
 from flask_dropzone import Dropzone
 #from flask_wtf.csrf import CSRFProtect, CSRFError
 import os
@@ -175,17 +173,6 @@ class Researcher_Profile(UserMixin, db.Model):
 
     def get_id(self):
         return self.username
-
-@app.route('/user/<username>', methods=['GET', 'POST'])
-#@login_required
-#@login_required_advanced(role="researcher")
-def user(username):
-    user = User.query.filter_by(username=username).first_or_404()
-    form = ProfileForm(request.form)
-    if request.method == 'POST' and form.validate():
-        researcher = Researcher_Profile(ORCID=form.orcid.data)
-
-    return render_template('user.html', title='Profile', user=user, form=form)
 
 class Engagements(UserMixin, db.Model):
 
@@ -652,9 +639,7 @@ class User(UserMixin, db.Model):
 
 
 
-"""
-    ** Routes **
-"""
+
 
 
 def login_required_advanced(role="ANY"):
@@ -669,6 +654,18 @@ def login_required_advanced(role="ANY"):
             return fn(*args, **kwargs)
         return decorated_view
     return wrapper
+
+
+
+
+
+
+
+"""
+                ********************
+    ****************** Routes *********************
+                ********************
+"""
 
 @app.route("/")
 @app.route("/index")
@@ -686,9 +683,6 @@ def index():
     db.session.add(comment)
     db.session.commit()
     return redirect(url_for('index'))
-
-
-
 
 @app.route("/login/", methods=["GET", "POST"])
 
@@ -721,29 +715,11 @@ def login():
     else:#user=institution:
         return redirect(url_for('institute_main'))
 
-
 @app.route("/logout/")
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('login'))
-
-
-@app.route("/home")
-def home():
-    return render_template('home.html', title='Profile')
-
-@app.route('/user_edit/<username>', methods=['GET', 'POST'])
-@login_required_advanced(role="researcher")
-def user_edit(username):
-    user = User.query.filter_by(username=username).first_or_404()
-    return render_template('user_edit.html', title='Edit Profile', user=user)
-
-@app.route('/edit_profile', methods=['GET', 'POST'])
-def edit_profile():
-    return render_template('edit_profile.html', title='Edit Profile')
-
-
 
 @app.route('/reset_password_request', methods=['GET', 'POST'])
 def reset_password_request():
@@ -758,7 +734,6 @@ def reset_password_request():
         return redirect(url_for('login'))
     return render_template('reset_password_request.html',
                            title='Reset Password', form=form)
-
 
 @app.route('/reset_password<token>', methods=['GET', 'POST'])#was /reset_password)reset_password<token>
 def reset_password(token):
@@ -775,7 +750,6 @@ def reset_password(token):
         return redirect(url_for('login'))
 
     return render_template('reset_password.html', form=form)
-
 
 @app.route('/add_proposals', methods=["GET", "POST"])
 @login_required_advanced(role="sfiAdmin")
@@ -800,7 +774,6 @@ def add_proposals():
 @login_required_advanced(role="sfiAdmin")
 def admin_main():
     return render_template('admin_main_page.html', title='Proposals', user=current_user)#Delete user=user
-
 
 @app.route('/research_centre_main')
 @login_required_advanced(role="researchCentre")
@@ -836,7 +809,6 @@ def delete_user():
         return redirect(url_for('delete_user'))
     return render_template('delete_user.html', title='Delete User', users=users, form=form)
 
-
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     if request.method == 'POST':
@@ -845,7 +817,6 @@ def upload():
                 #directory = current_user.get_id()
                 f.save(os.path.join(app.config['UPLOADED_PATH'], str(current_user.get_id())))
     return render_template('drag_and_drop.html', title='Proposals', user=user)
-
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -864,6 +835,17 @@ def register():
 def submit_proposals():
     return render_template('submit_proposals.html', title='Proposals', user=user)
 
+@app.route('/user/<username>', methods=['GET', 'POST'])
+#@login_required
+#@login_required_advanced(role="researcher")
+def user(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    form = ProfileForm(request.form)
+    if request.method == 'POST' and form.validate():
+        researcher = Researcher_Profile(ORCID=form.orcid.data)
+
+    return render_template('user.html', title='Profile', user=user, form=form)
+
 @app.route('/user/education_form', methods=['GET', 'POST'])
 #@login_required_advanced(role="sfiAdmin")
 def education_form():
@@ -880,23 +862,20 @@ def general_form():
         anotherEmptyAssignment="anotherEmptyAssignmentHere"
     return render_template('forms/general_form.html', title='Education', user=user, form=form)
 
-class GeneralForm(Form):
-    fName = StringField('Firstname', [validators.Length(min=4, max=30)])
-    lName = StringField('Lastname', [validators.Length(min=4, max=30)])
-    jobTitle = StringField('Job Title', [validators.Length(min=2, max=30)])
-    prefix = StringField('Prefix', [validators.Length(min=2, max=30)])
-    suffix = StringField('Suffix', [validators.Length(min=2, max=30)])
-    phone = StringField('Phone', [validators.Length(min=2, max=30)])
-    phoneExtension = StringField('Phone Extension', [validators.Length(min=2, max=30)])
-    email = StringField('Email', [validators.Length(min=2, max=30)])
-    orcid= StringField('ORCID', [validators.Length(min=19, max=19)])
+@app.route('/edit_profile', methods=['GET', 'POST'])
+def edit_profile():
+    return render_template('edit_profile.html', title='Edit Profile')
 
-class EducationForm(Form):
-    degree = StringField('Degree', [validators.Length(min=4, max=30)])
-    field_of_study = StringField('Field of Study', [validators.Length(min=4, max=30)])
-    institution = StringField('Institution', [validators.Length(min=2, max=30)])
-    location = StringField('Location', [validators.Length(min=2, max=30)])
-    year_degree_awarded = StringField('Year Degree Awarded', [validators.Length(min=2, max=30)])
+@app.route('/user_edit/<username>', methods=['GET', 'POST'])
+@login_required_advanced(role="researcher")
+def user_edit(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    return render_template('user_edit.html', title='Edit Profile', user=user)
+
+
+@app.route("/home")
+def home():
+    return render_template('home.html', title='Profile')
 
 """
     ** Redundant Class **

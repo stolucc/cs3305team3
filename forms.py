@@ -51,3 +51,21 @@ class ProfileForm(Form):
     employment_faculty = StringField('Place of Employment', [validators.Length(min=1, max=30)])
     location = StringField('Location', [validators.Length(min=1, max=30)])
     years_of_employment = StringField('Years of Employment', [validators.Length(min=1, max=30)])
+
+class GeneralForm(Form):
+    fName = StringField('Firstname', [validators.Length(min=4, max=30)])
+    lName = StringField('Lastname', [validators.Length(min=4, max=30)])
+    jobTitle = StringField('Job Title', [validators.Length(min=2, max=30)])
+    prefix = StringField('Prefix', [validators.Length(min=2, max=30)])
+    suffix = StringField('Suffix', [validators.Length(min=2, max=30)])
+    phone = StringField('Phone', [validators.Length(min=2, max=30)])
+    phoneExtension = StringField('Phone Extension', [validators.Length(min=2, max=30)])
+    email = StringField('Email', [validators.Length(min=2, max=30)])
+    orcid= StringField('ORCID', [validators.Length(min=19, max=19)])
+
+class EducationForm(Form):
+    degree = StringField('Degree', [validators.Length(min=4, max=30)])
+    field_of_study = StringField('Field of Study', [validators.Length(min=4, max=30)])
+    institution = StringField('Institution', [validators.Length(min=2, max=30)])
+    location = StringField('Location', [validators.Length(min=2, max=30)])
+    year_degree_awarded = StringField('Year Degree Awarded', [validators.Length(min=2, max=30)])
