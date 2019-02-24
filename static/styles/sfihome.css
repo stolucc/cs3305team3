@@ -454,3 +454,7 @@ main .active:after {
 input{
     width: 65%;
 }
+
+#delete-user {
+    width: 65%;
+}

@@ -5,7 +5,7 @@
 <div id="mySidepanel" class="sidepanel">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
     <a href="{{ url_for('index') }}">Home</a>
-    <a href="{{ url_for('user', username=current_user.username) }}">Profile</a>
+    <a href="../">Profile</a>
     <a href="#">Services</a>
     <a href="#">Clients</a>
     <a href="#">Contact</a>
@@ -76,7 +76,6 @@
             </div>
         {% endfor %}
 
-        <a href="{{ url_for('user_edit', username=current_user.username) }}"><button type="button"><span class="glyphicon glyphicon-edit"> Edit</button></a>
 -->
 
 
