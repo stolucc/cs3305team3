@@ -2,7 +2,7 @@ from wtforms import Form, IntegerField, StringField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, Email, EqualTo
 
 class ResetPasswordRequestForm(Form):
-    email = StringField('Email Address', [validators.Length(min=6, max=45)])
+    email = StringField('Email Address', [validators.Length(min=6, max=45), validators.Email()])
 
 class ResetPasswordForm(Form):
     password = PasswordField('Password', validators=[DataRequired()])
