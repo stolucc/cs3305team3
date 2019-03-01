@@ -7,6 +7,7 @@
 
             <div id="login" class="row">
                 <form class="box" action="" method="POST" novalidate>
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                   <div class="form-group">
                     <label style="color:white;" for="username">Username:</label>
                     <input class="form-control" id="username" name="username" placeholder="Enter your username">
@@ -50,6 +51,7 @@
     </article>
 </div>
 <script>
+    var csrftoken = "{{ csrf_token() }};
     var modal = document.getElementById('help');
 
     // When the user clicks anywhere outside of the modal, close it

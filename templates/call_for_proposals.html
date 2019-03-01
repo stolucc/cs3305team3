@@ -5,12 +5,12 @@
 <h3 id="researchHeading">New Proposals {{ user.username }}</h3>
 <hr>
         {% for call in calls %}
-        <button class="accordion">{{   call.target_audience  }}</button>
+        <button class="accordion">{{   call.call_for_proposal_title  }}</button>
 
             <div class="panel">
-
+                <p><strong>Target Audience:</strong>{{ call.target_audience}}</p>
                 <p><strong>Proposal: </strong>{{ call.text_of_call }}</p>
-                <p><strong>Target Audience: </strong>{{ call.eligibility_criteria }}</p>
+                <p><strong>Eligibility Criteria: </strong>{{ call.eligibility_criteria }}</p>
                 <p><strong>Reporting Guidelines: </strong>{{ call.reporting_guidelines }}</p>
                 <p><strong>Start Date: </strong>{{ call.start_date }}</p>
                 <p><strong>Duration of Award: </strong>{{ call.duration_of_award }}</p>

@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% if title %}
+            <title>SFI - {{ title }}</title>
+        {% else %}
+            <title>SFI</title>
+        {% endif %}
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                $('#generalForm').submit(function (e) {
+                    var url = "{{ url_for('add_application_general') }}"; // send the form data here.
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $('#generalForm').serialize(), // serializes the form's elements.
+                        success: function (data) {
+                        console.log(data)  // display the returned data in the console.
+                        }
+                    });
+                    e.preventDefault(); // block the traditional submission of the form.
+                });
+
+                $('#scientificAbstractForm').submit(function (e) {
+                    var url = "{{ url_for('add_scientific_abstract') }}"; // send the form data here.
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $('#scientificAbstractForm').serialize(), // serializes the form's elements.
+                        success: function (data) {
+                        console.log(data)  // display the returned data in the console.
+                        }
+                    });
+                    e.preventDefault(); // block the traditional submission of the form.
+                });
+
+                $('#layAbsractForm').submit(function (e) {
+                    var url = "{{ url_for('add_lay_abstract') }}"; // send the form data here.
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $('#layAbsractForm').serialize(), // serializes the form's elements.
+                        success: function (data) {
+                        console.log(data)  // display the returned data in the console.
+                        }
+                    });
+                    e.preventDefault(); // block the traditional submission of the form.
+                });
+
+                 $('#submitForm').submit(function (e) {
+                    var url = "{{ url_for('submit_Form') }}"; // send the form data here.
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $('form').serialize(), // serializes the form's elements.
+                        success: function (data) {
+                        console.log(data)  // display the returned data in the console.
+                        }
+                    });
+                    e.preventDefault(); // block the traditional submission of the form.
+                });
+
+                $('#CoApplicantsForm').submit(function (e) {
+                    var url = "{{ url_for('Co_applicants_form1') }}"; // send the form data here.
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $('#CoApplicantsForm').serialize(), // serializes the form's elements.
+                        success: function (data) {
+                        console.log(data)  // display the returned data in the console.
+                        }
+                    });
+                    e.preventDefault(); // block the traditional submission of the form.
+                });
+
+                $('#CoApplicantsForm2').submit(function (e) {
+                    var url = "{{ url_for('Co_applicants_form1') }}"; // send the form data here.
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $('#CoApplicantsForm2').serialize(), // serializes the form's elements.
+                        success: function (data) {
+                        console.log(data)  // display the returned data in the console.
+                        }
+                    });
+                    e.preventDefault(); // block the traditional submission of the form.
+                });
+
+                 $('#CoApplicantsForm3').submit(function (e) {
+                    var url = "{{ url_for('Co_applicants_form1') }}"; // send the form data here.
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $('#CoApplicantsForm3').serialize(), // serializes the form's elements.
+                        success: function (data) {
+                        console.log(data)  // display the returned data in the console.
+                        }
+                    });
+                    e.preventDefault(); // block the traditional submission of the form.
+                });
+
+                $('#CoApplicantsForm4').submit(function (e) {
+                    var url = "{{ url_for('Co_applicants_form1') }}"; // send the form data here.
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $('#CoApplicantsForm4').serialize(), // serializes the form's elements.
+                        success: function (data) {
+                        console.log(data)  // display the returned data in the console.
+                        }
+                    });
+                    e.preventDefault(); // block the traditional submission of the form.
+                });
+                $('#CoApplicantsForm5').submit(function (e) {
+                    var url = "{{ url_for('Co_applicants_form1') }}"; // send the form data here.
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $('#CoApplicantsForm5').serialize(), // serializes the form's elements.
+                        success: function (data) {
+                        console.log(data)  // display the returned data in the console.
+                        }
+                    });
+                    e.preventDefault(); // block the traditional submission of the form.
+                });
+
+                $('#CollaboratorForm').submit(function (e) {
+                    var url = "{{ url_for('Collaborators_form1') }}"; // send the form data here.
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $('#CollaboratorForm').serialize(), // serializes the form's elements.
+                        success: function (data) {
+                        console.log(data)  // display the returned data in the console.
+                        }
+                    });
+                    e.preventDefault(); // block the traditional submission of the form.
+                });
+                 $('#CollaboratorForm2').submit(function (e) {
+                    var url = "{{ url_for('Collaborators_form1') }}"; // send the form data here.
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $('#CollaboratorForm2').serialize(), // serializes the form's elements.
+                        success: function (data) {
+                        console.log(data)  // display the returned data in the console.
+                        }
+                    });
+                    e.preventDefault(); // block the traditional submission of the form.
+                });
+                 $('#CollaboratorForm3').submit(function (e) {
+                    var url = "{{ url_for('Collaborators_form1') }}"; // send the form data here.
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $('#CollaboratorForm3').serialize(), // serializes the form's elements.
+                        success: function (data) {
+                        console.log(data)  // display the returned data in the console.
+                        }
+                    });
+                    e.preventDefault(); // block the traditional submission of the form.
+                });
+                  $('#CollaboratorForm4').submit(function (e) {
+                    var url = "{{ url_for('Collaborators_form1') }}"; // send the form data here.
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $('#CollaboratorForm4').serialize(), // serializes the form's elements.
+                        success: function (data) {
+                        console.log(data)  // display the returned data in the console.
+                        }
+                    });
+                    e.preventDefault(); // block the traditional submission of the form.
+                });
+                $('#CollaboratorForm5').submit(function (e) {
+                    var url = "{{ url_for('Collaborators_form1') }}"; // send the form data here.
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: $('#CollaboratorForm5').serialize(), // serializes the form's elements.
+                        success: function (data) {
+                        console.log(data)  // display the returned data in the console.
+                        }
+                    });
+                    e.preventDefault(); // block the traditional submission of the form.
+                });
+
+
+
+
+
+
+            // Inject our CSRF token into our AJAX request.
+
+            });
+
+        </script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+        <link id ="stylesheet" rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/sfihome.css') }}"/>
+        <style>
+            /* Style the form */
+            #regForm {
+              background-color: #ffffff;
+              margin: 100px auto;
+              padding: 40px;
+              width: 70%;
+              min-width: 300px;
+            }
+
+
+            /* Style the Text Area fields */
+
+            /* Style the input fields */
+            input {
+              padding: 10px;
+              width: 100%;
+              font-size: 17px;
+              font-family: Raleway;
+              border: 1px solid #aaaaaa;
+            }
+
+            /* Mark input boxes that gets an error on validation: */
+            input.invalid {
+              background-color: #ffdddd;
+            }
+
+            /* Hide all steps by default: */
+            .tab {
+              display: none;
+            }
+
+            /* Make circles that indicate the steps of the form: */
+            .step {
+              height: 15px;
+              width: 15px;
+              margin: 0 2px;
+              background-color: #bbbbbb;
+              border: none;
+              border-radius: 50%;
+              display: inline-block;
+              opacity: 0.5;
+            }
+
+            /* Mark the active step: */
+            .step.active {
+              opacity: 1;
+            }
+
+            /* Mark the steps that are finished and valid: */
+            .step.finish {
+              background-color: #4CAF50;
+            }
+
+            .btn{
+                background-color: #4CAF50;
+            }
+            textarea {
+	            -webkit-box-sizing: border-box;
+	            -moz-box-sizing: border-box;
+	            box-sizing: border-box;
+	            width: 100%;
+                height: 10em;
+            }
+
+            select {
+                width: 100%;
+            }
+
+            label {
+                margin-top:6px;
+            }
+
+        </style>
+
+        <script>
+
+            var currentTab = 0; // Current tab is set to be the first tab (0)
+
+            showTab(currentTab); // Display the current tab
+
+            function display(){
+              var currentTab = 0;
+              showTab(currentTab);
+
+
+           }
+
+            function showTab(n) {
+              // This function will display the specified tab of the form ...
+
+              //if(contentWrapper.style.display.toString==""){
+              var x = document.getElementsByClassName("tab");
+
+              x[n].style.display = "block";
+                  // ... and fix the Previous/Next buttons
+              if (n == 0) {
+                document.getElementById("prevBtn").style.display = "none";
+              } else {
+                document.getElementById("prevBtn").style.display = "inline";
+              }
+              if (n == (x.length - 1)) {
+                document.getElementById("nextBtn").style.display = "none";
+              } else {
+                document.getElementById("nextBtn").innerHTML = "Next";
+              }
+              // ... and run a function that displays the correct step indicator:
+              fixStepIndicator(n)
+            }
+
+            function nextPrev(n) {
+              var x = document.getElementsByClassName("tab");
+              x[currentTab].style.display = "none";
+              // Increase or decrease the current tab by 1:
+              currentTab = currentTab + n;
+
+              showTab(currentTab);
+            }
+
+            function fixStepIndicator(n) {
+              // This function removes the "active" class of all steps...
+              var i, x = document.getElementsByClassName("step");
+              for (i = 0; i < x.length; i++) {
+                x[i].className = x[i].className.replace(" active", "");
+              }
+              //... and adds the "active" class to the current step:
+              x[n].className += " active";
+            }
+
+
+
+
+
+
+
+        </script>
+
+    </head>
+
+
+    <body onload="display()">
+
+        <header>
+            <div class="jumbotron text-center">
+                <div class="text-right">
+                    <form class="form-inline">
+                        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"/>
+                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                    </form>
+                </div>
+                <!-- class="col-sm-9 col-md-9" in img -->
+                <img src="https://www.techcentral.ie/wp-content/uploads/2014/07/SFI_Logo-620x350.jpg" alt="SFI logo" style="width: 15%;height:10%"/>
+                <br><br>
+            </div>
+        </header>
+
+        <nav class="navbar">
+            <div class="container-fluid">
+                <ul class="nav nav-tabs">
+                    <li><a href="{{ url_for('index') }}">Home</a></li>
+                    <li><a href="">Applications</a></li>
+                    <li><a href="{{ url_for('proposals') }}">Funding</a></li>
+                    <li><a href="">Engagement</a></li>
+                    <li><a href="">Events</a></li>
+                    <li><a href="">Research</a></li>
+                    <li><a href="">Centres</a></li>
+                    <li><a href="">About</a></li>
+                    <li><a href="">Subscribe</a></li>
+                    {% if current_user.is_authenticated %}
+                        <li class="active navbar-right"><a href="{{ url_for('logout') }}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                    {% else %}
+                        <li class="active navbar-right"><a href="{{ url_for('login') }}"><span class="glyphicon glyphicon-log-in"></span> Log in</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+
+        <main>
+            <h3>Grant Applications</h3>
+
+
+
+            <div style="overflow:auto;">
+              <div style="float:right;">
+                <button type="button" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
+                <button type="button" id="nextBtn" onclick="nextPrev(1)">Next</button>
+              </div>
+            </div>
+             {% from "_formhelpers.html" import render_field %}
+
+            <section class="tab">
+                <div class="row">
+                <center>
+                <form action="/add_application_general" method="POST" id='generalForm' style="width:70%" id="regForm" role="form">
+                    <dl>
+    			    {{ form1.generalForm }}
+    			    {{ form1.hidden_tag() }}
+
+    			    <div style="visibility:hidden">
+    			        {{ render_field(form1.grant_application_id) }}
+    			    </div>
+                    {{ render_field(form1.proposal_title) }}
+                    {{ render_field(form1.award_duration) }}
+                    {{ render_field(form1.national_research_priority) }}
+                    {{ render_field(form1.sfi_legal_remit_justification) }}
+                    {{ render_field(form1.ethical_issues) }}
+                    {{ render_field(form1.applicants_country) }}
+
+                  <input type="submit" value="Save"/>
+                </form>
+
+
+            </section>
+
+
+
+            <section class="tab">
+                <div class="row">
+                <center>
+                <form action="/add_scientific_abstract" id='scientificAbstractForm' method="POST" style="width:70%" id="regForm" role="form">
+                  <dl>
+                    {{ form2.generalForm }}
+    			    {{ form2.hidden_tag() }}
+    			    <div style="visibility:hidden; height:0">
+    			        {{ render_field(form1.grant_application_id) }}
+    			    </div>
+
+                    {{ render_field(form2.scientific_abstract) }}
+                  </dl>
+                  <input type="submit" value="Save"/>
+
+
+                </form>
+            </section>
+
+
+            <section class="tab">
+                <div class="row">
+                <center>
+                <form action="/add_lay_abstract" id='layAbsractForm' method="POST" style="width:70%" id="regForm" role="form">
+                  <dl>
+                    {{ form3.generalForm }}
+    			    {{ form3.hidden_tag() }}
+    			    <div style="visibility:hidden; height:0">
+                        {{ render_field(form3.grant_application_id) }}
+                     </div>
+                    {{ render_field(form3.lay_abstract) }}
+
+                  </dl>
+
+                 <input type="submit" value="Save"/>
+                </form>
+            </section>
+
+
+            <section class="tab">
+                <div class="row">
+                <H2>Co-Applicants</H2>
+                <center>
+                <section class="Co_applicants">
+                    <form action="/Co_applicants_form1" id='CoApplicantsForm' method="POST" style="width:70%" id="regForm" role="form">
+                      <dl>
+                        {{ form5.generalForm }}
+        			    {{ form5.hidden_tag() }}
+                        {{ render_field(form5.name) }}
+                        {{ render_field(form5.email) }}
+                        {{ render_field(form5.organization) }}
+                        <div style="visibility:hidden; height:0">
+                            {{ render_field(form5.grant_application)}}
+                        </div>
+                      </dl>
+
+                     <input type="submit" value="Save"/>
+
+
+                    </form>
+                </section>
+                <section class="Co_applicants">
+                    <form action="/Co_applicants_form1" id='CoApplicantsForm2' method="POST" style="width:70%" id="regForm" role="form">
+                      <dl>
+                        {{ form5.generalForm }}
+        			    {{ form5.hidden_tag() }}
+                        {{ render_field(form5.name) }}
+                        {{ render_field(form5.email) }}
+                        {{ render_field(form5.organization) }}
+                        <div style="visibility:hidden; height:0">
+                            {{ render_field(form5.grant_application)}}
+                         </div>
+                      </dl>
+
+                     <input type="submit" value="Save"/>
+
+
+                    </form>
+                </section>
+                <section class="Co_applicants">
+                    <form action="/Co_applicants_form1" id='CoApplicantsForm3' method="POST" style="width:70%" id="regForm" role="form">
+                      <dl>
+                        {{ form5.generalForm }}
+        			    {{ form5.hidden_tag() }}
+                        {{ render_field(form5.name) }}
+                        {{ render_field(form5.email) }}
+                        {{ render_field(form5.organization) }}
+                         <div style="visibility:hidden; height:0">
+                            {{ render_field(form5.grant_application)}}
+                         </div>
+                      </dl>
+
+                     <input type="submit" value="Save"/>
+
+
+                    </form>
+                </section>
+                <section class="Co_applicants">
+                    <form action="/Co_applicants_form1" id='CoApplicantsForm4' method="POST" style="width:70%" id="regForm" role="form">
+                      <dl>
+                        {{ form5.generalForm }}
+        			    {{ form5.hidden_tag() }}
+                        {{ render_field(form5.name) }}
+                        {{ render_field(form5.email) }}
+                        {{ render_field(form5.organization) }}
+                        <div style="visibility:hidden; height:0">
+                            {{ render_field(form5.grant_application)}}
+                        </div>
+                      </dl>
+
+                     <input type="submit" value="Save"/>
+
+
+                    </form>
+                </section>
+                <section class="Co_applicants">
+                    <form action="/Co_applicants_form1" id='CoApplicantsForm5' method="POST" style="width:70%" id="regForm" role="form">
+                      <dl>
+                        {{ form5.generalForm }}
+        			    {{ form5.hidden_tag() }}
+                        {{ render_field(form5.name) }}
+                        {{ render_field(form5.email) }}
+                        {{ render_field(form5.organization) }}
+                         <div style="visibility:hidden; height:0">
+                            {{ render_field(form5.grant_application)}}
+                        </div>
+
+                      </dl>
+
+                     <input type="submit" value="Save"/>
+
+
+                    </form>
+                </section>
+            </section>
+            <section class="tab">
+                <div class="row">
+                <H2>Collaborators</H2></H2>
+                <center>
+                <section class="Collaborators">
+                    <form action="/Collaborators_form1" id='CollaboratorForm' method="POST" style="width:70%" id="regForm" role="form">
+                      <dl>
+                        {{ form6.generalForm }}
+        			    {{ form6.hidden_tag() }}
+                        {{ render_field(form6.name) }}
+                        {{ render_field(form6.email) }}
+                        {{ render_field(form6.organization) }}
+                        <div style="visibility:hidden; height:0">
+                            {{ render_field(form6.grant_application)}}
+                        </div>
+                      </dl>
+
+                     <input type="submit" value="Save"/>
+
+
+                    </form>
+                </section>
+                <section class="Collaborators">
+                    <form action="/Collaborators_form1" id='CollaboratorForm2' method="POST" style="width:70%" id="regForm" role="form">
+                      <dl>
+                        {{ form6.generalForm }}
+        			    {{ form6.hidden_tag() }}
+                        {{ render_field(form6.name) }}
+                        {{ render_field(form6.email) }}
+                        {{ render_field(form6.organization) }}
+                        <div style="visibility:hidden; height:0">
+                            {{ render_field(form6.grant_application)}}
+                        </div>
+                      </dl>
+
+                     <input type="submit" value="Save"/>
+
+
+                    </form>
+                </section>
+                <section class="Collaborators">
+                    <form action="/Collaborators_form1" id='CollaboratorForm3' method="POST" style="width:70%" id="regForm" role="form">
+                      <dl>
+                        {{ form6.generalForm }}
+        			    {{ form6.hidden_tag() }}
+                        {{ render_field(form6.name) }}
+                        {{ render_field(form6.email) }}
+                        {{ render_field(form6.organization) }}
+                        <div style="visibility:hidden; height:0">
+                            {{ render_field(form6.grant_application)}}
+                        </div>
+                      </dl>
+
+                     <input type="submit" value="Save"/>
+
+
+                    </form>
+                </section>
+                <section class="Collaborators">
+                    <form action="/Collaborators_form1" id='CollaboratorForm4' method="POST" style="width:70%" id="regForm" role="form">
+                      <dl>
+                        {{ form6.generalForm }}
+        			    {{ form6.hidden_tag() }}
+                        {{ render_field(form6.name) }}
+                        {{ render_field(form6.email) }}
+                        {{ render_field(form6.organization) }}
+                          <div style="visibility:hidden; height:0">
+                            {{ render_field(form6.grant_application)}}
+                        </div>
+                      </dl>
+
+                     <input type="submit" value="Save"/>
+
+
+                    </form>
+                </section>
+                <section class="Collaborators">
+                    <form action="/Collaborators_form1" id='CollaboratorForm5' method="POST" style="width:70%" id="regForm" role="form">
+                      <dl>
+                        {{ form6.generalForm }}
+        			    {{ form6.hidden_tag() }}
+                        {{ render_field(form6.name) }}
+                        {{ render_field(form6.email) }}
+                        {{ render_field(form6.organization) }}
+                        <div style="visibility:hidden; height:0">
+                            {{ render_field(form6.grant_application)}}
+                        </div>
+                      </dl>
+
+                     <input type="submit" value="Save"/>
+
+
+                    </form>
+                </section>
+            </section>
+
+
+            {{ dropzone.style('border: 2px dashed #0087F7; margin: 10%; min-height: 400px;') }}
+            <section class="tab">
+                <H2>
+                    Programme doucments:
+                </H2>
+                <p>
+                    Please submit a pdf
+                </p>
+
+                 <button id="upload">Upload</button>
+
+                    {{ dropzone.create(action=url_for('upload')) }}
+
+
+                    {{ dropzone.load_js() }}
+                    {{ dropzone.config() }}
+
+            </section>
+
+
+
+
+
+
+             <section class="tab">
+                <div class="row">
+                <center>
+                <form action="/submit_Form" id='submitForm' method="POST" style="width:70%" id="regForm" role="form">
+
+
+                  <p>
+                      Submission of an application confirms acceptance of and agreement with the SFI Terms and
+Conditions of Research Grants; that the applicant meets eligibility requirements; that the project
+is in full agreement with all legal and regulatory matters governing research in Ireland; that no
+aspect of this project is already being funded from another source and that all details provided
+are correct
+                  </p>
+
+                  <input type="submit" value="I agree"/>
+                </form>
+            </section>
+            <div style="text-align:center;margin-top:40px;">
+                <span class="step"></span>
+                <span class="step"></span>
+                <span class="step"></span>
+                <span class="step"></span>
+            </div>
+
+
+
+
+
+
+
+
+        <div style="clear:both;height:157px;display:block;"></div>
+        </main>
+
+        <footer class="blur footer">
+        <p>#BelieveInScience</p>
+        <p><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span><small> Wilton Park House, Wilton Place, D02 NT99, Ireland</small></p>
+        <p><span class="glyphicon glyphicon-phone-alt" aria-hidden="true"></span><small> +353 (0)1 607 3200 </small></p>
+        <p><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span><small> info@sfi.ie</small></p>
+	<p><a class="hi" href="https://www.facebook.com/ScienceFoundationIreland/"><i style="font-size:24px" class="fa">&#xf082;</i></a> <a href="https://twitter.com/scienceirel"><i style="font-size:24px" class="fa">&#xf081;</i></a> <a href="https://www.linkedin.com/company/science-foundation-ireland"><i style="font-size:24px" class="fa">&#xf08c;</i></a> <a href="https://www.instagram.com/scienceireland/"><i style="font-size:24px" class="fa">&#xf16d;</i></a> <a href="https://www.flickr.com/photos/sciencefoundationireland/"><i style="font-size:24px" class="fa">&#xf16e;</i></a> <a href="https://www.youtube.com/ScienceFoundationIreland"><i style="font-size:24px" class="fa">&#xf16a;</i></a></p>
+    </footer>
+
+    </body>
+</html>

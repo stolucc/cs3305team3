@@ -1,4 +1,4 @@
-from wtforms import Form, IntegerField, StringField, PasswordField, BooleanField, SelectField, SubmitField, validators
+from wtforms import Form, IntegerField, StringField, PasswordField, BooleanField, SelectField, SubmitField, HiddenField, validators
 from wtforms.validators import DataRequired, Email, EqualTo
 
 class ResetPasswordRequestForm(Form):
@@ -31,12 +31,47 @@ class RegistrationForm(Form):
 
 class AddProposalForm(Form):
     text_of_call = StringField('Text of Call', [validators.Length(min=1, max=300)], render_kw={"placeholder": "Text of call"})
+    call_for_proposal_title = StringField('Title of call for proposal', [validators.Length(min=1, max=300)], render_kw={"placeholder": "Title of call for proposal"})
     target_audience = StringField('Target Audience', [validators.Length(min=6, max=45)], render_kw={"placeholder": "Researcher, Research Body, University"})
     eligibility_criteria = StringField('Eligibility Criteria', [validators.Length(min=6, max=30)], render_kw={"placeholder": "Proven track record with funding"})
     duration_of_award = StringField('Duration of Award', [validators.Length(min=6, max=30)], render_kw={"placeholder": "Duration in months"})
     reporting_guidelines = StringField('Reporting Guidelines', [validators.Length(min=6, max=30)], render_kw={"placeholder": "Monthly/Annual Reports"})
     start_date = StringField('Start Date', [validators.Length(min=6, max=30)], render_kw={"placeholder": "YYYY-MM-DD HH:MM:SS"})
     deadline = StringField('Deadline', [validators.Length(min=6, max=30)], render_kw={"placeholder": "YYYY-MM-DD HH:MM:SS"})
+
+
+
+class AddGrantApplicationForm(Form):
+    proposal_title = StringField('Proposal Title', [validators.Length(min=1, max=300)], render_kw={"placeholder": "Text of call"})
+    award_duration = StringField('Award Duration', [validators.Length(min=6, max=45)], render_kw={"placeholder": "Researcher, Research Body, University"})
+    national_research_priority = StringField('National Research Priority', [validators.Length(min=6, max=30)], render_kw={"placeholder": "Proven track record with funding"})
+    sfi_legal_remit_justification = StringField('SFI Legal Justification', [validators.Length(min=6, max=30)], render_kw={"placeholder": "Duration in months"})
+    ethical_issues = StringField('Ethical Issues', [validators.Length(min=6, max=30)], render_kw={"placeholder": "Monthly/Annual Reports"})
+    applicants_country = StringField('Applicants Country', [validators.Length(min=6, max=30)], render_kw={"placeholder": "YYYY-MM-DD HH:MM:SS"})
+    scientific_abstract = StringField('Scientific Abstract', [validators.Length(min=6, max=30)], render_kw={"placeholder": "YYYY-MM-DD HH:MM:SS"})
+    lay_abstract = StringField('Lay Abstract', [validators.Length(min=6, max=30)], render_kw={"placeholder": "YYYY-MM-DD HH:MM:SS"})
+    #programme_documents = StringField('', [validators.Length(min=6, max=30)], render_kw={"placeholder": "YYYY-MM-DD HH:MM:SS"})
+    #Have to add forms for applicants and coapplicants
+    #   Have to add URL for uploaded document
+
+
+class GrantGeneralInfoForm(Form):
+    grant_application_id = HiddenField('Grant Application ID',  [validators.Length(min=1, max=500, message="Application Field be 10 digits (no spaces)")],render_kw={"readonly": True})
+    proposal_title = StringField('Proposal Title', [validators.Length(min=1, max=300)], render_kw={"readonly": True})
+    award_duration = StringField('Award Duration', [validators.Length(min=6, max=45)], render_kw={"placeholder": "Researcher, Research Body, University"})
+    national_research_priority = StringField('National Research Priority', [validators.Length(min=6, max=30)], render_kw={"placeholder": "Proven track record with funding"})
+    sfi_legal_remit_justification = StringField('SFI Legal Justification', [validators.Length(min=6, max=30)], render_kw={"placeholder": "Duration in months"})
+    ethical_issues = StringField('Ethical Issues', [validators.Length(min=6, max=30)], render_kw={"placeholder": "Monthly/Annual Reports"})
+    applicants_country = StringField('Applicants Country', [validators.Length(min=6, max=30)], render_kw={"placeholder": "YYYY-MM-DD HH:MM:SS"})
+
+class GrantScientificAbstractForm(Form):
+    grant_application_id = HiddenField('Grant Application ID',  [validators.Length(min=1, max=500, message="Application Field be 10 digits (no spaces)")],render_kw={"readonly": True})
+    scientific_abstract = StringField('Scientific Abstract', [validators.Length(min=6, max=30)], render_kw={"placeholder": "YYYY-MM-DD HH:MM:SS"})
+
+class GrantLayAbstractForm(Form):
+    grant_application_id = HiddenField('Grant Application ID',  [validators.Length(min=1, max=500, message="Application Field be 10 digits (no spaces)")],render_kw={"readonly": True})
+    lay_abstract = StringField('Lay Abstract', [validators.Length(min=6, max=30)], render_kw={"placeholder": "YYYY-MM-DD HH:MM:SS"})
+
 
 class ProfileForm(Form):
     #Education

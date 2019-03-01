@@ -241,6 +241,72 @@ class Funding_Diversification(UserMixin, db.Model):
 
 
 
+class Grant_Application(UserMixin, db.Model):
+
+    __tablename__ = "grant_application"
+
+    grant_application_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer)
+    proposal_title = db.Column(db.String(30))
+    award_duration = db.Column(db.String(30))
+    national_research_priority = db.Column(db.String(60))
+    sfi_legal_remit_justification = db.Column(db.String(2000))
+    ethical_issues = db.Column(db.String(200))
+    applicants_country = db.Column(db.String(40))
+    scientific_abstract = db.Column(db.String(2000))
+    lay_abstract = db.Column(db.String(1000))
+    programme_documents = db.Column(db.String(1000))
+
+
+    def set_propsoal_title(self, title):
+        self.proposal_title  = title
+
+    def set_award_duration(self, duration):
+        self.award_duration = duration
+
+    def set_national_research_priority(self, priority):
+        self.national_research_priority = priority
+
+    def set_sfi_legal_remit_justification(self, justification):
+        self.sfi_legal_remit_justification= justification
+
+    def set_ethical_issues(self, issue):
+        self.ethical_issues = issue
+
+    def set_applicants_country(self, country):
+        self.applicants_country = country
+
+    def set_scientific_abstract(self, abstract):
+        self.scientific_abstract = abstract
+
+    def set_lay_abstract(self, abstract):
+        self.lay_abstract = abstract
+
+    def set_programme_documents(self, documents):
+        self.programme_documents = documents
+
+class Co_Applicants(UserMixin, db.Model):
+    __tablename__="coapplicants_db"
+    coapplicant_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(60))
+    organization = db.Column(db.String(80))
+    email = db.Column(db.String(80))
+    grant_application = db.Column(db.Integer, db.ForeignKey('grant_application.grant_application_id'), nullable=True)
+    grant_applications = db.relationship('Grant_Application', foreign_keys=grant_application)
+
+class Collaborators(UserMixin, db.Model):
+    __tablename__="collaborators_db"
+    collaborator_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(60))
+    organization = db.Column(db.String(80))
+    email = db.Column(db.String(80))
+    grant_application = db.Column(db.Integer, db.ForeignKey('grant_application.grant_application_id'), nullable=True)
+    grant_applications = db.relationship('Grant_Application', foreign_keys=grant_application)
+
+
+
+
+
 class EmploymentDB(UserMixin, db.Model):
 
     __tablename__ = "employment_db"
@@ -428,6 +494,14 @@ class Communication(UserMixin, db.Model):
         return self.username
 
 
+class SubmittedApplications(UserMixin, db.Model):
+    __tablename__ = "submitted_applications"
+    grant_application_id = db.Column(db.Integer, primary_key=True)
+    proposal_name = db.Column(db.String(128))
+
+
+
+
 class Innovations(UserMixin, db.Model):
     __tablename__ = "innovations"
 
@@ -495,6 +569,7 @@ class CFP(UserMixin, db.Model):
 
     __tablename__ = "call_for_proposals"
     call_id = db.Column(db.Integer, primary_key=True)
+    call_for_proposal_title= db.Column(db.String(20))
     deadline= db.Column(db.DateTime)
     text_of_call= db.Column(db.String(300))
     target_audience= db.Column(db.String(80))

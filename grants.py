@@ -1,18 +1,25 @@
-from flask import Flask, flash, redirect, render_template, request, url_for
+from flask import Flask, flash, redirect, render_template, request, url_for, jsonify
 from flask_login import current_user, login_required, login_user, LoginManager, logout_user#, UserMixin
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+# use and_()
+from sqlalchemy import and_
 from werkzeug.security import generate_password_hash#, check_password_hash
 from functools import wraps
 from flask_mail import Mail
-from forms import ResetPasswordRequestForm, ResetPasswordForm, DeletionForm, RegistrationForm, AddProposalForm, ProfileForm, EducationForm, GeneralForm
+from flask_wtf.csrf import CSRFProtect
+from forms import AddGrantApplicationForm,ResetPasswordRequestForm, ResetPasswordForm, DeletionForm, RegistrationForm, AddProposalForm, ProfileForm, EducationForm, GeneralForm
+from dynamicforms import GrantLayAbstractForm, GrantScientificAbstractForm, GrantGeneralInfoForm, CoApplicantsForm, CollaboratorsForm
 from flask_dropzone import Dropzone
 import os
 import requests
 import xml.dom.minidom
+import json
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
+
+csrf = CSRFProtect(app)
 app.config["DEBUG"] = True
 
 SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
@@ -24,7 +31,7 @@ SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostnam
 app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
 app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["SECRET_KEY"] = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
+app.config["SECRET_KEY"] = 'dev key'#os.environ.get('SECRET_KEY') or 'you-will-never-guess'
 
 app.config.update(
     DEBUG=True,
@@ -36,7 +43,7 @@ app.config.update(
     UPLOADED_PATH=os.path.join(basedir, 'uploads'),
     DROPZONE_ALLOWED_FILE_CUSTOM = True,
     DROPZONE_ALLOWED_FILE_TYPE = '.pdf, .txt',
-    #DROPZONE_ENABLE_CSRF = True,
+    DROPZONE_ENABLE_CSRF = True,
     DROPZONE_UPLOAD_ON_CLICK=True,
     )
 
@@ -53,8 +60,9 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-from models import Researcher_Profile, CFP, User #moved this
+from models import Researcher_Profile, CFP, User, Grant_Application,SubmittedApplications,Collaborators,Co_Applicants#moved this
 #Unused models SFIAdmin, Reviewer, Researcher_Account, Research_Centre_Admin, Login_Account, Engagements, Presentations, FundingRatio, TeamMembers, Impacts, Funding_Diversification, EmploymentDB, AwardsDB, Conferences, Publications, Professional_Socities, AcademicCollabs, NonAcademicCollabs, Communication, Innovations, AnnualReports, ResearcherEducation
+
 
 def make_shell_context():
     return dict(app=app, db=db)
@@ -172,6 +180,7 @@ def add_proposals():
     form = AddProposalForm(request.form)
     if request.method == 'POST' and form.validate():
         call=CFP(
+            call_for_proposal_title=form.text.call_for_proposal_title,
             text_of_call=form.text_of_call.data,
             target_audience=form.target_audience.data,
             eligibility_criteria=form.eligibility_criteria.data,
@@ -241,10 +250,17 @@ def institute_main():
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     if request.method == 'POST':
+        for key, f in request.files.items():
             if key.startswith('file'):
                 #save_as = f.filename + current_user.get_id()
                 #directory = current_user.get_id()
-                f.save(os.path.join(app.config['UPLOADED_PATH'], str(current_user.get_id())))
+
+                saved_as = str(current_user.get_id()) + f.filename
+                f.save(os.path.join(app.config['UPLOADED_PATH'], saved_as))
+                #application = Grant_Application.query.filter_by(grant_application_id=(request.form['grant_application_id'])).first()
+                application = Grant_Application.query.filter_by(user_id=current_user.get_id()).first()
+                application.set_programme_documents(os.path.join(app.config['UPLOADED_PATH'], saved_as))
+
     return render_template('drag_and_drop.html', title='Proposals', user=user)
 
 @app.route('/user/<username>', methods=['GET', 'POST'])
@@ -273,6 +289,158 @@ def general_form():
     if request.method == 'POST' and form.validate():
         anotherEmptyAssignment="anotherEmptyAssignmentHere"
     return render_template('forms/general_form.html', title='Education', user=user, form=form)
+
+
+@app.route('/sample_button',methods=['GET','POST'])
+@login_required
+def press_button():#TESTER FUNCTION REMOVE AFTERWARDS
+    if request.method == 'POST':
+        call_for_proposal_title=request.form['sample']
+        application = Grant_Application(
+        user_id = current_user.get_id(), proposal_title=call_for_proposal_title)# = application_title)
+        print("IN HEEERE")
+        db.session.add(application)
+        db.session.commit()
+        return redirect(url_for('submit_application',application_id=application.grant_application_id))#Try to pass on the value in the button as well.
+
+    return render_template('sample_button.html')
+
+@app.route('/submit_application/<application_id>',methods=['GET','POST'])
+@login_required
+def submit_application(application_id):
+    application = Grant_Application.query.filter_by(grant_application_id=application_id).first()
+    co_applicant_instance= Co_Applicants(grant_application=application_id)
+    collaborator_instance= Collaborators(grant_application=application_id)
+    general_app_form = GrantGeneralInfoForm(request.form, obj=application)
+    scientific_abstract_form = GrantScientificAbstractForm(request.form, obj=application)
+    lay_abstract_form = GrantLayAbstractForm(request.form, obj=application)
+    co_applicants_form = CoApplicantsForm(request.form, obj=co_applicant_instance)
+    collaborators_form = CollaboratorsForm(request.form, obj=collaborator_instance)
+
+    return render_template('grant_application.html', form1= general_app_form, form2 = scientific_abstract_form,
+    form3 = lay_abstract_form, form5=co_applicants_form,  form6=collaborators_form)
+
+
+
+
+@app.route('/add_application_general', methods=['POST'])#CHANGED USED TO HAVE GET AS WELL
+@login_required
+def add_application_general():
+    general_app_form = GrantGeneralInfoForm()
+
+
+    #return json.dumps({'status':'OK','proposal_title':request.form['award_duration'],'award_duration':request.form['proposal_title']});#Will have to change this.
+
+
+    if general_app_form.validate_on_submit():
+        application = Grant_Application.query.filter_by(grant_application_id=(request.form['grant_application_id'])).first()#MUST FILTER FOR CASE WHERE A RESEARCHER HAS MULTIPLE APPLICATIONS
+
+        application.set_propsoal_title(request.form['proposal_title'])
+        application.set_award_duration(request.form['award_duration'])
+        application.set_national_research_priority(request.form['national_research_priority'])
+        application.set_sfi_legal_remit_justification(request.form['sfi_legal_remit_justification'])
+        application.set_ethical_issues(request.form['ethical_issues'])
+        application.set_applicants_country(request.form['applicants_country'])
+        db.session.add(application)
+        db.session.commit()
+
+        return json.dumps({'status':'OK','ethical_issues':'New addition'});
+    else:
+        return jsonify(data=general_app_form.errors)
+
+
+
+@app.route('/add_scientific_abstract', methods=['POST'])
+@login_required
+def add_scientific_abstract():
+    #return json.dumps({'status':'OK',"ETHICAL_ISSUES":request.form['ethical_issues']});
+    #application = Grant_Application.query.filter_by(user_id=current_user.get_id()).first()
+    #grant_id = request.form[],
+    #application = Grant_Application.query.filter_by(grant_application_id=(request.form['grant_application_id'])).first()#MUST FILTER FOR CASE WHERE A RESEARCHER HAS MULTIPLE APPLICATIONS
+
+    scientific_abstract_form = GrantScientificAbstractForm()
+
+
+
+    if scientific_abstract_form.validate_on_submit():
+        application = Grant_Application.query.filter_by(grant_application_id=(request.form['grant_application_id'])).first()#MUST FILTER FOR CASE WHERE A RESEARCHER HAS MULTIPLE APPLICATIONS
+        application.set_scientific_abstract(request.form['scientific_abstract'])
+        db.session.commit()
+        return json.dumps({'status':'OK','ethical_issues':'New addition'});#Will have to change this.
+
+    else:
+        return jsonify(data=scientific_abstract_form.errors)#EXPAND AND GIVE PROPER ERROR MESSAGE
+
+@app.route('/add_lay_abstract', methods=['POST'])
+@login_required
+def add_lay_abstract():
+    #return json.dumps({'status':'OK'});
+    #application = Grant_Application.query.filter_by(grant_application_id=(request.form['grant_application_id'])).first()#MUST FILTER FOR CASE WHERE A RESEARCHER HAS MULTIPLE APPLICATIONS
+    lay_abstract_form = GrantLayAbstractForm()
+
+
+    if lay_abstract_form.validate_on_submit():
+        application = Grant_Application.query.filter_by(grant_application_id=(request.form['grant_application_id'])).first()#MUST FILTER FOR CASE WHERE A RESEARCHER HAS MULTIPLE APPLICATIONS
+
+        application.set_lay_abstract(request.form['lay_abstract'])
+        db.session.commit()
+        return json.dumps({'status':'OK','ethical_issues':'New addition'});#Will have to change this.
+    else:
+        return jsonify(data=lay_abstract_form.errors)
+
+@app.route('/Co_applicants_form1', methods=['POST'])
+@login_required
+def Co_applicants_form1():
+    #Collaborators_form = CollaboratorsForm(request.form)
+    co_app =CoApplicantsForm(request.form)
+
+    if co_app.validate_on_submit():
+        co_app = Co_Applicants(name=request.form['name'],organization=request.form['organization'],
+        email=request.form['email'],grant_application=request.form['grant_application'])
+        db.session.add(co_app)
+        db.session.commit()
+        return json.dumps({'status':'OK','ethical_issues':'New addition'});#Will have to change this.
+    else:
+        return jsonify(co_app.errors)
+
+@app.route('/Collaborators_form1', methods=['POST'])
+@login_required
+def Collaborators_form1():
+    #Collaborators_form = CollaboratorsForm(request.form)
+    co_app =CollaboratorsForm(request.form)
+
+    if co_app.validate_on_submit():
+        co_app = Collaborators(name=request.form['name'],organization=request.form['organization'],
+        email=request.form['email'],grant_application=request.form['grant_application'])
+        db.session.add(co_app)
+        db.session.commit()
+        return json.dumps({'status':'OK','ethical_issues':'New addition'});#Will have to change this.
+    else:
+        return jsonify(co_app.errors)
+
+
+
+@app.route('/submit_Form', methods=['POST'])
+@login_required
+def submit_Form():
+    #return json.dumps({'status':'OK',"ETHICAL_ISSUES":request.form['ethical_issues']});
+    return_string = ""
+
+    application = Grant_Application.query.filter_by(grant_application_id=(request.form['grant_application_id'])).first()#MUST FILTER FOR CASE WHERE A RESEARCHER HAS MULTIPLE APPLICATIONS
+    general_app_form = AddGrantApplicationForm(request.form, obj=application)
+    if general_app_form.validate():
+        new_Submitted=SubmittedApplications(grant_application_id=request.form['grant_application_id'],proposal_name=application.proposal_title)
+        db.session.add(new_Submitted)
+        db.session.commit()
+        return json.dumps({'status':'OK','ethical_issues':'New addition'});#Will have to change this.
+    else:
+        return jsonify(data=general_app_form.errors)
+
+
+    #db.session.commit()
+    return json.dumps({'status':'OK','query:':return_string});
+
+
 
 @app.route("/home")
 def home():
