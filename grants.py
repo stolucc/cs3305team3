@@ -8,7 +8,7 @@ from werkzeug.security import generate_password_hash#, check_password_hash
 from functools import wraps
 from flask_mail import Mail
 from flask_wtf.csrf import CSRFProtect
-from forms import AddGrantApplicationForm,ResetPasswordRequestForm, ResetPasswordForm, DeletionForm, RegistrationForm, AddProposalForm, ProfileForm, EducationForm, GeneralForm
+from forms import AddGrantApplicationForm,ResetPasswordRequestForm, ResetPasswordForm, DeletionForm, RegistrationForm, AddProposalForm, ProfileForm, EducationForm, GeneralForm, AddOrcid
 from dynamicforms import GrantLayAbstractForm, GrantScientificAbstractForm, GrantGeneralInfoForm, CoApplicantsForm, CollaboratorsForm
 from flask_dropzone import Dropzone
 import os
@@ -97,14 +97,11 @@ def getPasswordHash(password):
 @app.route("/")
 @app.route("/index")
 def index():
-    dom = xml.dom.minidom.parseString(requests.get('https://pub.sandbox.orcid.org/v3.0_rc1/0000-0002-9227-8514').text)
-    eles = dom.documentElement
-    zmin = eles.getElementsByTagName("personal-details:credit-name")[0].firstChild.data
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
 
     if request.method == "GET":
-        return render_template("main_page.html", title="Home", zmin=zmin)
+        return render_template("main_page.html", title="Home")
     return redirect(url_for('index'))
 
 @app.route("/login/", methods=["GET", "POST"])
@@ -175,12 +172,12 @@ def reset_password(token):
     return render_template('reset_password.html', form=form)
 
 @app.route('/add_proposals', methods=["GET", "POST"])
-@login_required_advanced(role="sfiAdmin")
+#@login_required_advanced(role="sfiAdmin")
 def add_proposals():
     form = AddProposalForm(request.form)
     if request.method == 'POST' and form.validate():
         call=CFP(
-            call_for_proposal_title=form.text.call_for_proposal_title,
+            call_for_proposal_title=form.call_for_proposal_title.data,
             text_of_call=form.text_of_call.data,
             target_audience=form.target_audience.data,
             eligibility_criteria=form.eligibility_criteria.data,
@@ -213,8 +210,19 @@ def admin_main():
 def register():
     form = RegistrationForm(request.form)
     if request.method == 'POST' and form.validate():
-        user = User(username=form.username.data, email=form.email.data, user_type=form.user_type.data,
-                    password_hash=generate_password_hash(form.password.data))
+
+        user = User(
+            username=form.username.data,
+            email=form.email.data,
+            user_type=form.user_type.data,
+            password_hash=generate_password_hash(form.password.data)
+            )
+        if form.user_type.data=="researcher":
+            researcher = Researcher_Profile(username=form.username.data)
+            researchers_education = Researcher_Education(username=form.username.data)
+            db.session.add(researcher)
+            db.session.add(researchers_education)
+
         db.session.add(user)
         db.session.commit()
         flash('Thanks for registering')
@@ -270,16 +278,42 @@ def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     form = ProfileForm(request.form)
     if request.method == 'POST' and form.validate():
-        researcher = Researcher_Profile(ORCID=form.orcid.data)
-
+        pass
     return render_template('user.html', title='Profile', user=user, form=form)
+
+@app.route('/user/add_orcid', methods=['GET', 'POST'])
+#@login_required_advanced(role="sfiAdmin")
+def add_orcid():
+    form = AddOrcid(request.form)
+    creditName = ""
+    if request.method == 'POST' and form.validate():
+        if form.orcid.data:
+
+            orcidUrl = 'https://pub.orcid.org/v2.0/' + str(form.orcid.data)
+            dom = xml.dom.minidom.parseString(requests.get(orcidUrl).text)
+            eles = dom.documentElement
+            person = eles.getElementsByTagName("person:name")
+            for i in person:
+                firstName = i.getElementsByTagName("personal-details:given-names")[0].firstChild.data
+                lastName = i.getElementsByTagName("personal-details:family-name")[0].firstChild.data
+                creditName = creditName + firstName + " " + lastName
+
+            if current_user.user_type == "researcher":
+                researcher = Researcher_Profile.query.filter_by(username=current_user.username).first()
+                researcher.f_name = firstName
+                researcher.l_name = lastName
+                researcher.ORCID = form.orcid.data
+
+            db.session.commit()
+
+    return render_template('forms/add_orcid.html', title='Education', user=user, form=form, creditName=creditName)
 
 @app.route('/user/education_form', methods=['GET', 'POST'])
 #@login_required_advanced(role="sfiAdmin")
 def education_form():
     form = EducationForm(request.form)
     if request.method == 'POST' and form.validate():
-        makeAssignment="makeAssignmentHere"
+        pass
     return render_template('forms/education_form.html', title='Education', user=user, form=form)
 
 @app.route('/user/general_form', methods=['GET', 'POST'])
@@ -287,7 +321,7 @@ def education_form():
 def general_form():
     form = GeneralForm(request.form)
     if request.method == 'POST' and form.validate():
-        anotherEmptyAssignment="anotherEmptyAssignmentHere"
+        pass
     return render_template('forms/general_form.html', title='Education', user=user, form=form)
 
 

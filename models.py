@@ -93,14 +93,13 @@ class Researcher_Profile(UserMixin, db.Model):
     __tablename__ = "researcher_profile"
 
     researcher_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(128))
-    password_hash = db.Column(db.String(128))
     f_name = db.Column(db.String(64))
     l_name = db.Column(db.String(64))
     job_title = db.Column(db.String(4))
-    email = db.Column(db.String(80))
     ORCID = db.Column(db.Integer)
-    login_id = db.Column(db.Integer)
+
+    users = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    UserDetails = db.relationship('User', foreign_keys=users)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -113,17 +112,18 @@ class Engagements(UserMixin, db.Model):
     __tablename__ = "engagements"
 
     engagement_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(128))
-    password_hash = db.Column(db.String(128))
-    f_name = db.Column(db.String(64))
-    l_name = db.Column(db.String(64))
-    job_title = db.Column(db.String(4))
-    email = db.Column(db.String(80))
-    ORCID = db.Column(db.Integer)
-    login_id = db.Column(db.Integer)
+    project_name = db.Column(db.String(100))
+    start_date = db.Column(db.DateTime)
+    end_date = db.Column(db.DateTime)
+    activity_type = db.Column(db.String(30))
+    project_topic = db.Column(db.String(45))
+    target_area = db.Column(db.String(80))
+
+    grant_application = db.Column(db.Integer, db.ForeignKey('grant_application.grant_application_id'), nullable=True)
+    grant_applications = db.relationship('Grant_Application', foreign_keys=grant_application)
+
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
-
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -136,13 +136,15 @@ class Presentations(UserMixin, db.Model):
     __tablename__ = "presentations"
 
     presentation_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(128))
-    password_hash = db.Column(db.String(128))
     year = db.Column(db.Integer)
     type = db.Column(db.String(64))
     title = db.Column(db.String(20))
     organizing_body = db.Column(db.String(40))
     location = db.Column(db.String(40))
+
+    grant_reference = db.Column(db.Integer, db.ForeignKey('submitted_applications.grant_application_id'))
+    grant_reference_id = db.relationship('SubmittedApplications', foreign_keys=grant_reference)
+
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
 
@@ -157,8 +159,6 @@ class FundingRatio(UserMixin, db.Model):
     __tablename__ = "funding_ratio"
 
     funding_ratio_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(128))
-    password_hash = db.Column(db.String(128))
     year = db.Column(db.Integer)
     percentage = db.Column(db.Integer)
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
@@ -175,17 +175,15 @@ class TeamMembers(UserMixin, db.Model):
     __tablename__ = "team_members"
 
     team_member_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(128))
-    password_hash = db.Column(db.String(128))
     start_date = db.Column(db.DateTime)
     departure_date = db.Column(db.DateTime)
     position = db.Column(db.String(64))
     name = db.Column(db.String(20))
     grant_number = db.Column(db.Integer)
     position = db.Column(db.String(30))
+
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
-
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -193,21 +191,20 @@ class TeamMembers(UserMixin, db.Model):
     def get_id(self):
         return self.username
 
-
 class Impacts(UserMixin, db.Model):
 
     __tablename__ = "impacts"
 
     impact_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(128))
-    password_hash = db.Column(db.String(128))
     impact_title = db.Column(db.String(38))
     impact_category = db.Column(db.String(38))
     primary_beneficiary = db.Column(db.String(38))
-    primary_attribution = db.Column(db.Integer)
+
+    grant_reference = db.Column(db.Integer, db.ForeignKey('submitted_applications.grant_application_id'))
+    grant_reference_id = db.relationship('SubmittedApplications', foreign_keys=grant_reference)
+
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
-
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -217,21 +214,22 @@ class Impacts(UserMixin, db.Model):
 
 
 class Funding_Diversification(UserMixin, db.Model):
+
     __tablename__ = "funding_diversifications"
 
     funding_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(128))
-    password_hash = db.Column(db.String(128))
     start_date = db.Column(db.DateTime)
     end_date = db.Column(db.DateTime)
     funding_amount = db.Column(db.Integer)
     funding_body = db.Column(db.String(64))
     funding_programme = db.Column(db.String(64))
     status = db.Column(db.String(20))
-    primary_attribution = db.Column(db.Integer)
+
+    grant_reference = db.Column(db.Integer, db.ForeignKey('submitted_applications.grant_application_id'))
+    grant_reference_id = db.relationship('SubmittedApplications', foreign_keys=grant_reference)
+
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
-
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -304,19 +302,15 @@ class Collaborators(UserMixin, db.Model):
     grant_applications = db.relationship('Grant_Application', foreign_keys=grant_application)
 
 
-
-
-
 class EmploymentDB(UserMixin, db.Model):
 
     __tablename__ = "employment_db"
 
     employment_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(128))
-    password_hash = db.Column(db.String(128))
     institution = db.Column(db.String(25))
     location = db.Column(db.String(21))
     year = db.Column(db.Integer)
+
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
 
@@ -333,8 +327,6 @@ class AwardsDB(UserMixin, db.Model):
     __tablename__ = "awards_db"
 
     awards_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(128))
-    password_hash = db.Column(db.String(128))
     awarding_body = db.Column(db.String(21))
     awarding_details = db.Column(db.String(100))
     member_name = db.Column(db.String(21))
@@ -353,8 +345,6 @@ class Conferences(UserMixin, db.Model):
     __tablename__ = "conferences"
 
     conference_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(128))
-    password_hash = db.Column(db.String(128))
     start_date = db.Column(db.DateTime)
     end_date = db.Column(db.DateTime)
     title = db.Column(db.String(64))
@@ -378,8 +368,6 @@ class Publications(UserMixin, db.Model):
     __tablename__ = "publications"
 
     publication_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(128))
-    password_hash = db.Column(db.String(128))
     year = db.Column(db.Integer)
     title = db.Column(db.String(64))
     type = db.Column(db.String(64))
@@ -387,10 +375,12 @@ class Publications(UserMixin, db.Model):
     published = db.Column(db.BOOLEAN)
     in_press = db.Column(db.BOOLEAN)
     doi = db.Column(db.Integer)
-    grant_num = db.Column(db.Integer)
+
+    grant_reference = db.Column(db.Integer, db.ForeignKey('submitted_applications.grant_application_id'))
+    grant_reference_id = db.relationship('SubmittedApplications', foreign_keys=grant_reference)
+
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
-
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -403,8 +393,6 @@ class Professional_Socities(UserMixin, db.Model):
     __tablename__ = "professional_socities"
 
     research_profile_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(128))
-    password_hash = db.Column(db.String(128))
     start_date = db.Column(db.DateTime)
     end_date = db.Column(db.DateTime)
     name = db.Column(db.String(20))
@@ -422,13 +410,10 @@ class Professional_Socities(UserMixin, db.Model):
 
 
 
-
 class AcademicCollabs(UserMixin, db.Model):
     __tablename__ = "academic_collaborations"
 
     collaboration_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(128))
-    password_hash = db.Column(db.String(128))
     start_date = db.Column(db.DateTime)
     end_date = db.Column(db.DateTime)
     department = db.Column(db.String(20))
@@ -437,7 +422,10 @@ class AcademicCollabs(UserMixin, db.Model):
     collaborator_name = db.Column(db.String(40))
     collaborator_goal = db.Column(db.String(40))
     interaction_frequency = db.Column(db.String(40))
-    grant_number = db.Column(db.Integer)
+
+    grant_reference = db.Column(db.Integer, db.ForeignKey('submitted_applications.grant_application_id'))
+    grant_reference_id = db.relationship('SubmittedApplications', foreign_keys=grant_reference)
+
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
 
@@ -452,16 +440,18 @@ class NonAcademicCollabs(UserMixin, db.Model):
     __tablename__ = "non_academic_collaborations"
 
     non_academic_collaboration_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(128))
-    password_hash = db.Column(db.String(128))
     start_date = db.Column(db.DateTime)
     end_date = db.Column(db.DateTime)
     department = db.Column(db.String(20))
+    institution_name = db.Column(db.String(64))
     location = db.Column(db.String(64))
     collaborator_name = db.Column(db.String(40))
     collaborator_goal = db.Column(db.String(40))
     interaction_frequency = db.Column(db.String(40))
-    grant_number = db.Column(db.Integer)
+
+    grant_reference = db.Column(db.Integer, db.ForeignKey('submitted_applications.grant_application_id'))
+    grant_reference_id = db.relationship('SubmittedApplications', foreign_keys=grant_reference)
+
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
 
@@ -472,13 +462,10 @@ class NonAcademicCollabs(UserMixin, db.Model):
     def get_id(self):
         return self.username
 
-
 class Communication(UserMixin, db.Model):
     __tablename__ = "communication"
 
     research_profile_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(128))
-    password_hash = db.Column(db.String(128))
     year = db.Column(db.Integer)
     num_lectures = db.Column(db.Integer)
     num_visits = db.Column(db.Integer)
@@ -501,17 +488,17 @@ class SubmittedApplications(UserMixin, db.Model):
 
 
 
-
 class Innovations(UserMixin, db.Model):
     __tablename__ = "innovations"
 
     innovation_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(128))
-    password_hash = db.Column(db.String(128))
     year = db.Column(db.Integer)
     type = db.Column(db.String(10))
     title = db.Column(db.String(25))
-    grant_number = db.Column(db.Integer)
+
+    grant_reference = db.Column(db.Integer, db.ForeignKey('submitted_applications.grant_application_id'))
+    grant_reference_id = db.relationship('SubmittedApplications', foreign_keys=grant_reference)
+
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
 
@@ -550,12 +537,12 @@ class ResearcherEducation(UserMixin, db.Model):
     __tablename__ = "researcher_education"
 
     researcher_education_id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(128))
-    password_hash = db.Column(db.String(128))
     field_of_study = db.Column(db.String(35))
     degree = db.Column(db.String(20))
     institution = db.Column(db.String(20))
+    location = db.Column(db.String(45))
     year_of_degree = db.Column(db.Integer)
+
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
 

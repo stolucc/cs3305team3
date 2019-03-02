@@ -1,0 +1,12 @@
+{% extends "user.html" %}
+{% block content %}
+        <form method=post>
+            <dl>
+                <div class="form-group">
+                    {{ render_field(form.orcid) }}
+                </div>
+            </dl>
+            <p><input type=submit value="Add/Update"></p>
+        </form>
+        {{creditName}}
+{% endblock %}

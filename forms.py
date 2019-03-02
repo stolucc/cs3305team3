@@ -86,6 +86,9 @@ class ProfileForm(Form):
     location = StringField('Location', [validators.Length(min=1, max=30)])
     years_of_employment = StringField('Years of Employment', [validators.Length(min=1, max=30)])
 
+class AddOrcid(Form):
+    orcid = StringField('ORCID', [validators.Length(min=19, max=19)], render_kw={"placeholder": "****-****-****-****"})
+
 class GeneralForm(Form):
     fName = StringField('Firstname', [validators.Length(min=4, max=30)])
     lName = StringField('Lastname', [validators.Length(min=4, max=30)])

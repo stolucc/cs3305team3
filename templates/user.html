@@ -84,8 +84,8 @@ body {
     width:25%;
     border-right: 2px dashed lightgrey;
     background: white;
-  left: 0;
-  padding:20px;
+    left: 0;
+    padding:20px;
 }
 
 .right {
@@ -107,6 +107,7 @@ body {
 <body>
 <h3 id="researchHeading">Research Profile</h3>
 <div class="split left">
+    <div><a href="{{ url_for('add_orcid') }}">ORCID</a></div>
     <div><a href="{{ url_for('general_form') }}">General Information</a></div>
     <div><a href="{{ url_for('education_form') }}">Education</a></div>
     <div><a href="">Employment</a></div>
@@ -133,12 +134,12 @@ body {
 <div style="clear:both;height:157px;display:block;"></div>
    </main>
 
-        <footer class="blur footer">
+    <footer class="blur footer">
         <p>#BelieveInScience</p>
         <p><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span><small> Wilton Park House, Wilton Place, D02 NT99, Ireland</small></p>
         <p><span class="glyphicon glyphicon-phone-alt" aria-hidden="true"></span><small> +353 (0)1 607 3200 </small></p>
         <p><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span><small> info@sfi.ie</small></p>
-	<p><a class="hi" href="https://www.facebook.com/ScienceFoundationIreland/"><i style="font-size:24px" class="fa">&#xf082;</i></a> <a href="https://twitter.com/scienceirel"><i style="font-size:24px" class="fa">&#xf081;</i></a> <a href="https://www.linkedin.com/company/science-foundation-ireland"><i style="font-size:24px" class="fa">&#xf08c;</i></a> <a href="https://www.instagram.com/scienceireland/"><i style="font-size:24px" class="fa">&#xf16d;</i></a> <a href="https://www.flickr.com/photos/sciencefoundationireland/"><i style="font-size:24px" class="fa">&#xf16e;</i></a> <a href="https://www.youtube.com/ScienceFoundationIreland"><i style="font-size:24px" class="fa">&#xf16a;</i></a></p>
+	    <p><a class="hi" href="https://www.facebook.com/ScienceFoundationIreland/"><i style="font-size:24px" class="fa">&#xf082;</i></a> <a href="https://twitter.com/scienceirel"><i style="font-size:24px" class="fa">&#xf081;</i></a> <a href="https://www.linkedin.com/company/science-foundation-ireland"><i style="font-size:24px" class="fa">&#xf08c;</i></a> <a href="https://www.instagram.com/scienceireland/"><i style="font-size:24px" class="fa">&#xf16d;</i></a> <a href="https://www.flickr.com/photos/sciencefoundationireland/"><i style="font-size:24px" class="fa">&#xf16e;</i></a> <a href="https://www.youtube.com/ScienceFoundationIreland"><i style="font-size:24px" class="fa">&#xf16a;</i></a></p>
     </footer>
 
     </body>
