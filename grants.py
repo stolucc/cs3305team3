@@ -60,7 +60,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-from models import Researcher_Profile, CFP, User, Grant_Application,SubmittedApplications,Collaborators,Co_Applicants#moved this
+from models import Researcher_Profile, CFP, User, Grant_Application,SubmittedApplications,Collaborators,Co_Applicants #moved this
 #Unused models SFIAdmin, Reviewer, Researcher_Account, Research_Centre_Admin, Login_Account, Engagements, Presentations, FundingRatio, TeamMembers, Impacts, Funding_Diversification, EmploymentDB, AwardsDB, Conferences, Publications, Professional_Socities, AcademicCollabs, NonAcademicCollabs, Communication, Innovations, AnnualReports, ResearcherEducation
 
 
@@ -479,3 +479,19 @@ def submit_Form():
 @app.route("/home")
 def home():
     return render_template('home.html', title='Profile')
+
+
+@app.route("/sample_slider")
+def sample_slider():
+    return render_template('sample_slider.html')
+
+@app.route("/notifications")
+def notifications():
+    #grants=Grant_Application.query.all()
+    grants = db.session.query(Grant_Application).count()
+    calls= db.session.query(CFP).count()
+    return render_template('notifications.html', title='Profile', user=user, grants=grants, calls=calls)
+
+
+
+

@@ -212,6 +212,15 @@
             }
 
 
+            .Collaborators {
+                display: none;
+            }
+
+            .Co_applicants{
+                display: none;
+            }
+
+
             /* Style the Text Area fields */
 
             /* Style the input fields */
@@ -276,67 +285,7 @@
 
         </style>
 
-        <script>
 
-            var currentTab = 0; // Current tab is set to be the first tab (0)
-
-            showTab(currentTab); // Display the current tab
-
-            function display(){
-              var currentTab = 0;
-              showTab(currentTab);
-
-
-           }
-
-            function showTab(n) {
-              // This function will display the specified tab of the form ...
-
-              //if(contentWrapper.style.display.toString==""){
-              var x = document.getElementsByClassName("tab");
-
-              x[n].style.display = "block";
-                  // ... and fix the Previous/Next buttons
-              if (n == 0) {
-                document.getElementById("prevBtn").style.display = "none";
-              } else {
-                document.getElementById("prevBtn").style.display = "inline";
-              }
-              if (n == (x.length - 1)) {
-                document.getElementById("nextBtn").style.display = "none";
-              } else {
-                document.getElementById("nextBtn").innerHTML = "Next";
-              }
-              // ... and run a function that displays the correct step indicator:
-              fixStepIndicator(n)
-            }
-
-            function nextPrev(n) {
-              var x = document.getElementsByClassName("tab");
-              x[currentTab].style.display = "none";
-              // Increase or decrease the current tab by 1:
-              currentTab = currentTab + n;
-
-              showTab(currentTab);
-            }
-
-            function fixStepIndicator(n) {
-              // This function removes the "active" class of all steps...
-              var i, x = document.getElementsByClassName("step");
-              for (i = 0; i < x.length; i++) {
-                x[i].className = x[i].className.replace(" active", "");
-              }
-              //... and adds the "active" class to the current step:
-              x[n].className += " active";
-            }
-
-
-
-
-
-
-
-        </script>
 
     </head>
 
@@ -458,9 +407,15 @@
 
             <section class="tab">
                 <div class="row">
-                <H2>Co-Applicants</H2>
+                <bold>Co-Applicants<bold>
+                <form style="width:70%; margin-left:auto; margin-right:auto">
+                    No. of Coapplicants
+                    <input type="text" id="numCoapplicants" onChange="generateCoapplicants()" placeholder="Please enter the number of coapplicants"/>
+                    {{ form5.hidden_tag() }}
+                    <div id="ch"></div>
+                </form>
                 <center>
-                <section class="Co_applicants">
+                <section class="Co_applicants" style="width:70%">
                     <form action="/Co_applicants_form1" id='CoApplicantsForm' method="POST" style="width:70%" id="regForm" role="form">
                       <dl>
                         {{ form5.generalForm }}
@@ -478,7 +433,7 @@
 
                     </form>
                 </section>
-                <section class="Co_applicants">
+                <section class="Co_applicants" style="width:70%; display:none">
                     <form action="/Co_applicants_form1" id='CoApplicantsForm2' method="POST" style="width:70%" id="regForm" role="form">
                       <dl>
                         {{ form5.generalForm }}
@@ -496,7 +451,7 @@
 
                     </form>
                 </section>
-                <section class="Co_applicants">
+                <section class="Co_applicants"  style="width:70%; display:none">
                     <form action="/Co_applicants_form1" id='CoApplicantsForm3' method="POST" style="width:70%" id="regForm" role="form">
                       <dl>
                         {{ form5.generalForm }}
@@ -514,7 +469,7 @@
 
                     </form>
                 </section>
-                <section class="Co_applicants">
+                <section class="Co_applicants" style="width:70%; display:none">
                     <form action="/Co_applicants_form1" id='CoApplicantsForm4' method="POST" style="width:70%" id="regForm" role="form">
                       <dl>
                         {{ form5.generalForm }}
@@ -532,7 +487,7 @@
 
                     </form>
                 </section>
-                <section class="Co_applicants">
+                <section class="Co_applicants" style="width:70%; display:none">
                     <form action="/Co_applicants_form1" id='CoApplicantsForm5' method="POST" style="width:70%" id="regForm" role="form">
                       <dl>
                         {{ form5.generalForm }}
@@ -556,7 +511,12 @@
                 <div class="row">
                 <H2>Collaborators</H2></H2>
                 <center>
-                <section class="Collaborators">
+                <form style="width:70%; margin-left:auto; margin-right:auto">
+                    No. of Collabarotors
+                    <input type="text" id="numCollaborators" onChange="generateCollaborators()" placeholder="Please enter the number of collaborators"/>
+                    {{ form5.hidden_tag() }}
+                </form>
+                <section class="Collaborators" style="width:70%; display:none">
                     <form action="/Collaborators_form1" id='CollaboratorForm' method="POST" style="width:70%" id="regForm" role="form">
                       <dl>
                         {{ form6.generalForm }}
@@ -574,7 +534,7 @@
 
                     </form>
                 </section>
-                <section class="Collaborators">
+                <section class="Collaborators" style="width:70%; display:none">
                     <form action="/Collaborators_form1" id='CollaboratorForm2' method="POST" style="width:70%" id="regForm" role="form">
                       <dl>
                         {{ form6.generalForm }}
@@ -592,7 +552,7 @@
 
                     </form>
                 </section>
-                <section class="Collaborators">
+                <section class="Collaborators" style="width:70%; display:none">
                     <form action="/Collaborators_form1" id='CollaboratorForm3' method="POST" style="width:70%" id="regForm" role="form">
                       <dl>
                         {{ form6.generalForm }}
@@ -610,7 +570,7 @@
 
                     </form>
                 </section>
-                <section class="Collaborators">
+                <section class="Collaborators" style="width:70%; display:none">
                     <form action="/Collaborators_form1" id='CollaboratorForm4' method="POST" style="width:70%" id="regForm" role="form">
                       <dl>
                         {{ form6.generalForm }}
@@ -628,7 +588,7 @@
 
                     </form>
                 </section>
-                <section class="Collaborators">
+                <section class="Collaborators" style="width:70%; display:none">
                     <form action="/Collaborators_form1" id='CollaboratorForm5' method="POST" style="width:70%" id="regForm" role="form">
                       <dl>
                         {{ form6.generalForm }}
@@ -695,6 +655,9 @@ are correct
                 <span class="step"></span>
                 <span class="step"></span>
                 <span class="step"></span>
+                <span class="step"></span>
+                <span class="step"></span>
+                <span class="step"></span>
             </div>
 
 
@@ -706,6 +669,109 @@ are correct
 
         <div style="clear:both;height:157px;display:block;"></div>
         </main>
+        <script>
+
+            function generateCollaborators() {
+                console.log("IN HER COLLABORATORS");
+
+                var a = parseInt(document.getElementById("numCollaborators").value);
+                var collabs = document.getElementsByClassName("Collaborators");
+                console.log(a);
+                console.log(collabs);
+
+                 for (i = 4; i > document.getElementById("numCollaborators").value-1; i--) {
+                    collabs[i].style.display = 'none';
+                  }
+                 for (i=0; i < document.getElementById("numCollaborators").value; i++)   {
+                     collabs[i].style.display = 'inline';
+                 }
+            }
+
+            function generateCoapplicants(){
+                console.log("IN HER COapplicants");
+                var a = parseInt(document.getElementById("numCoapplicants").value);
+                var co_apps = document.getElementsByClassName("Co_applicants");
+
+
+
+                 for (i = 4; i > document.getElementById("numCoapplicants").value-1; i--) {
+                    co_apps[i].style.display = 'none';
+                  }
+                 for (i=0; i < document.getElementById("numCoapplicants").value; i++)   {
+                     co_apps[i].style.display = 'inline';
+                 }
+            }
+
+            var currentTab = 0; // Current tab is set to be the first tab (0)
+
+             function dropBoxChng(){
+              var collabs = document.getElementsByClassName("Collaborators");
+              for (i = 5; i > document.getElementById('dropBox').value; i--) {
+                collabs[i].style.display = 'none';
+              }
+            }
+
+
+            showTab(currentTab); // Display the current tab
+
+            function display(){
+              var currentTab = 0;
+              showTab(currentTab);
+
+
+           }
+
+            function showTab(n) {
+              // This function will display the specified tab of the form ...
+
+              //if(contentWrapper.style.display.toString==""){
+              var x = document.getElementsByClassName("tab");
+
+              x[n].style.display = "block";
+                  // ... and fix the Previous/Next buttons
+              if (n == 0) {
+                document.getElementById("prevBtn").style.display = "none";
+              } else {
+                document.getElementById("prevBtn").style.display = "inline";
+              }
+              if (n == (x.length - 1)) {
+                document.getElementById("nextBtn").style.display = "none";
+              } else {
+                document.getElementById("nextBtn").innerHTML = "Next";
+              }
+              // ... and run a function that displays the correct step indicator:
+              fixStepIndicator(n)
+            }
+
+            function nextPrev(n) {
+              var x = document.getElementsByClassName("tab");
+              x[currentTab].style.display = "none";
+              // Increase or decrease the current tab by 1:
+              currentTab = currentTab + n;
+
+              showTab(currentTab);
+            }
+
+            function fixStepIndicator(n) {
+              // This function removes the "active" class of all steps...
+              var i, x = document.getElementsByClassName("step");
+              for (i = 0; i < x.length; i++) {
+                x[i].className = x[i].className.replace(" active", "");
+              }
+              //... and adds the "active" class to the current step:
+              x[n].className += " active";
+            }
+
+
+
+
+
+
+
+
+
+
+        </script>
 
         <footer class="blur footer">
         <p>#BelieveInScience</p>
