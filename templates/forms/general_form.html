@@ -1,19 +1,46 @@
 {% extends "user.html" %}
+
 {% block content %}
-        <form method=post>
-            <dl>
-                <div class="form-group">
-                    {{ render_field(form.fName) }}
-                    {{ render_field(form.lName) }}
-                    {{ render_field(form.jobTitle) }}
+ {% from "_formhelpers.html" import render_field %}
+ <script src="{{url_for('static', filename='update_profile.js')}}">var csrftoken = "{{ csrf_token() }}"</script>
+    <h2 class="profileTitles">General Information</h2>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            {% block content2 %}
+            {% if profile_exists %}
+                <fieldset id="fieldset1" disabled="disabled">
+                    {{ render_field(form.f_name) }}
+                    {{ render_field(form.l_name) }}
+                    {{ render_field(form.job_title) }}
                     {{ render_field(form.prefix) }}
                     {{ render_field(form.suffix) }}
                     {{ render_field(form.phone) }}
-                    {{ render_field(form.phoneExtension) }}
-                    {{ render_field(form.email) }}
-                    {{ render_field(form.orcid) }}
-                </div>
-            </dl>
-            <p><input type=submit value=Update></p>
+                    {{ render_field(form.phone_extension) }}
+                </fieldset>
+                <input id="submit_button" style="display: none;" type="submit" value="Update"/>
+            {% else %}
+                {{ render_field(form.f_name) }}
+                {{ render_field(form.l_name) }}
+                {{ render_field(form.job_title) }}
+                {{ render_field(form.prefix) }}
+                {{ render_field(form.suffix) }}
+                {{ render_field(form.phone) }}
+                {{ render_field(form.phone_extension) }}
+                <input id="submit_button"  type="submit" value="Submit general Profile"/>
+            {% endif %}
+            {% endblock %}
         </form>
+
+        {% block content3 %}
+            {% if profile_exists %}
+                <button  id="edit_profile_button" type="button" onclick="updateProfile()">Edit profile</button>
+            {% else %}
+                <button style="display: none;" type="button">Edit profile</button>
+            {% endif %}
+
+        {% endblock %}
+
+
+
 {% endblock %}
+

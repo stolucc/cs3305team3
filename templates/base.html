@@ -12,6 +12,7 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
         <link id ="stylesheet" rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/sfihome.css') }}"/>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
         <script>
             $(document).ready(function() {
                 $('.dc-morph-btns li').on('click', function() {
@@ -22,7 +23,7 @@
             });
 
             function openNav() {
-                document.getElementById("mySidepanel").style.width = "250px";
+                document.getElementById("mySidepanel").style.width = "15em";
             }
 
             function closeNav() {
@@ -32,35 +33,53 @@
     </head>
     <body>
         <header>
-            <div class="jumbotron text-center">
-                <div class="text-right">
-                    <form class="form-inline">
-                        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"/>
-                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-                    </form>
-                </div>
-                <!-- class="col-sm-9 col-md-9" in img -->
-                <img src="https://www.techcentral.ie/wp-content/uploads/2014/07/SFI_Logo-620x350.jpg" alt="SFI logo" style="width: 15%;height:10%"/>
-                <br><br>
+            <div class="jumbotron">
+                <img class="col-sm-9 col-md-9" src="https://www.techcentral.ie/wp-content/uploads/2014/07/SFI_Logo-620x350.jpg" alt="SFI logo" align="left"/>
+                <br><br><br><br>
             </div>
         </header>
 
         <nav class="navbar">
             <div class="container-fluid">
                 <ul class="nav nav-tabs">
-                    <li><a href="{{ url_for('index') }}">Home</a></li>
-                    <li><a href="">Applications</a></li>
+                    <li><a href="{{ url_for('home') }}">Home</a></li>
                     <li><a href="{{ url_for('proposals') }}">Funding</a></li>
-                    <li><a href="">Engagement</a></li>
-                    <li><a href="">Events</a></li>
-                    <li><a href="">Research</a></li>
-                    <li><a href="">Centres</a></li>
-                    <li><a href="">About</a></li>
-                    <li><a href="">Subscribe</a></li>
+                    {% if (current_user.is_authenticated and current_user.user_type=="researcher") %}
+                        <li><a href="{{ url_for('index') }}"> Researcher Dashboard</a></li>
+                    {% endif %}
+                    {% if (current_user.is_authenticated and current_user.user_type=="sfiAdmin") %}
+                        <li><a href="{{ url_for('admin_main') }}"> Admin Dashboard</a></li>
+                    {% endif %}
+                    {% if (current_user.is_authenticated and current_user.user_type=="reviewer") %}
+                        <li><a href="{{ url_for('reviewer_main') }}"> Reviewer Dashboard</a></li>
+                    {% endif %}
+                    {% if (current_user.is_authenticated and current_user.user_type=="researchCentre") %}
+                        <li><a href="{{ url_for('research_centre_main') }}"> Research Centre Dashboard</a></li>
+                    {% endif %}
+                    {% if (current_user.is_authenticated and current_user.user_type=="institution") %}
+                        <li><a href="{{ url_for('institute_main') }}"> Instituition Dashboard</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('about') }}">About</a></li>
+                    <li><a href="{{ url_for('subscribe') }}">Subscribe</a></li>
+                    {% if not current_user.is_authenticated %}
+                        <li><a href="{{ url_for('registration') }}"> Register</a></li>
+                    {% endif %}
                     {% if current_user.is_authenticated %}
-                        <li class="active navbar-right"><a href="{{ url_for('logout') }}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                    <li class="active navbar-right">
+                        <div class="sesame">
+                            <form action="{{ url_for('logout') }}">
+                                <button type="submit">Logout of Sesame</button>
+                            </form>
+                        </div>
+                    </li>
                     {% else %}
-                        <li class="active navbar-right"><a href="{{ url_for('login') }}"><span class="glyphicon glyphicon-log-in"></span> Log in</a></li>
+                    <li class="active navbar-right">
+                        <div class="sesame">
+                            <form action="{{ url_for('login') }}">
+                                <button type="submit">Login to Sesame</button>
+                            </form>
+                        </div>
+                    </li>
                     {% endif %}
                 </ul>
             </div>
@@ -69,16 +88,21 @@
         <main>
 
         {% block content %}{% endblock %}
-        <div style="clear:both;height:157px;display:block;"></div>
+        <div style="clear:both;height:10em;display:block;"></div>
         </main>
 
-        <footer class="blur footer">
-        <p>#BelieveInScience</p>
-        <p><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span><small> Wilton Park House, Wilton Place, D02 NT99, Ireland</small></p>
-        <p><span class="glyphicon glyphicon-phone-alt" aria-hidden="true"></span><small> +353 (0)1 607 3200 </small></p>
-        <p><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span><small> info@sfi.ie</small></p>
-	<p><a class="hi" href="https://www.facebook.com/ScienceFoundationIreland/"><i style="font-size:24px" class="fa">&#xf082;</i></a> <a href="https://twitter.com/scienceirel"><i style="font-size:24px" class="fa">&#xf081;</i></a> <a href="https://www.linkedin.com/company/science-foundation-ireland"><i style="font-size:24px" class="fa">&#xf08c;</i></a> <a href="https://www.instagram.com/scienceireland/"><i style="font-size:24px" class="fa">&#xf16d;</i></a> <a href="https://www.flickr.com/photos/sciencefoundationireland/"><i style="font-size:24px" class="fa">&#xf16e;</i></a> <a href="https://www.youtube.com/ScienceFoundationIreland"><i style="font-size:24px" class="fa">&#xf16a;</i></a></p>
-    </footer>
+        <footer>
+            <div class="row">
+                <div class="col-xs-6 col-sm-3">
+                    <h4>#BelieveInScience</h4>
+                    <p><a href="https://www.facebook.com/ScienceFoundationIreland/"><i style="font-size:24px" class="fa">&#xf082;</i></a> <a href="https://twitter.com/scienceirel"><i style="font-size:24px" class="fa">&#xf081;</i></a> <a href="https://www.linkedin.com/company/science-foundation-ireland"><i style="font-size:24px" class="fa">&#xf08c;</i></a> <a href="https://www.instagram.com/scienceireland/"><i style="font-size:24px" class="fa">&#xf16d;</i></a> <a href="https://www.flickr.com/photos/sciencefoundationireland/"><i style="font-size:24px" class="fa">&#xf16e;</i></a> <a href="https://www.youtube.com/ScienceFoundationIreland"><i style="font-size:24px" class="fa">&#xf16a;</i></a></p>
+                </div>
+                <div class="col-xs-6 col-sm-9">
+                    <p><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span><small> Wilton Park House, Wilton Place, D02 NT99, Ireland</small></p>
+                    <p><span class="glyphicon glyphicon-phone-alt" aria-hidden="true"></span><small> +353 (0)1 607 3200 </small></p>
+                    <p><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span><small> info@sfi.ie</small></p>
+                </div>
+        </footer>
 
     </body>
 </html>

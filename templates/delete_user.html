@@ -19,6 +19,7 @@ th, td {
 
         {% from "_formhelpers.html" import render_field %}
         <form method=post>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <dl>
                 <div class="form-group">
                     {{ render_field(form.user_id) }}
@@ -47,7 +48,7 @@ th, td {
 </center>
 
         <script>
-
+            var csrftoken = "{{ csrf_token() }}"
             var acc = document.getElementsByClassName("accordion");
 
             var i;

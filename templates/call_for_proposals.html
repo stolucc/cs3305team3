@@ -2,38 +2,55 @@
 
 {% block content %}
 
-<h3 id="researchHeading">New Proposals {{ user.username }}</h3>
-<hr>
+<h3 id="proposalsHeading">Calls {{ user.username }}</h3>
+
+    {% block calls %}
+        <div class="proposalButtons">
+            <a href="proposals"><button type="button" class="proposalStyle">Open Calls</button></a>
+            <a href="proposals1"><button type="button">Expired Calls</button></a>
+        </div>
+        <div class="proposalScroll pre-scrollable"  style="max-height: 40vh">
         {% for call in calls %}
-        <button class="accordion">{{   call.call_for_proposal_title  }}</button>
+            {% if call.start_date != None and call.start_date > date %}
+                <button class="accordion">{{   call.call_for_proposal_title  }}</button>
 
-            <div class="panel">
-                <p><strong>Target Audience:</strong>{{ call.target_audience}}</p>
-                <p><strong>Proposal: </strong>{{ call.text_of_call }}</p>
-                <p><strong>Eligibility Criteria: </strong>{{ call.eligibility_criteria }}</p>
-                <p><strong>Reporting Guidelines: </strong>{{ call.reporting_guidelines }}</p>
-                <p><strong>Start Date: </strong>{{ call.start_date }}</p>
-                <p><strong>Duration of Award: </strong>{{ call.duration_of_award }}</p>
+                <div class="panel">
+                    <p><strong>Proposal: </strong>{{ call.text_of_call }}</p>
+                    <p><strong>Target Audience: </strong>{{ call.target_audience }}</p>
+                    <p><strong>Eligibility Criteria: </strong>{{ call.eligibility_criteria }}</p>
+                    <p><strong>Reporting Guidelines: </strong>{{ call.reporting_guidelines }}</p>
+                    <p><strong>Duration of Award: </strong>{{ call.duration_of_award }}</p>
+                    <p><strong>Start Date: </strong>{{ call.start_date }}</p>
+                    <p><strong>Deadline: </strong>{{ call.deadline }}</p>
+                    {% if (current_user.is_authenticated and current_user.user_type=="researcher") %}
+                        <form action="" method='POST' novalidate>
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <button type="submit" name="grant_id" type="button" value={{call.call_for_proposal_title}}><span class="fa fa-edit">Apply For</button>
+                            <!--<input type="submit" value="Click Me" name="sample"/> !-->
+                        </form>
 
-            </div>
+                    {% endif %}
+                </div>
+            {% endif %}
         {% endfor %}
+        </div>
+    {% endblock %}
 
+    <script>
+        var acc = document.getElementsByClassName("accordion");
+        var i;
 
-        <script>
-            var acc = document.getElementsByClassName("accordion");
-            var i;
-            for (i = 0; i < acc.length; i++) {
-                acc[i].addEventListener("click", function() {
-                    this.classList.toggle("active");
-                    var panel = this.nextElementSibling;
-                    if (panel.style.maxHeight) {
-                        panel.style.maxHeight = null;
-                    } else {
-                        panel.style.maxHeight = panel.scrollHeight + "px";
-                    }
-                });
-            }
-        </script>
-
+        for (i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.maxHeight) {
+                    panel.style.maxHeight = null;
+                } else {
+                    panel.style.maxHeight = panel.scrollHeight + "px";
+                }
+            });
+        }
+    </script>
 
 {% endblock %}

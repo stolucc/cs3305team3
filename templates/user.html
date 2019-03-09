@@ -13,6 +13,7 @@
         <link id ="stylesheet" rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/sfihome.css') }}"/>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script>
+            var csrftoken = "{{ csrf_token() }}"
             $(document).ready(function() {
                 $('.dc-morph-btns li').on('click', function() {
                     $('.dc-morph-btns li').removeClass("selected");
@@ -32,36 +33,52 @@
     </head>
     <body>
         <header>
-            <div class="jumbotron text-center">
-                <div class="text-right">
-                    <form class="form-inline">
-                        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"/>
-                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-                    </form>
-                </div>
+            <div class="jumbotron">
                 <!-- class="col-sm-9 col-md-9" in img -->
-                <img src="https://www.techcentral.ie/wp-content/uploads/2014/07/SFI_Logo-620x350.jpg" alt="SFI logo" style="width: 15%;height:10%"/>
-                <br><br>
+                <img class="col-sm-9 col-md-9" src="https://www.techcentral.ie/wp-content/uploads/2014/07/SFI_Logo-620x350.jpg" alt="SFI logo" align="left"/>
+                <br><br><br><br>
             </div>
         </header>
 
         <nav class="navbar">
             <div class="container-fluid">
                 <ul class="nav nav-tabs">
-                    <li><a href="{{ url_for('index') }}">Home</a></li>
-                    <li><a href="">Applications</a></li>
+                    <li><a href="{{ url_for('home') }}">Home</a></li>
+                    <!--<li><a href="">Applications</a></li>-->
                     <li><a href="{{ url_for('proposals') }}">Funding</a></li>
-                    <li><a href="">Engagement</a></li>
+                    <!--<li><a href="">Engagement</a></li>
                     <li><a href="">Events</a></li>
                     <li><a href="">Research</a></li>
-                    <li><a href="">Centres</a></li>
-                    <li><a href="">About</a></li>
-                    <li><a href="">Subscribe</a></li>
+                    <li><a href="">Centres</a></li>-->
                     {% if current_user.is_authenticated %}
+                        <li><a href="{{ url_for('index') }}">Researcher Dashboard</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('about') }}">About</a></li>
+                    <li><a href="{{ url_for('subscribe') }}">Subscribe</a></li>
+                     {% if current_user.is_authenticated %}
+                     <li class="active navbar-right">
+                        <div class="sesame">
+                            <form action="{{ url_for('logout') }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                <button type="submit">Logout of Sesame</button>
+                            </form>
+                        </div>
+                    </li>
+                    {% else %}
+                    <li class="active navbar-right">
+                        <div class="sesame">
+                            <form action="{{ url_for('login') }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                <button type="submit">Login to Sesame</button>
+                            </form>
+                        </div>
+                    </li>
+                    {% endif %}
+                    <!--{% if current_user.is_authenticated %}
                         <li class="active navbar-right"><a href="{{ url_for('logout') }}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
                     {% else %}
                         <li class="active navbar-right"><a href="{{ url_for('login') }}"><span class="glyphicon glyphicon-log-in"></span> Log in</a></li>
-                    {% endif %}
+                    {% endif %}-->
                 </ul>
             </div>
         </nav>
@@ -81,17 +98,20 @@ body {
 }
 
 .left {
-    width:25%;
-    border-right: 2px dashed lightgrey;
-    background: white;
-    left: 0;
-    padding:20px;
+  width:25%;
+  border-right: 3px dashed lightgrey;
+  border-top: 2px dashed lightgrey;
+  border-bottom: 2px dashed lightgrey;
+  background: white;
+  left: 0;
+  padding:20px;
 }
 
 .right {
   width:75%;
   right: 0;
   padding:20px;
+  margin:1em;
 }
 
 .centered {
@@ -102,49 +122,57 @@ body {
   text-align: center;
 }
 
+
+input[type="text"]:disabled {
+    background-color:#f2f2f2;
+}
+
 </style>
-</head>
-<body>
-<h3 id="researchHeading">Research Profile</h3>
-<div class="split left">
+
+<h3 id="researchProfile">Research Profile</h3>
+<div class="split left" style="max-height: 43vh">
     <div><a href="{{ url_for('add_orcid') }}">ORCID</a></div>
     <div><a href="{{ url_for('general_form') }}">General Information</a></div>
     <div><a href="{{ url_for('education_form') }}">Education</a></div>
-    <div><a href="">Employment</a></div>
-    <div><a href="">Professional Societies</a></div>
-    <div><a href="">Distinctions & Awards</a></div>
-    <div><a href="">Funding Diversification</a></div>
-    <div><a href="">Team Members</a></div>
-    <div><a href="">Impacts</a></div>
-    <div><a href="">Innovation</a></div>
-    <div><a href="">Publications</a></div>
-    <div><a href="">Presentations</a></div>
-    <div><a href="">Academic Collaborations</a></div>
-    <div><a href="">Non-Academic Collaborations</a></div>
-    <div><a href="">Conferences/Workshops/Seminars Organized</a></div>
-    <div><a href="">Communications Overview</a></div>
-    <div><a href="">SFI Funding Ratio</a></div>
-    <div><a href="">Eduction & Public Engagement</a></div>
+    <div><a href="{{ url_for('employment_form') }}">Employment</a></div>
+    <div><a href="{{ url_for('professional_societies_form') }}">Professional Societies</a></div>
+    <div><a href="{{ url_for('awards_form') }}">Distinctions & Awards</a></div>
+    <div><a href="{{ url_for('funding_diversification_form') }}">Funding Diversification</a></div>
+    <div><a href="{{ url_for('team_members_form') }}">Team Members</a></div>
+    <div><a href="{{ url_for('impacts_form') }}">Impacts</a></div>
+    <div><a href="{{ url_for('innovations_form') }}">Innovation</a></div>
+    <div><a href="{{ url_for('publications_form') }}">Publications</a></div>
+    <div><a href="{{ url_for('presentations_form') }}">Presentations</a></div>
+    <div><a href="{{ url_for('academic_collab_form') }}">Academic Collaborations</a></div>
+    <div><a href="{{ url_for('non_academic_collab_form') }}">Non-Academic Collaborations</a></div>
+    <div><a href="{{ url_for('conferences_form') }}">Conferences/Workshops/Seminars Organized</a></div>
+    <div><a href="{{ url_for('communication_form') }}">Communications Overview</a></div>
+    <div><a href="{{ url_for('funding_ratio_form') }}">SFI Funding Ratio</a></div>
+    <div><a href="{{ url_for('engagements_form') }}">Education & Public Engagement</a></div>
 </div>
 
-<div class="split right">
+<div class="split right pre-scrollable" style="max-height: 40vh">
     {% from "_formhelpers.html" import render_field %}
-    {% block content %}{% endblock %}
+    {% block content %}<h4>Please click one of the links on the left</h4>{% endblock %}
 </div>
-<div style="clear:both;height:157px;display:block;"></div>
+<div style="clear:both;height:10em;display:block;"></div>
    </main>
 
-    <footer class="blur footer">
-        <p>#BelieveInScience</p>
-        <p><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span><small> Wilton Park House, Wilton Place, D02 NT99, Ireland</small></p>
-        <p><span class="glyphicon glyphicon-phone-alt" aria-hidden="true"></span><small> +353 (0)1 607 3200 </small></p>
-        <p><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span><small> info@sfi.ie</small></p>
-	    <p><a class="hi" href="https://www.facebook.com/ScienceFoundationIreland/"><i style="font-size:24px" class="fa">&#xf082;</i></a> <a href="https://twitter.com/scienceirel"><i style="font-size:24px" class="fa">&#xf081;</i></a> <a href="https://www.linkedin.com/company/science-foundation-ireland"><i style="font-size:24px" class="fa">&#xf08c;</i></a> <a href="https://www.instagram.com/scienceireland/"><i style="font-size:24px" class="fa">&#xf16d;</i></a> <a href="https://www.flickr.com/photos/sciencefoundationireland/"><i style="font-size:24px" class="fa">&#xf16e;</i></a> <a href="https://www.youtube.com/ScienceFoundationIreland"><i style="font-size:24px" class="fa">&#xf16a;</i></a></p>
-    </footer>
-
+        <footer ><!--</footer>class="blur footer">-->
+            <div class="row">
+                <div class="col-xs-6 col-sm-3">
+                    <h4>#BelieveInScience</h4>
+                    <p><a href="https://www.facebook.com/ScienceFoundationIreland/"><i style="font-size:24px" class="fa">&#xf082;</i></a> <a href="https://twitter.com/scienceirel"><i style="font-size:24px" class="fa">&#xf081;</i></a> <a href="https://www.linkedin.com/company/science-foundation-ireland"><i style="font-size:24px" class="fa">&#xf08c;</i></a> <a href="https://www.instagram.com/scienceireland/"><i style="font-size:24px" class="fa">&#xf16d;</i></a> <a href="https://www.flickr.com/photos/sciencefoundationireland/"><i style="font-size:24px" class="fa">&#xf16e;</i></a> <a href="https://www.youtube.com/ScienceFoundationIreland"><i style="font-size:24px" class="fa">&#xf16a;</i></a></p>
+                </div>
+                <div class="col-xs-6 col-sm-9">
+                    <p><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span><small> Wilton Park House, Wilton Place, D02 NT99, Ireland</small></p>
+                    <p><span class="glyphicon glyphicon-phone-alt" aria-hidden="true"></span><small> +353 (0)1 607 3200 </small></p>
+                    <p><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span><small> info@sfi.ie</small></p>
+    	        </div>
+            </div>
+        </footer>
     </body>
 </html>
-
 
 
 

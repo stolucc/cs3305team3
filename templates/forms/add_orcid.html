@@ -1,6 +1,7 @@
 {% extends "user.html" %}
 {% block content %}
         <form method=post>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <dl>
                 <div class="form-group">
                     {{ render_field(form.orcid) }}
@@ -8,5 +9,6 @@
             </dl>
             <p><input type=submit value="Add/Update"></p>
         </form>
-        {{creditName}}
+
+        {{output}}
 {% endblock %}

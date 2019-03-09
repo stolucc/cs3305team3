@@ -1,15 +1,37 @@
 {% extends "user.html" %}
 {% block content %}
-        <form method=post>
-            <dl>
-                <div class="form-group">
+{% from "_formhelpers.html" import render_field %}
+<script src="{{url_for('static', filename='update_profile.js')}}">var csrftoken = "{{ csrf_token() }}"</script>
+    <h2 class="profileTitles">Education</h2>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            {% block content2 %}
+            {% if profile_exists %}
+            <fieldset id="fieldset1" disabled="disabled">
                     {{ render_field(form.degree) }}
                     {{ render_field(form.field_of_study) }}
                     {{ render_field(form.institution) }}
                     {{ render_field(form.location) }}
-                    {{ render_field(form.year_degree_awarded) }}
-                </div>
-            </dl>
-            <p><input type=submit value=Update></p>
+                    {{ render_field(form.year_of_degree) }}
+            </fieldset>
+            <input id="submit_button" style="display: none;" type="submit" value="Update"/>
+            {% else %}
+                {{ render_field(form.degree) }}
+                {{ render_field(form.field_of_study) }}
+                {{ render_field(form.institution) }}
+                {{ render_field(form.location) }}
+                {{ render_field(form.year_of_degree) }}
+                <input id="submit_button"  type="submit" value="Submit Education info"/>
+            {% endif %}
+            {% endblock %}
         </form>
+
+        {% block content3 %}
+            {% if profile_exists %}
+                <button  id="edit_profile_button" type="button" onclick="updateProfile()">Edit Profile</button>
+            {% else %}
+                <button style="display: none;" type="button">Edit Profile</button>
+            {% endif %}
+
+        {% endblock %}
 {% endblock %}

@@ -1,0 +1,24 @@
+{% extends "call_for_proposals.html"%}
+{% block calls %}
+    <div class="proposalButtons">
+        <a href="proposals"><button type="button">Open Calls</button></a>
+        <a href="proposals1"><button type="button" class="proposalStyle">Expired Calls</button></a>
+    </div>
+    <div class="proposalScroll pre-scrollable">
+    {% for call in calls %}
+        {% if call.start_date != None and call.start_date <= date %}
+            <button class="accordion">{{   call.call_for_proposal_title  }}</button>
+
+            <div class="panel">
+                <p><strong>Proposal: </strong>{{ call.text_of_call }}</p>
+                <p><strong>Target Audience: </strong>{{   call.target_audience  }}</p>
+                <p><strong>Eligibility Criteria: </strong>{{ call.eligibility_criteria }}</p>
+                <p><strong>Reporting Guidelines: </strong>{{ call.reporting_guidelines }}</p>
+                <p><strong>Duration of Award: </strong>{{ call.duration_of_award }}</p>
+                <p><strong>Start Date: </strong>{{ call.start_date }}</p>
+                <p><strong>Deadline: </strong>{{ call.deadline }}</p>
+            </div>
+        {% endif %}
+    {% endfor %}
+    </div>
+{% endblock %}

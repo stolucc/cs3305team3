@@ -1,0 +1,16 @@
+{% extends "user.html" %}
+{% block content %}
+        <form method=post>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <dl>
+                <div class="form-group">
+                    {{ render_field(form.start_date) }}
+                    {{ render_field(form.end_date) }}
+                    {{ render_field(form.name) }}
+                    {{ render_field(form.membership_type) }}
+                    {{ render_field(form.status) }}
+                </div>
+            </dl>
+            <p><input type=submit value=Update></p>
+        </form>
+{% endblock %}

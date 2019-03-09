@@ -1,24 +1,29 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-
-<div style="font-family:Helvetica; font-size:50px; clear:both"></div>
-<div class="row3" style="font-size: 2em;">
-
-
-    <section style="float:left;">
-        <img src="https://collegechoice.azureedge.net/wp-content/uploads/2017/02/Best-Colleges-in-the-USA.jpg"/>
-    </section>
-    <section style="margin-top:300px;">
+<style>
+    main{
+      background: url(../static/images/Institute.jpg) no-repeat center center fixed;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
+    }
+</style>
+<div style="clear:both;"></div>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<div class="row3">
+    <div class="Welcome">
         <h2> Welcome {{ user.username }} </h2>
-        <h2 >You are using an institution account</h2>
+        <h2>You are using an institution account</h2>
+    </div>
+    <div class="institute">
         <div class="dc-morph-btns">
             <ul>
                 <li><a id="icon-APA" href=""></a><span>Accept/Reject Proposals</span></li>
             </ul>
+        </div>
     </div>
-    </section>
 </div>
 <div style="clear:both;"></div>
 

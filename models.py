@@ -95,8 +95,12 @@ class Researcher_Profile(UserMixin, db.Model):
     researcher_id = db.Column(db.Integer, primary_key=True)
     f_name = db.Column(db.String(64))
     l_name = db.Column(db.String(64))
-    job_title = db.Column(db.String(4))
-    ORCID = db.Column(db.Integer)
+    job_title = db.Column(db.String(40))
+    ORCID = db.Column(db.String(19))
+    prefix = db.Column(db.String(10))
+    suffix = db.Column(db.String(10))
+    phone = db.Column(db.Integer)
+    phone_extension = db.Column(db.Integer)
 
     users = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     UserDetails = db.relationship('User', foreign_keys=users)
@@ -125,6 +129,9 @@ class Engagements(UserMixin, db.Model):
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
 
+    users = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    UserDetails = db.relationship('User', foreign_keys=users)
+
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
@@ -148,6 +155,9 @@ class Presentations(UserMixin, db.Model):
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
 
+    users = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    UserDetails = db.relationship('User', foreign_keys=users)
+
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
@@ -164,6 +174,9 @@ class FundingRatio(UserMixin, db.Model):
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
 
+    users = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    UserDetails = db.relationship('User', foreign_keys=users)
+
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
@@ -177,13 +190,17 @@ class TeamMembers(UserMixin, db.Model):
     team_member_id = db.Column(db.Integer, primary_key=True)
     start_date = db.Column(db.DateTime)
     departure_date = db.Column(db.DateTime)
-    position = db.Column(db.String(64))
     name = db.Column(db.String(20))
-    grant_number = db.Column(db.Integer)
     position = db.Column(db.String(30))
+
+    grant_reference = db.Column(db.Integer, db.ForeignKey('submitted_applications.grant_application_id'))
+    grant_reference_id = db.relationship('SubmittedApplications', foreign_keys=grant_reference)
 
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
+
+    users = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    UserDetails = db.relationship('User', foreign_keys=users)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -205,6 +222,9 @@ class Impacts(UserMixin, db.Model):
 
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
+
+    users = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    UserDetails = db.relationship('User', foreign_keys=users)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -231,6 +251,9 @@ class Funding_Diversification(UserMixin, db.Model):
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
 
+    users = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    UserDetails = db.relationship('User', foreign_keys=users)
+
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
@@ -254,6 +277,8 @@ class Grant_Application(UserMixin, db.Model):
     scientific_abstract = db.Column(db.String(2000))
     lay_abstract = db.Column(db.String(1000))
     programme_documents = db.Column(db.String(1000))
+    approved = db.Column(db.Boolean, default=False)
+    reviewer_approved = db.Column(db.Boolean, default=False)
 
 
     def set_propsoal_title(self, title):
@@ -314,6 +339,8 @@ class EmploymentDB(UserMixin, db.Model):
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
 
+    users = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    UserDetails = db.relationship('User', foreign_keys=users)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -333,6 +360,8 @@ class AwardsDB(UserMixin, db.Model):
     year = db.Column(db.Integer)
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
 
+    users = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    UserDetails = db.relationship('User', foreign_keys=users)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -355,6 +384,8 @@ class Conferences(UserMixin, db.Model):
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
 
+    users = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    UserDetails = db.relationship('User', foreign_keys=users)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -382,6 +413,9 @@ class Publications(UserMixin, db.Model):
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
 
+    users = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    UserDetails = db.relationship('User', foreign_keys=users)
+
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
@@ -389,8 +423,8 @@ class Publications(UserMixin, db.Model):
         return self.username
 
 
-class Professional_Socities(UserMixin, db.Model):
-    __tablename__ = "professional_socities"
+class Professional_Societies(UserMixin, db.Model):
+    __tablename__ = "professional_societies"
 
     research_profile_id = db.Column(db.Integer, primary_key=True)
     start_date = db.Column(db.DateTime)
@@ -401,6 +435,8 @@ class Professional_Socities(UserMixin, db.Model):
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
 
+    users = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    UserDetails = db.relationship('User', foreign_keys=users)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -429,6 +465,8 @@ class AcademicCollabs(UserMixin, db.Model):
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
 
+    users = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    UserDetails = db.relationship('User', foreign_keys=users)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -455,6 +493,8 @@ class NonAcademicCollabs(UserMixin, db.Model):
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
 
+    users = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    UserDetails = db.relationship('User', foreign_keys=users)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -473,6 +513,8 @@ class Communication(UserMixin, db.Model):
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
 
+    users = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    UserDetails = db.relationship('User', foreign_keys=users)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -501,6 +543,9 @@ class Innovations(UserMixin, db.Model):
 
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
+
+    users = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    UserDetails = db.relationship('User', foreign_keys=users)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -545,6 +590,9 @@ class ResearcherEducation(UserMixin, db.Model):
 
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
+
+    users = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
+    UserDetails = db.relationship('User', foreign_keys=users)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)

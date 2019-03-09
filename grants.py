@@ -8,7 +8,7 @@ from werkzeug.security import generate_password_hash#, check_password_hash
 from functools import wraps
 from flask_mail import Mail
 from flask_wtf.csrf import CSRFProtect
-from forms import AddGrantApplicationForm,ResetPasswordRequestForm, ResetPasswordForm, DeletionForm, RegistrationForm, AddProposalForm, ProfileForm, EducationForm, GeneralForm, AddOrcid
+from forms import AddGrantApplicationForm,ResetPasswordRequestForm, ResetPasswordForm, DeletionForm, RegistrationForm, AddProposalForm, ProfileForm, EducationForm, EducationFormAdd, GeneralForm, AddOrcid, RegisterForm, GeneralUpdateForm, TeamMembersForm, EmploymentForm, ProfessionalSocietiesForm, AwardsForm, FundingDiversificationForm, ImpactsForm, InnovationsForm, PublicationsForm, PresentationsForm, AcademicCollabForm, NonAcademicCollabForm, ConferencesForm,CommunicationForm,FundingRatioForm,EngagementsForm
 from dynamicforms import GrantLayAbstractForm, GrantScientificAbstractForm, GrantGeneralInfoForm, CoApplicantsForm, CollaboratorsForm
 from flask_dropzone import Dropzone
 import os
@@ -16,6 +16,7 @@ import requests
 import xml.dom.minidom
 import json
 basedir = os.path.abspath(os.path.dirname(__file__))
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -47,6 +48,7 @@ app.config.update(
     DROPZONE_UPLOAD_ON_CLICK=True,
     )
 
+
 mail = Mail(app)
 
 from email1 import send_password_reset_email
@@ -60,7 +62,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-from models import Researcher_Profile, CFP, User, Grant_Application,SubmittedApplications,Collaborators,Co_Applicants #moved this
+from models import Researcher_Profile, CFP, User, Grant_Application,SubmittedApplications,Collaborators,Co_Applicants, ResearcherEducation, EmploymentDB, Engagements, AcademicCollabs, NonAcademicCollabs,Publications, FundingRatio, Conferences, Communication, Professional_Societies, TeamMembers, AwardsDB, Funding_Diversification, Impacts, Innovations, Presentations  #moved this
 #Unused models SFIAdmin, Reviewer, Researcher_Account, Research_Centre_Admin, Login_Account, Engagements, Presentations, FundingRatio, TeamMembers, Impacts, Funding_Diversification, EmploymentDB, AwardsDB, Conferences, Publications, Professional_Socities, AcademicCollabs, NonAcademicCollabs, Communication, Innovations, AnnualReports, ResearcherEducation
 
 
@@ -101,7 +103,7 @@ def index():
         return redirect(url_for('login'))
 
     if request.method == "GET":
-        return render_template("main_page.html", title="Home")
+        return render_template("main_page.html", title="Home", user=current_user)
     return redirect(url_for('index'))
 
 @app.route("/login/", methods=["GET", "POST"])
@@ -132,7 +134,7 @@ def login():
     elif urole=="reviewer":
         return redirect(url_for('reviewer_main'))
 
-    else:#user=institution:
+    elif urole=="institution":
         return redirect(url_for('institute_main'))
 
 @app.route("/logout/")
@@ -155,7 +157,7 @@ def reset_password_request():
     return render_template('reset_password_request.html',
                            title='Reset Password', form=form)
 
-@app.route('/reset_password<token>', methods=['GET', 'POST'])#was /reset_password)reset_password<token>
+@app.route('/reset_password)<token>', methods=['GET', 'POST'])#was /reset_password)reset_password<token>#Changed to reset_password<token>
 def reset_password(token):
     if current_user.is_authenticated:
         return redirect(url_for('index'))
@@ -191,10 +193,25 @@ def add_proposals():
         return redirect(url_for('proposals'))
     return render_template('add_proposals.html', title='Proposals', user=user, form=form)
 
-@app.route('/proposals')
+@app.route('/proposals',methods=['GET', 'POST'])
 def proposals():
     calls=CFP.query.all()
-    return render_template('call_for_proposals.html', title='Proposals', user=user, calls=calls)
+    date=datetime.now()
+    if request.method == 'POST':
+        call_for_proposal_title=request.form['grant_id']
+        application = Grant_Application(
+        user_id = current_user.id, proposal_title=call_for_proposal_title)
+        db.session.add(application)
+        db.session.commit()
+        return redirect(url_for('submit_application',application_id=application.grant_application_id))#
+    return render_template('call_for_proposals.html', title='Proposals', user=user, date=date, calls=calls)
+
+
+@app.route("/proposals1")
+def proposals1():
+    date=datetime.now()
+    calls=CFP.query.all()
+    return render_template('call_for_proposals1.html', title='Proposals', user=user, date=date, calls=calls)
 
 @app.route('/submit_proposals')
 #@login_required_advanced(role="sfiAdmin")
@@ -219,7 +236,7 @@ def register():
             )
         if form.user_type.data=="researcher":
             researcher = Researcher_Profile(username=form.username.data)
-            researchers_education = Researcher_Education(username=form.username.data)
+            researchers_education = ResearcherEducation(username=form.username.data)
             db.session.add(researcher)
             db.session.add(researchers_education)
 
@@ -228,6 +245,24 @@ def register():
         flash('Thanks for registering')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
+
+@app.route('/registration', methods=['GET', 'POST'])
+def registration():
+    form = RegisterForm(request.form)
+    if request.method == 'POST' and form.validate():
+
+        user = User(
+            username=form.username.data,
+            email=form.email.data,
+            user_type="researcher",
+            password_hash=generate_password_hash(form.password.data)
+            )
+
+        db.session.add(user)
+        db.session.commit()
+        flash('Thanks for registering')
+        return redirect(url_for('login'))
+    return render_template('registration.html', title='Register', form=form)
 
 @app.route('/delete_user', methods=['GET', 'POST'])
 @login_required_advanced(role="sfiAdmin")
@@ -257,19 +292,43 @@ def institute_main():
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
-    if request.method == 'POST':
-        for key, f in request.files.items():
-            if key.startswith('file'):
-                #save_as = f.filename + current_user.get_id()
-                #directory = current_user.get_id()
+    #return "this is the messag" =
+    #iterations = 0
+    #file_loop = False
+    #if request.method == 'POST':
+    #flash('IN HERE THE LOOP')
+     #   #return json.dumps({'status':'OK','ethical_issues':"W"})
+    #file_loop = True
+    #return jsonify({'status':'OK','File loop':"TESTER"});
+    for key, f in request.files.items():
+        #iterations += 1
 
-                saved_as = str(current_user.get_id()) + f.filename
-                f.save(os.path.join(app.config['UPLOADED_PATH'], saved_as))
-                #application = Grant_Application.query.filter_by(grant_application_id=(request.form['grant_application_id'])).first()
-                application = Grant_Application.query.filter_by(user_id=current_user.get_id()).first()
-                application.set_programme_documents(os.path.join(app.config['UPLOADED_PATH'], saved_as))
+        flash('IN SECOND LOOP')
+        #if key.startswith('file'):
+        #save_as = f.filename + current_user.get_id()
+        #directory = current_user.get_id()
+        saved_as = str(current_user.id) + str(f.filename)
+        #'filename = secure_filename(file.filename)#ADDED THIS
+        #return jsonify({'status':'OK','File loop':"TESTER"});
+        application = Grant_Application.query.filter_by(user_id=current_user.id).first()
+        #return json.dumps({'status':'OK','ethical_issues':application.user_id});
+        application.programme_documents = str(saved_as) # url_for('uploaded_file', filename=saved_as)
+        db.session.commit()
+        f.save(os.path.join(app.config['UPLOADED_PATH'], saved_as))
 
-    return render_template('drag_and_drop.html', title='Proposals', user=user)
+        #return json.dumps({'status':'OK','ethical_issues':"W"})
+        #application = Grant_Application.query.filter_by(grant_application_id=(request.form['grant_application_id'])).first()
+
+
+        #db.session.add(application)
+
+    return "uploading"
+    #filename = secure_filename(file.filename)
+        #return jsonify({'status':'OK','File loop':str(file_loop)});
+    #return json.dumps({'status':'OK','ethical_issues':'No response here'});
+    #return True
+
+    #return render_template('drag_and_drop.html', title='Proposals', user=user)
 
 @app.route('/user/<username>', methods=['GET', 'POST'])
 #@login_required
@@ -286,43 +345,707 @@ def user(username):
 def add_orcid():
     form = AddOrcid(request.form)
     creditName = ""
+    output=""
     if request.method == 'POST' and form.validate():
         if form.orcid.data:
 
+
+            """ ******ORCID IMPLEMENTATION START******** """
             orcidUrl = 'https://pub.orcid.org/v2.0/' + str(form.orcid.data)
             dom = xml.dom.minidom.parseString(requests.get(orcidUrl).text)
             eles = dom.documentElement
             person = eles.getElementsByTagName("person:name")
+
+            #NAME
             for i in person:
-                firstName = i.getElementsByTagName("personal-details:given-names")[0].firstChild.data
-                lastName = i.getElementsByTagName("personal-details:family-name")[0].firstChild.data
-                creditName = creditName + firstName + " " + lastName
+                firstName = i.getElementsByTagName("personal-details:given-names")[0].firstChild.data #Gets First Name
+                lastName = i.getElementsByTagName("personal-details:family-name")[0].firstChild.data #Gets Last Name
+                creditName = creditName + firstName + " " + lastName #Gets full name
+                output = "ORCID entered of: " + creditName
 
-            if current_user.user_type == "researcher":
-                researcher = Researcher_Profile.query.filter_by(username=current_user.username).first()
-                researcher.f_name = firstName
-                researcher.l_name = lastName
-                researcher.ORCID = form.orcid.data
 
+            #Create an
+            application = Researcher_Profile.query.filter_by(users=current_user.id).first()#MUST FILTER FOR CASE WHERE A RESEARCHER HAS MULTIPLE APPLICATIONS
+
+            if application:
+                application.f_name = firstName
+                application.l_name = lastName
+
+            if not application:
+                profile=Researcher_Profile(
+                        f_name=firstName,
+                        l_name=lastName,
+                        users=current_user.id
+                    )
+                db.session.add(profile)
             db.session.commit()
 
-    return render_template('forms/add_orcid.html', title='Education', user=user, form=form, creditName=creditName)
+            #EDUCATION
+            educations = eles.getElementsByTagName("activities:educations")
+            for education in educations:
+                degree_title = education.getElementsByTagName("education:role-title")[0].firstChild.data #e.g. "PhD"
+                fieldofstudy = education.getElementsByTagName("education:department-name")[0].firstChild.data #e.g. "Computer Science"
+                institution = education.getElementsByTagName("common:name")[0].firstChild.data #e.g. "University of Limerick"
+                city = education.getElementsByTagName("common:city")[0].firstChild.data
+                country = education.getElementsByTagName("common:country")[0].firstChild.data
+                location = (city + ", " + country) #Location
+                awardyear = education.getElementsByTagName("common:year")[1].firstChild.data #Year degree awarded
+
+            education = ResearcherEducation.query.filter_by(users=current_user.id).first()#MUST FILTER FOR CASE WHERE A RESEARCHER HAS MULTIPLE APPLICATIONS
+
+            if education:
+                education.field_of_study = fieldofstudy,
+                education.degree = degree_title
+
+            if not education:
+                profile=ResearcherEducation(
+                        field_of_study = fieldofstudy,
+                        degree = degree_title,
+                        users=current_user.id
+                    )
+                db.session.add(profile)
+            db.session.commit()
+
+            #EMPLOYMENT
+            employments = eles.getElementsByTagName("activities:employments")
+            for employment in employments:
+                company = employment.getElementsByTagName("common:name")[0].firstChild.data #e.g. "University College Cork"
+                employcity = employment.getElementsByTagName("common:city")[0].firstChild.data
+                employcountry = employment.getElementsByTagName("common:country")[0].firstChild.data
+                location = (employcity + ", " + employcountry) #e.g. "Cork, IE"
+                employyear = employment.getElementsByTagName("common:year")[0].firstChild.data
+                employmonth = employment.getElementsByTagName("common:month")[0].firstChild.data
+                employday = employment.getElementsByTagName("common:day")[0].firstChild.data
+                start_date = (employyear + "-" + employmonth + "-" + employday) #e.g. "2017-09-01"
+
+            #PUBLICATIONS
+            publications = eles.getElementsByTagName("activities:group")
+            for pub in publications:
+                title = pub.getElementsByTagName("common:title")[0].firstChild.data #publication title
+                type = pub.getElementsByTagName("work:type")[0].firstChild.data #publication type
+                try:
+                    year = pub.getElementsByTagName("common:year")[0].firstChild.data       #publication year if there is one
+                except:
+                    pass
+                try:
+                    doiNull = pub.getElementsByTagName("common:external-id-value")[0].firstChild.data
+                except IndexError:
+                    pass #Remove this
+                    #print("\n" + year + "\n" + type + "\n" + title + "\n" + "No doi value here!!!") Add assignements here for publication with no doi
+                pubtypes= pub.getElementsByTagName("common:external-ids")
+                doi = " "
+                for pubtype in pubtypes:
+                    pub1s = pubtype.getElementsByTagName("common:external-id")
+                    for pub1 in pub1s:
+                        type1 = pub1.getElementsByTagName("common:external-id-type")[0].firstChild.data
+                        if type1 == 'doi' and doi != pub1.getElementsByTagName("common:external-id-value")[0].firstChild.data:
+                            doi = pub1.getElementsByTagName("common:external-id-value")[0].firstChild.data      #publication doi if there is one
+                            pass #Remove this
+                            #print("\n" + year + "\n" + type + "\n" + title + "\n" + doi) Add assignements here for publication with no doi
+                            type1 = ""
+                            break
+                        elif type1 == "eid":
+                            break
+
+            """ ******ORCID IMPLEMENTATION END******** """
+
+            if current_user.user_type == "researcher":
+                researcher_check = Researcher_Profile.query.filter_by(users=current_user.id).first()
+                if researcher_check == None:
+                    researcher=Researcher_Profile(
+                        f_name = firstName,
+                        l_name = lastName,
+                        ORCID = form.orcid.data
+                    )
+                    db.session.add(researcher)
+                    db.session.commit()
+                #researcher.f_name = firstName
+                #researcher.l_name = lastName
+                #researcher.ORCID = form.orcid.data
+
+
+    return render_template('forms/add_orcid.html', title='Education', user=user, form=form, output=output)
+
 
 @app.route('/user/education_form', methods=['GET', 'POST'])
 #@login_required_advanced(role="sfiAdmin")
 def education_form():
-    form = EducationForm(request.form)
+    data=ResearcherEducation.query.filter_by(users=current_user.id).first()
+    #users=User.query.filter_by(id=researcher_education.users)
+    if data:
+        form = EducationForm(request.form,obj=data)
+        profile_exists=True;
+    else:
+        form = EducationForm(request.form)
+        profile_exists=False;
+
+
     if request.method == 'POST' and form.validate():
-        pass
-    return render_template('forms/education_form.html', title='Education', user=user, form=form)
+        if data == None:
+            education=ResearcherEducation(
+                field_of_study=request.form['field_of_study'],
+                degree=request.form['degree'],
+                institution=request.form['institution'],
+                year_of_degree=request.form['year_of_degree'],
+                users= current_user.id,
+                location=request.form['location']
+
+                )
+            db.session.add(education)
+        else:
+            data.field_of_study=request.form['field_of_study']
+            data.degree=request.form['degree']
+            data.institution=request.form['institution']
+            data.year_of_degree=request.form['year_of_degree']
+            data.location=request.form['location']
+        db.session.commit()
+
+    return render_template('forms/education_form.html', title='Education', user=current_user.id, form=form, profile_exists=profile_exists )
+
+@app.route('/user/education_form_add', methods=['GET', 'POST'])
+#@login_required_advanced(role="sfiAdmin")
+def education_form_add():
+    form = EducationFormAdd(request.form)
+    if request.method == 'POST' and form.validate():
+        education=ResearcherEducation(
+            field_of_study=form.field_of_study.data,
+            degree=form.degree.data,
+            institution=form.institution.data,
+            year_of_degree=form.year_of_degree.data,
+            location=form.location.data,
+            users=current_user.id
+        )
+        db.session.add(education)
+        db.session.commit()
+        return redirect(url_for('education_form'))
+    return render_template('forms/education_form.html', title='Education', user=current_user.id, form=form)
+
 
 @app.route('/user/general_form', methods=['GET', 'POST'])
 #@login_required_advanced(role="sfiAdmin")
 def general_form():
-    form = GeneralForm(request.form)
+    #Displays the info from the database.
+    data=Researcher_Profile.query.filter_by(users=current_user.id).first()
+    if data:
+        form = GeneralForm(request.form,obj=data)
+        profile_exists = True;
+    else:
+        form = GeneralForm(request.form)
+        profile_exists = False;
+
+
     if request.method == 'POST' and form.validate():
-        pass
-    return render_template('forms/general_form.html', title='Education', user=user, form=form)
+        if data == None:
+            profile=Researcher_Profile(
+                    f_name= request.form['f_name'],
+                    l_name= request.form['l_name'],
+                    job_title = request.form['job_title'],
+                    prefix = request.form['prefix'],
+                    suffix = request.form['suffix'],
+                    phone = request.form['phone'],
+                    users= current_user.id,
+                    phone_extension = request.form['phone_extension']
+                )
+            db.session.add(profile)
+        else:
+            data.f_name= request.form['f_name']
+            data.l_name= request.form['l_name']
+            data.job_title = request.form['job_title']
+            data.prefix = request.form['prefix']
+            data.suffix = request.form['suffix']
+            data.phone = request.form['phone']
+            data.phone_extension = request.form['phone_extension']
+        db.session.commit()
+
+        #return redirect(url_for('/general_form'))
+    return render_template('forms/general_form.html', title='General info', profile_exists= profile_exists, user=current_user.id , form=form)
+
+
+
+
+@app.route('/user/employment_form', methods=['GET', 'POST'])
+#@login_required_advanced(role="sfiAdmin")
+def employment_form():
+    data=EmploymentDB.query.filter_by(users=current_user.id).first()
+    if data:
+        form = EmploymentForm(request.form,obj=data)
+        profile_exists=True
+    else:
+        form = EmploymentForm(request.form)
+        profile_exists=False
+
+
+    if request.method == 'POST' and form.validate():
+        if data==None:
+            employment=EmploymentDB(
+                institution=request.form['institution'],
+                location=request.form['location'],
+                year=request.form['year'],
+                users=current_user.id
+            )
+            db.session.add(employment)
+        else:
+            data.institution=request.form['institution']
+            data.location=request.form['location']
+            data.year=request.form['year']
+        db.session.commit()
+
+    return render_template('forms/employment_form.html', title='Employment',  form=form, profile_exists= profile_exists, user=current_user.id )
+
+@app.route('/user/employment_form_add', methods=['GET', 'POST'])
+#@login_required_advanced(role="sfiAdmin")
+def employment_form_add():
+    form = EmploymentForm(request.form)
+    if request.method == 'POST' and form.validate():
+        employment=EmploymentDB(
+            institution=form.institution.data,
+            location=form.location.data,
+            year=form.year.data,
+            users=current_user.id
+        )
+        db.session.add(employment)
+        db.session.commit()
+        return redirect(url_for('employment_form'))
+    return render_template('forms/employment_form.html', title='Employment', user=current_user.id, form=form)
+
+@app.route('/user/engagements_form', methods=['GET', 'POST'])
+#@login_required_advanced(role="sfiAdmin")
+def engagements_form():
+    data=Engagements.query.filter_by(users=current_user.id).first()
+    if data:
+        form = EngagementsForm(request.form,obj=data)
+        profile_exists=True
+    else:
+        form= EngagementsForm(request.form)
+        profile_exists=False
+
+    if request.method == 'POST' and form.validate():
+        if data==None:
+            engagements=Engagements(
+                start_date=request.form['start_date'],
+                end_date=request.form['end_date'],
+                project_name=request.form['project_name'],
+                project_topic=request.form['project_topic'],
+                activity_type=request.form['activity_type'],
+                target_area=request.form['target_area'],
+                users=current_user.id
+                )
+            db.session.add(engagements)
+        else:
+            data.start_date=request.form['start_date']
+            data.end_date=request.form['end_date']
+            data.project_name=request.form['project_name']
+            data.project_topic=request.form['project_topic']
+            data.activity_type=request.form['activity_type']
+            data.target_area=request.form['target_area']
+        db.session.commit()
+
+    return render_template('forms/engagements_form.html', title='Engagements', form=form, profile_exists= profile_exists, user=current_user.id)
+
+
+@app.route('/user/team_members_form', methods=['GET', 'POST'])
+#@login_required_advanced(role="sfiAdmin")
+def team_members_form():
+    data=TeamMembers.query.filter_by(users=current_user.id).first()
+    if data:
+        form = TeamMembersForm(request.form,obj=data)
+        profile_exists=True
+    else:
+        form= TeamMembersForm(request.form)
+        profile_exists=False
+
+    if request.method == 'POST' and form.validate():
+        if data==None:
+            team_member=TeamMembers(
+                start_date=request.form['start_date'],
+                departure_date=request.form['departure_date'],
+                name=request.form['name'],
+                position=request.form['position'],
+                users=current_user.id
+                )
+            db.session.add(team_member)
+        else:
+            data.start_date=request.form['start_date']
+            data.departure_date=request.form['departure_date']
+            data.name=request.form['name']
+            data.position=request.form['position']
+        db.session.commit()
+    return render_template('forms/team_members_form.html', title='Team-Members', user=current_user.id, form=form, profile_exists= profile_exists)
+
+@app.route('/user/professional_societies_form', methods=['GET', 'POST'])
+#@login_required_advanced(role="sfiAdmin")
+def professional_societies_form():
+    data=Professional_Societies.query.filter_by(users=current_user.id).first()
+    if data:
+        form = ProfessionalSocietiesForm(request.form,obj=data)
+        profile_exists=True
+    else:
+        form= ProfessionalSocietiesForm(request.form)
+        profile_exists=False
+
+    if request.method == 'POST' and form.validate():
+        if data==None:
+            professional_society=Professional_Societies(
+                start_date=request.form['start_date'],
+                end_date=request.form['end_date'],
+                name=request.form['name'],
+                membership_type=request.form['membership_type'],
+                status=request.form['status'],
+                users=current_user.id
+                )
+            db.session.add(professional_society)
+        else:
+            data.start_date=request.form['start_date']
+            data.end_date=request.form['end_date']
+            data.name=request.form['name']
+            data.membership_type=request.form['membership_type']
+            data.status=request.form['status']
+        db.session.commit()
+    return render_template('forms/professional_societies_form.html', title='Professional Societies', user=current_user.id, form=form, profile_exists= profile_exists)
+
+@app.route('/user/awards_form', methods=['GET', 'POST'])
+#@login_required_advanced(role="sfiAdmin")
+def awards_form():
+    data=AwardsDB.query.filter_by(users=current_user.id).first()
+    if data:
+        form = AwardsForm(request.form,obj=data)
+        profile_exists=True
+    else:
+        form= AwardsForm(request.form)
+        profile_exists=False
+
+    if request.method == 'POST' and form.validate():
+        if data==None:
+            award=AwardsDB(
+                awarding_body=request.form['awarding_body'],
+                awarding_details=request.form['awarding_details'],
+                year=request.form['year'],
+                users=current_user.id
+                )
+            db.session.add(award)
+        else:
+            data.awarding_body=request.form['awarding_body']
+            data.awarding_details=request.form['awarding_details']
+            data.year=request.form['year']
+        db.session.commit()
+    return render_template('forms/awards_form.html', title='Awards & Distinctions', user=current_user.id, form=form, profile_exists= profile_exists)
+
+@app.route('/user/funding_diversification_form', methods=['GET', 'POST'])
+#@login_required_advanced(role="sfiAdmin")
+def funding_diversification_form():
+    data=Funding_Diversification.query.filter_by(users=current_user.id).first()
+    if data:
+        form = FundingDiversificationForm(request.form,obj=data)
+        profile_exists=True
+    else:
+        form= FundingDiversificationForm(request.form)
+        profile_exists=False
+
+    if request.method == 'POST' and form.validate():
+        if data==None:
+            funding_diversification=Funding_Diversification(
+                start_date=request.form['start_date'],
+                end_date =request.form['end_date'],
+                funding_amount=request.form['funding_amount'],
+                funding_body=request.form['funding_body'],
+                funding_programme=request.form['funding_programme'],
+                status=request.form['status'],
+                users=current_user.id
+                )
+            db.session.add(funding_diversification)
+        else:
+            data.start_date=request.form['start_date']
+            data.end_date =request.form['end_date']
+            data.funding_amount=request.form['funding_amount']
+            data.funding_body=request.form['funding_body']
+            data.funding_programme=request.form['funding_programme']
+            data.status=request.form['status']
+        db.session.commit()
+    return render_template('forms/funding_diversification_form.html', title='Funding Diversification', user=current_user.id, form=form, profile_exists= profile_exists)
+
+@app.route('/user/impacts_form', methods=['GET', 'POST'])
+#@login_required_advanced(role="sfiAdmin")
+def impacts_form():
+    data=Impacts.query.filter_by(users=current_user.id).first()
+    if data:
+        form = ImpactsForm(request.form,obj=data)
+        profile_exists=True
+    else:
+        form= ImpactsForm(request.form)
+        profile_exists=False
+
+    if request.method == 'POST' and form.validate():
+        if data==None:
+            impact=Impacts(
+                impact_title=request.form['impact_title'],
+                impact_category =request.form['impact_category'],
+                primary_beneficiary=request.form['primary_beneficiary'],
+                users=current_user.id
+                )
+            db.session.add(impact)
+        else:
+            data.impact_title=request.form['impact_title']
+            data.impact_category =request.form['impact_category']
+            data.primary_beneficiary=request.form['primary_beneficiary']
+        db.session.commit()
+    return render_template('forms/impacts_form.html', title='Impacts', user=current_user.id, form=form, profile_exists= profile_exists)
+
+@app.route('/user/innovations_form', methods=['GET', 'POST'])
+#@login_required_advanced(role="sfiAdmin")
+def innovations_form():
+    data=Innovations.query.filter_by(users=current_user.id).first()
+    if data:
+        form = InnovationsForm(request.form,obj=data)
+        profile_exists=True
+    else:
+        form= InnovationsForm(request.form)
+        profile_exists=False
+
+    if request.method == 'POST' and form.validate():
+        if data==None:
+            innovation=Innovations(
+                year=request.form['year'],
+                type =request.form['type'],
+                title=request.form['title'],
+                users=current_user.id
+                )
+            db.session.add(innovation)
+        else:
+            data.year=request.form['year']
+            data.type =request.form['type']
+            data.title=request.form['title']
+        db.session.commit()
+    return render_template('forms/innovations_form.html', title='Innovations', user=current_user.id, form=form, profile_exists= profile_exists)
+
+@app.route('/user/publications_form', methods=['GET', 'POST'])
+#@login_required_advanced(role="sfiAdmin")
+def publications_form():
+    data=Publications.query.filter_by(users=current_user.id).first()
+    if data:
+        form = PublicationsForm(request.form,obj=data)
+        profile_exists=True
+    else:
+        form = PublicationsForm(request.form)
+        profile_exists=False
+
+    if request.method == 'POST' and form.validate():
+        if data==None:
+            publications=Publications(
+                year=request.form['year'],
+                title=request.form['title'],
+                type=request.form['type'],
+                journal_conference_name=request.form['journal_conference_name'],
+                published=request.form['published'],
+                in_press=request.form['in_press'],
+                users= current_user.id,
+                doi=request.form['doi']
+                )
+            db.session.add(publications)
+        else:
+            data.year=request.form['year']
+            data.title=request.form['title']
+            data.type=request.form['type']
+            data.journal_conference_name=request.form['journal_conference_name']
+            data.published=request.form['published']
+            data.in_press=request.form['in_press']
+            data.doi=request.form['doi']
+        db.session.commit()
+
+    return render_template('forms/publications_form.html', title='Publications', user=current_user.id, form=form, profile_exists= profile_exists)
+
+@app.route('/user/presentations_form', methods=['GET', 'POST'])
+#@login_required_advanced(role="sfiAdmin")
+def presentations_form():
+    data=Presentations.query.filter_by(users=current_user.id).first()
+    if data:
+        form = PresentationsForm(request.form,obj=data)
+        profile_exists=True
+    else:
+        form = PresentationsForm(request.form)
+        profile_exists=False
+
+    if request.method == 'POST' and form.validate():
+        if data==None:
+            presentation=Presentations(
+                year=request.form['year'],
+                type=request.form['type'],
+                title=request.form['title'],
+                organizing_body=request.form['organizing_body'],
+                location=request.form['location'],
+                users= current_user.id
+                )
+            db.session.add(presentation)
+        else:
+            data.year=request.form['year']
+            data.type=request.form['type']
+            data.title=request.form['title']
+            data.organizing_body=request.form['organizing_body']
+            data.location=request.form['location']
+        db.session.commit()
+    return render_template('forms/presentations_form.html', title='Presentations', user=current_user.id, form=form, profile_exists= profile_exists)
+
+@app.route('/user/academic_collab_form', methods=['GET', 'POST'])
+#@login_required_advanced(role="sfiAdmin")
+def academic_collab_form():
+    data=AcademicCollabs.query.filter_by(users=current_user.id).first()
+    if data:
+        form = AcademicCollabForm(request.form,obj=data)
+        profile_exists=True
+    else:
+        form = AcademicCollabForm(request.form)
+        profile_exists=False
+
+    if request.method == 'POST' and form.validate():
+        if data==None:
+            a_collabs= AcademicCollabs(
+                start_date=request.form['start_date'],
+                end_date=request.form['end_date'],
+                department=request.form['department'],
+                institution_name=request.form['institution_name'],
+                location=request.form['location'],
+                collaborator_name=request.form['collaborator_name'],
+                collaborator_goal=request.form['collaborator_goal'],
+                users= current_user.id,
+                interaction_frequency=request.form['interaction_frequency']
+                )
+            db.session.add(a_collabs)
+        else:
+            data.start_date=request.form['start_date']
+            data.end_date=request.form['end_date']
+            data.department=request.form['department']
+            data.institution_name=request.form['institution_name']
+            data.location=request.form['location']
+            data.collaborator_name=request.form['collaborator_name']
+            data.collaborator_goal=request.form['collaborator_goal']
+            data.interaction_frequency=request.form['interaction_frequency']
+        db.session.commit()
+
+
+    return render_template('forms/academic_collab_form.html', title='Academic Collab', user=current_user.id, form=form, profile_exists= profile_exists)
+
+@app.route('/user/non_academic_collab_form', methods=['GET', 'POST'])
+#@login_required_advanced(role="sfiAdmin")
+def non_academic_collab_form():
+    data=NonAcademicCollabs.query.filter_by(users=current_user.id).first()
+    if data:
+        form = NonAcademicCollabForm(request.form,obj=data)
+        profile_exists=True
+    else:
+        form = NonAcademicCollabForm(request.form)
+        profile_exists=False
+
+    if request.method == 'POST' and form.validate():
+        if data==None:
+            non_a_collabs= NonAcademicCollabs(
+                start_date=request.form['start_date'],
+                end_date=request.form['end_date'],
+                department=request.form['department'],
+                location=request.form['location'],
+                collaborator_name=request.form['collaborator_name'],
+                collaborator_goal=request.form['collaborator_goal'],
+                users= current_user.id,
+                interaction_frequency=request.form['interaction_frequency']
+                )
+            db.session.add(non_a_collabs)
+        else:
+            data.start_date=request.form['start_date']
+            data.end_date=request.form['end_date']
+            data.department=request.form['department']
+            data.location=request.form['location']
+            data.collaborator_name=request.form['collaborator_name']
+            data.collaborator_goal=request.form['collaborator_goal']
+            data.interaction_frequency=request.form['interaction_frequency']
+        db.session.commit()
+    return render_template('forms/non_academic_collab_form.html', title='Non Academic Collab', user=current_user.id, form=form, profile_exists= profile_exists)
+
+
+@app.route('/user/conferences_form', methods=['GET', 'POST'])
+#@login_required_advanced(role="sfiAdmin")
+def conferences_form():
+    data=Conferences.query.filter_by(users=current_user.id).first()
+    if data:
+        form = ConferencesForm(request.form,obj=data)
+        profile_exists=True
+    else:
+        form = ConferencesForm(request.form)
+        profile_exists=False
+
+    if request.method == 'POST' and form.validate():
+        if data==None:
+            conferences= Conferences(
+                start_date=request.form['start_date'],
+                end_date=request.form['end_date'],
+                title=request.form['title'],
+                type=request.form['type'],
+                role=request.form['role'],
+                event_location=request.form['event_location'],
+                users= current_user.id
+                )
+            db.session.add(conferences)
+        else:
+            data.start_date=request.form['start_date']
+            data.end_date=request.form['end_date']
+            data.title=request.form['title']
+            data.type=request.form['type']
+            data.role=request.form['role']
+            data.event_location=request.form['event_location']
+        db.session.commit()
+    return render_template('forms/conferences_form.html', title='Conferences', user=current_user.id, form=form, profile_exists= profile_exists)
+
+@app.route('/user/communication_form', methods=['GET', 'POST'])
+#@login_required_advanced(role="sfiAdmin")
+def communication_form():
+    data=Communication.query.filter_by(users=current_user.id).first()
+    if data:
+        form = CommunicationForm(request.form,obj=data)
+        profile_exists=True
+    else:
+        form = CommunicationForm(request.form)
+        profile_exists=False
+
+    if request.method == 'POST' and form.validate():
+        if data==None:
+            communication= Communication(
+                year=request.form['year'],
+                num_lectures=request.form['num_lectures'],
+                num_visits=request.form['num_visits'],
+                num_media_interactions=request.form['num_media_interactions'],
+                users= current_user.id
+                )
+            db.session.add(communication)
+        else:
+            data.year=request.form['year']
+            data.num_lectures=request.form['num_lectures']
+            data.num_visits=request.form['num_visits']
+            data.num_media_interactions=request.form['num_media_interactions']
+        db.session.commit()
+    return render_template('forms/communication_form.html', title='Communication', user=current_user.id, form=form, profile_exists= profile_exists)
+
+@app.route('/user/funding_ratio', methods=['GET', 'POST'])
+#@login_required_advanced(role="sfiAdmin")
+def funding_ratio_form():
+    data=FundingRatio.query.filter_by(users=current_user.id).first()
+    if data:
+        form = FundingRatioForm(request.form,obj=data)
+        profile_exists=True
+    else:
+        form = FundingRatioForm(request.form)
+        profile_exists=False
+
+    if request.method == 'POST' and form.validate():
+        if data==None:
+            funding_ratio= FundingRatio(
+                year=request.form['year'],
+                percentage=request.form['percentage'],
+                users= current_user.id
+                )
+            db.session.add(funding_ratio)
+        else:
+            data.year=request.form['year']
+            data.percentage=request.form['percentage']
+        db.session.commit()
+    return render_template('forms/funding_ratio.html', title='Funding Ratio', user=current_user.id, form=form, profile_exists= profile_exists)
+
 
 
 @app.route('/sample_button',methods=['GET','POST'])
@@ -331,11 +1054,10 @@ def press_button():#TESTER FUNCTION REMOVE AFTERWARDS
     if request.method == 'POST':
         call_for_proposal_title=request.form['sample']
         application = Grant_Application(
-        user_id = current_user.get_id(), proposal_title=call_for_proposal_title)# = application_title)
-        print("IN HEEERE")
+        user_id = current_user.id, proposal_title=call_for_proposal_title)
         db.session.add(application)
         db.session.commit()
-        return redirect(url_for('submit_application',application_id=application.grant_application_id))#Try to pass on the value in the button as well.
+        return redirect(url_for('submit_application',application_id=application.grant_application_id))#
 
     return render_template('sample_button.html')
 
@@ -476,11 +1198,6 @@ def submit_Form():
 
 
 
-@app.route("/home")
-def home():
-    return render_template('home.html', title='Profile')
-
-
 @app.route("/sample_slider")
 def sample_slider():
     return render_template('sample_slider.html')
@@ -492,6 +1209,81 @@ def notifications():
     calls= db.session.query(CFP).count()
     return render_template('notifications.html', title='Profile', user=user, grants=grants, calls=calls)
 
+@app.route("/submitted_applications")
+def submitted_applications():
+    application_count = 0
+    submittedApps =[]
+    applications = SubmittedApplications.query.all()#Change to submited_applications
+    for grant in applications:
+        application_count = application_count + 1
+        if Grant_Application.query.filter_by(grant_application_id=grant.grant_application_id).first():
+            submittedApps.append(Grant_Application.query.filter_by(grant_application_id=grant.grant_application_id).first())
+        #return json.dumps({'status':'OK','List': len(submittedApps) });#Will have to change this.
+        #GET the
+    return render_template('submitted_applications.html', title='Profile', user=user, grants=submittedApps, application_count=application_count)
+
+@app.route("/review_applications", methods=['GET', 'POST'])
+def review_applications():
+    application_count = 0
+    grants = Grant_Application.query.filter_by(approved=True).all()
+    for grant in grants:
+        application_count = application_count + 1
+    if request.method == 'POST':
+        grant_application = request.form["grant_id"]
+        get_grant = Grant_Application.query.filter_by(grant_application_id=grant_application).first()
+        get_grant.reviewer_approved = True
+        db.session.commit()
+
+    return render_template('review_applications.html', title='Profile', user=user, grants=grants, application_count=application_count)
 
 
+@app.route("/home", methods=['GET','POST'])
+def home():
+    calls=CFP.query.all()
+    date=datetime.now()
+    return render_template('home.html', title='Home', user=user, date=date, calls=calls)
+
+@app.route("/subscribe")
+def subscribe():
+    return render_template('subscriptions.html', title='Subscribe', user=user)
+
+@app.route("/about")
+def about():
+    return render_template('about.html', title='About', user=user)
+
+@app.route("/services")
+def services():
+    return render_template('services.html', title='Services', user=user)
+
+@app.route("/clients")
+def clients():
+    return render_template('clients.html', title='Clients', user=user)
+
+@app.route("/contact")
+def contact():
+    return render_template('contact.html', title='Contact', user=user)
+
+@app.route("/pending_applications")
+def pending_applications():
+    return render_template('pending_applications.html', title='Applications Pending Action', user=user)
+
+@app.route("/pending_scientific_reports")
+def pending_scientific_reports():
+    return render_template('pending_scientific_reports.html', title='Scientific Reports Pending Action', user=user)
+
+@app.route("/pending_financial_reports")
+def pending_financial_reports():
+    return render_template('pending_financial_reports.html', title='Financial Reports Pending Action', user=user)
+
+@app.route("/pending_budgets")
+def pending_budgets():
+    return render_template('pending_budgets.html', title='Budgets Pending Action', user=user)
+
+@app.route("/pending_pre_award_applicant_response")
+def pending_pre_award_applicant_response():
+    return render_template('pending_pre_award_applicant_response.html', title='Pre Award Applicant Response Pending Action', user=user)
+
+@app.route("/pending_other_items")
+def pending_other_items():
+    return render_template('pending_other_items.html', title='Other Items Pending Action', user=user)
 

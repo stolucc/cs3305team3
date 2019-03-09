@@ -1,23 +1,31 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-</main>
+<style>
+    main{
+      background: url(../static/images/research-center.jpg) no-repeat center center fixed;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
+    }
+</style>
 <div id="mySidepanel" class="sidepanel">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
-    <a href="">Home</a>
-    <a href="">Services</a>
-    <a href="">Clients</a>
-    <a href="">Contact</a>
+    <a href="{{ url_for('home') }}">Home</a>
+    <a href="{{ url_for('services') }}">Services</a>
+    <a href="{{ url_for('clients') }}">Clients</a>
+    <a href="{{ url_for('contact') }}">Contact</a>
 </div>
 <button class="openbtn" onclick="openNav()">☰ Admin Menu</button>
 <main>
-
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 <div style="clear:both"></div>
 <div class="row3">
-    <h2> <b>Welcome {{ user.username }}</b> </h2>
-    <h2> <b>You are using the research centre admin account</b></h2>
-    <img src="https://www.spilasers.com/wp-content/uploads/2015/09/aerospace-research-centre.jpg"/>
+    <div class="Welcome">
+        <h2> Welcome {{ user.username }} </h2>
+        <h2><b>You are using the research centre admin account</b></h2>
+    </div>
     <div class="dc-morph-btns">
         <ul>
             <li><a id="icon-APA" href=""></a><span>Update User Profiles</span></li>

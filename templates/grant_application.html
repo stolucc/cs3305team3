@@ -8,9 +8,50 @@
         {% endif %}
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.1/bootstrap-slider.js"></script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.1/css/bootstrap-slider.css" rel="stylesheet" type="text/css" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"> var csrf_token = "{{ csrf_token() }}"</script>
+        <script src="{{url_for('static', filename='bootstrap-slider.js')}}"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+        <link id ="stylesheet" rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/sfihome.css') }}"/>
+
+
+        <!--<script src="http://code.jquery.com/jquery-1.8.3.min.js">  var csrf_token = "{{ csrf_token() }}"</script> !-->
         <script>
             $(document).ready(function() {
+                //$('#ex21').slider('setValue',  0);
+                //var x = document.getElementById("ex21");
+                $('#slider_value').on('input',function() {
+                    console.log("IN HERE");
+                    var slider_val = $('#slider_value').val();
+                    //x.slider('setValue', slider_val ); //Redundant Function
+                });
+
+                $( "#next" ).click(function() {
+                    console.log("in here");
+                    var slider_val = $('#slider_value').val();
+                    //console.log(parseInt(slider_val) + 1);
+                    $('#ex21').slider('setValue', parseInt(slider_val) + 1 );
+                    console.log("THE VALUE IS AFTERWARDS:");
+                    console.log($('#slider_value').val());
+                });
+
+                $( "#previous" ).click(function() {
+                    var slider_val = $('#slider_value').val();
+                    console.log(slider_val + 1);
+                    $('#ex21').slider('setValue',  parseInt(slider_val) - 1 );
+                });
+
+
+                $('.slider').on("click", function() {
+                    console.log("IN HERE");
+                    var newvalue = $('.tooltip-inner').text();
+                    //show tab n
+                    sliderChange(newvalue);
+                });
+
+
+
                 $('#generalForm').submit(function (e) {
                     var url = "{{ url_for('add_application_general') }}"; // send the form data here.
                     $.ajax({
@@ -187,469 +228,472 @@
                     });
                     e.preventDefault(); // block the traditional submission of the form.
                 });
-
-
-
-
-
-
-            // Inject our CSRF token into our AJAX request.
-
             });
 
+
+
+
+
         </script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
-        <link id ="stylesheet" rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/sfihome.css') }}"/>
-        <style>
-            /* Style the form */
-            #regForm {
-              background-color: #ffffff;
-              margin: 100px auto;
-              padding: 40px;
-              width: 70%;
-              min-width: 300px;
-            }
 
 
-            .Collaborators {
-                display: none;
-            }
-
-            .Co_applicants{
-                display: none;
-            }
-
-
-            /* Style the Text Area fields */
-
-            /* Style the input fields */
-            input {
-              padding: 10px;
-              width: 100%;
-              font-size: 17px;
-              font-family: Raleway;
-              border: 1px solid #aaaaaa;
-            }
-
-            /* Mark input boxes that gets an error on validation: */
-            input.invalid {
-              background-color: #ffdddd;
-            }
-
-            /* Hide all steps by default: */
-            .tab {
-              display: none;
-            }
-
-            /* Make circles that indicate the steps of the form: */
-            .step {
-              height: 15px;
-              width: 15px;
-              margin: 0 2px;
-              background-color: #bbbbbb;
-              border: none;
-              border-radius: 50%;
-              display: inline-block;
-              opacity: 0.5;
-            }
-
-            /* Mark the active step: */
-            .step.active {
-              opacity: 1;
-            }
-
-            /* Mark the steps that are finished and valid: */
-            .step.finish {
-              background-color: #4CAF50;
-            }
-
-            .btn{
-                background-color: #4CAF50;
-            }
-            textarea {
-	            -webkit-box-sizing: border-box;
-	            -moz-box-sizing: border-box;
-	            box-sizing: border-box;
-	            width: 100%;
-                height: 10em;
-            }
-
-            select {
-                width: 100%;
-            }
-
-            label {
-                margin-top:6px;
-            }
-
-        </style>
 
 
 
     </head>
 
 
-    <body onload="display()">
+    <body onload="display()" >
 
         <header>
-            <div class="jumbotron text-center">
-                <div class="text-right">
-                    <form class="form-inline">
-                        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"/>
-                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-                    </form>
-                </div>
-                <!-- class="col-sm-9 col-md-9" in img -->
-                <img src="https://www.techcentral.ie/wp-content/uploads/2014/07/SFI_Logo-620x350.jpg" alt="SFI logo" style="width: 15%;height:10%"/>
-                <br><br>
+            <div class="jumbotron">
+                <img class="col-sm-9 col-md-9" src="https://www.techcentral.ie/wp-content/uploads/2014/07/SFI_Logo-620x350.jpg" alt="SFI logo" align="left"/>
+                <br><br><br><br>
             </div>
         </header>
+
 
         <nav class="navbar">
             <div class="container-fluid">
                 <ul class="nav nav-tabs">
-                    <li><a href="{{ url_for('index') }}">Home</a></li>
-                    <li><a href="">Applications</a></li>
+                    <li><a href="{{ url_for('home') }}">Home</a></li>
                     <li><a href="{{ url_for('proposals') }}">Funding</a></li>
-                    <li><a href="">Engagement</a></li>
-                    <li><a href="">Events</a></li>
-                    <li><a href="">Research</a></li>
-                    <li><a href="">Centres</a></li>
-                    <li><a href="">About</a></li>
-                    <li><a href="">Subscribe</a></li>
+                    {% if (current_user.is_authenticated and current_user.user_type=="researcher") %}
+                        <li><a href="{{ url_for('index') }}"> Researcher Dashboard</a></li>
+                    {% endif %}
+                    {% if (current_user.is_authenticated and current_user.user_type=="sfiAdmin") %}
+                        <li><a href="{{ url_for('admin_main') }}"> Admin Dashboard</a></li>
+                    {% endif %}
+                    {% if (current_user.is_authenticated and current_user.user_type=="reviewer") %}
+                        <li><a href="{{ url_for('reviewer_main') }}"> Reviewer Dashboard</a></li>
+                    {% endif %}
+                    <li><a href="{{ url_for('about') }}">About</a></li>
+                    <li><a href="{{ url_for('subscribe') }}">Subscribe</a></li>
+                    {% if not current_user.is_authenticated %}
+                        <li><a href="{{ url_for('registration') }}"> Register</a></li>
+                    {% endif %}
                     {% if current_user.is_authenticated %}
-                        <li class="active navbar-right"><a href="{{ url_for('logout') }}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                    <li class="active navbar-right">
+                        <div class="sesame">
+                            <form action="{{ url_for('logout') }}">
+                                <button type="submit">Logout of Sesame</button>
+                            </form>
+                        </div>
+                    </li>
                     {% else %}
-                        <li class="active navbar-right"><a href="{{ url_for('login') }}"><span class="glyphicon glyphicon-log-in"></span> Log in</a></li>
+                    <li class="active navbar-right">
+                        <div class="sesame">
+                            <form action="{{ url_for('login') }}">
+                                <button type="submit">Login to Sesame</button>
+                            </form>
+                        </div>
+                    </li>
                     {% endif %}
                 </ul>
             </div>
         </nav>
 
+
+
+        </div>
+
         <main>
+            <style>
+                nav{
+                    display: None;
+                }
+            </style>
+
+                     <div class="slider-btn">
+
+            </div>
+
+             <input type="text" id="val" name="firstname">
+
+
             <h3>Grant Applications</h3>
+            <div class="col-sm-12">
+            <div class="slider" style="width: 100%;">
+                <input id="ex21" type="text"
+                  data-provide="slider"
+                  data-slider-ticks="[0, 1, 2, 3, 4, 5, 6]"
+                  data-slider-ticks-labels='["General Info", "Scientific Abstract", "Lay Abstract", "Coapplicants", "Collaborators","Programme Documents","Confirmation"]'
+                  data-slider-min="1"
+                  data-slider-max="9"
+                  data-slider-step="1"
+                  data-slider-value="0"
+                  data-slider-tooltip="hide" />
+                 <style scoped>
+                    .slider-track{
+                        width:80%;
+                    }
+                    .slider.slider-horizontal{
+                        width:80%;
+                    }
 
-
+                 </style>
+            </div>
+            </div
 
             <div style="overflow:auto;">
+
+
+                <div id="holder">
+                    <div onclick="nextPrev(1)" id="next" class="prev_next1" style="float:right;">
+                        <p class="btnText">Next</p>
+                        <div class="btnTwo">
+                          <p class="btnText2">></p>
+                        </div>
+                     </div>
+
+                    <div onclick="nextPrev(-1)" id="previous" class="prev_next2" style="float:left;">
+                        <p class="btnText">Previous</p>
+                        <div class="btnTwo">
+                          <p class="btnText2"><</p>
+                        </div>
+                     </div>
+
+                    </div>
               <div style="float:right;">
-                <button type="button" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
-                <button type="button" id="nextBtn" onclick="nextPrev(1)">Next</button>
+
+                <!--<button type="button" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
+                <button type="button" id="nextBtn" onclick="nextPrev(1)">Next</button> !-->
               </div>
             </div>
              {% from "_formhelpers.html" import render_field %}
 
-            <section class="tab">
-                <div class="row">
-                <center>
-                <form action="/add_application_general" method="POST" id='generalForm' style="width:70%" id="regForm" role="form">
-                    <dl>
-    			    {{ form1.generalForm }}
-    			    {{ form1.hidden_tag() }}
+            <div id="body_container">
 
-    			    <div style="visibility:hidden">
-    			        {{ render_field(form1.grant_application_id) }}
-    			    </div>
-                    {{ render_field(form1.proposal_title) }}
-                    {{ render_field(form1.award_duration) }}
-                    {{ render_field(form1.national_research_priority) }}
-                    {{ render_field(form1.sfi_legal_remit_justification) }}
-                    {{ render_field(form1.ethical_issues) }}
-                    {{ render_field(form1.applicants_country) }}
+                <section class="tab">
+                    <div class="row">
+                    <center>
+                    <form action="/add_application_general" method="POST" id='generalForm' style="width:70%" id="regForm" role="form">
+                        <dl>
+        			    {{ form1.generalForm }}
+        			    {{ form1.hidden_tag() }}
 
-                  <input type="submit" value="Save"/>
-                </form>
+        			    <div style="visibility:hidden">
+        			        {{ render_field(form1.grant_application_id) }}
+        			    </div>
+                        {{ render_field(form1.proposal_title) }}
+                        {{ render_field(form1.award_duration) }}
+                        {{ render_field(form1.national_research_priority) }}
+                        {{ render_field(form1.sfi_legal_remit_justification) }}
+                        {{ render_field(form1.ethical_issues) }}
+                        {{ render_field(form1.applicants_country) }}
 
-
-            </section>
-
+                      <input type="submit" value="Save"/>
+                    </form>
 
 
-            <section class="tab">
-                <div class="row">
-                <center>
-                <form action="/add_scientific_abstract" id='scientificAbstractForm' method="POST" style="width:70%" id="regForm" role="form">
-                  <dl>
-                    {{ form2.generalForm }}
-    			    {{ form2.hidden_tag() }}
-    			    <div style="visibility:hidden; height:0">
-    			        {{ render_field(form1.grant_application_id) }}
-    			    </div>
-
-                    {{ render_field(form2.scientific_abstract) }}
-                  </dl>
-                  <input type="submit" value="Save"/>
+                </section>
 
 
-                </form>
-            </section>
 
-
-            <section class="tab">
-                <div class="row">
-                <center>
-                <form action="/add_lay_abstract" id='layAbsractForm' method="POST" style="width:70%" id="regForm" role="form">
-                  <dl>
-                    {{ form3.generalForm }}
-    			    {{ form3.hidden_tag() }}
-    			    <div style="visibility:hidden; height:0">
-                        {{ render_field(form3.grant_application_id) }}
-                     </div>
-                    {{ render_field(form3.lay_abstract) }}
-
-                  </dl>
-
-                 <input type="submit" value="Save"/>
-                </form>
-            </section>
-
-
-            <section class="tab">
-                <div class="row">
-                <bold>Co-Applicants<bold>
-                <form style="width:70%; margin-left:auto; margin-right:auto">
-                    No. of Coapplicants
-                    <input type="text" id="numCoapplicants" onChange="generateCoapplicants()" placeholder="Please enter the number of coapplicants"/>
-                    {{ form5.hidden_tag() }}
-                    <div id="ch"></div>
-                </form>
-                <center>
-                <section class="Co_applicants" style="width:70%">
-                    <form action="/Co_applicants_form1" id='CoApplicantsForm' method="POST" style="width:70%" id="regForm" role="form">
+                <section class="tab">
+                    <div class="row">
+                    <center>
+                    <form action="/add_scientific_abstract" id='scientificAbstractForm' method="POST" style="width:70%" id="regForm" role="form">
                       <dl>
-                        {{ form5.generalForm }}
-        			    {{ form5.hidden_tag() }}
-                        {{ render_field(form5.name) }}
-                        {{ render_field(form5.email) }}
-                        {{ render_field(form5.organization) }}
-                        <div style="visibility:hidden; height:0">
-                            {{ render_field(form5.grant_application)}}
-                        </div>
-                      </dl>
+                        {{ form2.generalForm }}
+        			    {{ form2.hidden_tag() }}
+        			    <div style="visibility:hidden; height:0">
+        			        {{ render_field(form1.grant_application_id) }}
+        			    </div>
 
-                     <input type="submit" value="Save"/>
+                        {{ render_field(form2.scientific_abstract) }}
+                      </dl>
+                      <input type="submit" value="Save"/>
 
 
                     </form>
                 </section>
-                <section class="Co_applicants" style="width:70%; display:none">
-                    <form action="/Co_applicants_form1" id='CoApplicantsForm2' method="POST" style="width:70%" id="regForm" role="form">
+
+
+                <section class="tab">
+                    <div class="row">
+                    <center>
+                    <form action="/add_lay_abstract" id='layAbsractForm' method="POST" style="width:70%" id="regForm" role="form">
                       <dl>
-                        {{ form5.generalForm }}
-        			    {{ form5.hidden_tag() }}
-                        {{ render_field(form5.name) }}
-                        {{ render_field(form5.email) }}
-                        {{ render_field(form5.organization) }}
-                        <div style="visibility:hidden; height:0">
-                            {{ render_field(form5.grant_application)}}
+                        {{ form3.generalForm }}
+        			    {{ form3.hidden_tag() }}
+        			    <div style="visibility:hidden; height:0">
+                            {{ render_field(form3.grant_application_id) }}
                          </div>
-                      </dl>
-
-                     <input type="submit" value="Save"/>
-
-
-                    </form>
-                </section>
-                <section class="Co_applicants"  style="width:70%; display:none">
-                    <form action="/Co_applicants_form1" id='CoApplicantsForm3' method="POST" style="width:70%" id="regForm" role="form">
-                      <dl>
-                        {{ form5.generalForm }}
-        			    {{ form5.hidden_tag() }}
-                        {{ render_field(form5.name) }}
-                        {{ render_field(form5.email) }}
-                        {{ render_field(form5.organization) }}
-                         <div style="visibility:hidden; height:0">
-                            {{ render_field(form5.grant_application)}}
-                         </div>
-                      </dl>
-
-                     <input type="submit" value="Save"/>
-
-
-                    </form>
-                </section>
-                <section class="Co_applicants" style="width:70%; display:none">
-                    <form action="/Co_applicants_form1" id='CoApplicantsForm4' method="POST" style="width:70%" id="regForm" role="form">
-                      <dl>
-                        {{ form5.generalForm }}
-        			    {{ form5.hidden_tag() }}
-                        {{ render_field(form5.name) }}
-                        {{ render_field(form5.email) }}
-                        {{ render_field(form5.organization) }}
-                        <div style="visibility:hidden; height:0">
-                            {{ render_field(form5.grant_application)}}
-                        </div>
-                      </dl>
-
-                     <input type="submit" value="Save"/>
-
-
-                    </form>
-                </section>
-                <section class="Co_applicants" style="width:70%; display:none">
-                    <form action="/Co_applicants_form1" id='CoApplicantsForm5' method="POST" style="width:70%" id="regForm" role="form">
-                      <dl>
-                        {{ form5.generalForm }}
-        			    {{ form5.hidden_tag() }}
-                        {{ render_field(form5.name) }}
-                        {{ render_field(form5.email) }}
-                        {{ render_field(form5.organization) }}
-                         <div style="visibility:hidden; height:0">
-                            {{ render_field(form5.grant_application)}}
-                        </div>
+                        {{ render_field(form3.lay_abstract) }}
 
                       </dl>
 
                      <input type="submit" value="Save"/>
-
-
                     </form>
                 </section>
-            </section>
-            <section class="tab">
-                <div class="row">
-                <H2>Collaborators</H2></H2>
-                <center>
-                <form style="width:70%; margin-left:auto; margin-right:auto">
-                    No. of Collabarotors
-                    <input type="text" id="numCollaborators" onChange="generateCollaborators()" placeholder="Please enter the number of collaborators"/>
-                    {{ form5.hidden_tag() }}
-                </form>
-                <section class="Collaborators" style="width:70%; display:none">
-                    <form action="/Collaborators_form1" id='CollaboratorForm' method="POST" style="width:70%" id="regForm" role="form">
-                      <dl>
-                        {{ form6.generalForm }}
-        			    {{ form6.hidden_tag() }}
-                        {{ render_field(form6.name) }}
-                        {{ render_field(form6.email) }}
-                        {{ render_field(form6.organization) }}
-                        <div style="visibility:hidden; height:0">
-                            {{ render_field(form6.grant_application)}}
-                        </div>
-                      </dl>
-
-                     <input type="submit" value="Save"/>
 
 
+                <section class="tab">
+                    <div class="row">
+                    <form style="width:70%; margin-left:auto; margin-right:auto">
+                        <bold>No. of Coapplicants</bold>
+                        <input type="text" id="numCoapplicants" onChange="generateCoapplicants()" placeholder="Please enter the number of coapplicants"/>
+                        <button type="button" id="num_coapplicants" onClick="generateCoapplicants()">Generate Coapplicants</button>
+                        {{ form5.hidden_tag() }}
+                        <div id="ch"></div>
                     </form>
+                    <center>
+                    <section class="Co_applicants" style="width:70%">
+                        <form action="/Co_applicants_form1" id='CoApplicantsForm' method="POST" style="width:70%" id="regForm" role="form">
+                          <dl>
+                            {{ form5.generalForm }}
+            			    {{ form5.hidden_tag() }}
+                            {{ render_field(form5.name) }}
+                            {{ render_field(form5.email) }}
+                            {{ render_field(form5.organization) }}
+                            <div style="visibility:hidden; height:0">
+                                {{ render_field(form5.grant_application)}}
+                            </div>
+                          </dl>
+
+                         <input type="submit" value="Save"/>
+
+
+                        </form>
+                    </section>
+                    <section class="Co_applicants" style="width:70%; display:none">
+                        <form action="/Co_applicants_form1" id='CoApplicantsForm2' method="POST" style="width:70%" id="regForm" role="form">
+                          <dl>
+                            {{ form5.generalForm }}
+            			    {{ form5.hidden_tag() }}
+                            {{ render_field(form5.name) }}
+                            {{ render_field(form5.email) }}
+                            {{ render_field(form5.organization) }}
+                            <div style="visibility:hidden; height:0">
+                                {{ render_field(form5.grant_application)}}
+                             </div>
+                          </dl>
+
+                         <input type="submit" value="Save"/>
+
+
+                        </form>
+                    </section>
+                    <section class="Co_applicants"  style="width:70%; display:none">
+                        <form action="/Co_applicants_form1" id='CoApplicantsForm3' method="POST" style="width:70%" id="regForm" role="form">
+                          <dl>
+                            {{ form5.generalForm }}
+            			    {{ form5.hidden_tag() }}
+                            {{ render_field(form5.name) }}
+                            {{ render_field(form5.email) }}
+                            {{ render_field(form5.organization) }}
+                             <div style="visibility:hidden; height:0">
+                                {{ render_field(form5.grant_application)}}
+                             </div>
+                          </dl>
+
+                         <input type="submit" value="Save"/>
+
+
+                        </form>
+                    </section>
+                    <section class="Co_applicants" style="width:70%; display:none">
+                        <form action="/Co_applicants_form1" id='CoApplicantsForm4' method="POST" style="width:70%" id="regForm" role="form">
+                          <dl>
+                            {{ form5.generalForm }}
+            			    {{ form5.hidden_tag() }}
+                            {{ render_field(form5.name) }}
+                            {{ render_field(form5.email) }}
+                            {{ render_field(form5.organization) }}
+                            <div style="visibility:hidden; height:0">
+                                {{ render_field(form5.grant_application)}}
+                            </div>
+                          </dl>
+
+                         <input type="submit" value="Save"/>
+
+
+                        </form>
+                    </section>
+                    <section class="Co_applicants" style="width:70%; display:none">
+                        <form action="/Co_applicants_form1" id='CoApplicantsForm5' method="POST" style="width:70%" id="regForm" role="form">
+                          <dl>
+                            {{ form5.generalForm }}
+            			    {{ form5.hidden_tag() }}
+                            {{ render_field(form5.name) }}
+                            {{ render_field(form5.email) }}
+                            {{ render_field(form5.organization) }}
+                             <div style="visibility:hidden; height:0">
+                                {{ render_field(form5.grant_application)}}
+                            </div>
+
+                          </dl>
+
+                         <input type="submit" value="Save"/>
+
+
+                        </form>
+                    </section>
                 </section>
-                <section class="Collaborators" style="width:70%; display:none">
-                    <form action="/Collaborators_form1" id='CollaboratorForm2' method="POST" style="width:70%" id="regForm" role="form">
-                      <dl>
-                        {{ form6.generalForm }}
-        			    {{ form6.hidden_tag() }}
-                        {{ render_field(form6.name) }}
-                        {{ render_field(form6.email) }}
-                        {{ render_field(form6.organization) }}
-                        <div style="visibility:hidden; height:0">
-                            {{ render_field(form6.grant_application)}}
-                        </div>
-                      </dl>
-
-                     <input type="submit" value="Save"/>
-
-
+                <section class="tab">
+                    <div class="row">
+                    <center>
+                    <form style="width:70%; margin-left:auto; margin-right:auto">
+                        <bold>No. of Collabarotors</bold>
+                        <input type="text" id="numCollaborators" onChange="generateCollaborators()" placeholder="Please enter the number of collaborators"/>
+                        <button type="button" id="num_collabs" onClick="generateCollaborators()">Generate Collaborators</button>
+                        {{ form5.hidden_tag() }}
                     </form>
+                    <section class="Collaborators" style="width:70%; display:none">
+                        <form action="/Collaborators_form1" id='CollaboratorForm' method="POST" style="width:70%" id="regForm" role="form">
+                          <dl>
+                            {{ form6.generalForm }}
+            			    {{ form6.hidden_tag() }}
+                            {{ render_field(form6.name) }}
+                            {{ render_field(form6.email) }}
+                            {{ render_field(form6.organization) }}
+                            <div style="visibility:hidden; height:0">
+                                {{ render_field(form6.grant_application)}}
+                            </div>
+                          </dl>
+
+                         <input type="submit" value="Save"/>
+
+
+                        </form>
+                    </section>
+                    <section class="Collaborators" style="width:70%; display:none">
+                        <form action="/Collaborators_form1" id='CollaboratorForm2' method="POST" style="width:70%" id="regForm" role="form">
+                          <dl>
+                            {{ form6.generalForm }}
+            			    {{ form6.hidden_tag() }}
+                            {{ render_field(form6.name) }}
+                            {{ render_field(form6.email) }}
+                            {{ render_field(form6.organization) }}
+                            <div style="visibility:hidden; height:0">
+                                {{ render_field(form6.grant_application)}}
+                            </div>
+                          </dl>
+
+                         <input type="submit" value="Save"/>
+
+
+                        </form>
+                    </section>
+                    <section class="Collaborators" style="width:70%; display:none">
+                        <form action="/Collaborators_form1" id='CollaboratorForm3' method="POST" style="width:70%" id="regForm" role="form">
+                          <dl>
+                            {{ form6.generalForm }}
+            			    {{ form6.hidden_tag() }}
+                            {{ render_field(form6.name) }}
+                            {{ render_field(form6.email) }}
+                            {{ render_field(form6.organization) }}
+                            <div style="visibility:hidden; height:0">
+                                {{ render_field(form6.grant_application)}}
+                            </div>
+                          </dl>
+
+                         <input type="submit" value="Save"/>
+
+
+                        </form>
+                    </section>
+                    <section class="Collaborators" style="width:70%; display:none">
+                        <form action="/Collaborators_form1" id='CollaboratorForm4' method="POST" style="width:70%" id="regForm" role="form">
+                          <dl>
+                            {{ form6.generalForm }}
+            			    {{ form6.hidden_tag() }}
+                            {{ render_field(form6.name) }}
+                            {{ render_field(form6.email) }}
+                            {{ render_field(form6.organization) }}
+                              <div style="visibility:hidden; height:0">
+                                {{ render_field(form6.grant_application)}}
+                            </div>
+                          </dl>
+
+                         <input type="submit" value="Save"/>
+
+
+                        </form>
+                    </section>
+                    <section class="Collaborators" style="width:70%; display:none">
+                        <form action="/Collaborators_form1" id='CollaboratorForm5' method="POST" style="width:70%" id="regForm" role="form">
+                          <dl>
+                            {{ form6.generalForm }}
+            			    {{ form6.hidden_tag() }}
+                            {{ render_field(form6.name) }}
+                            {{ render_field(form6.email) }}
+                            {{ render_field(form6.organization) }}
+                            <div style="visibility:hidden; height:0">
+                                {{ render_field(form6.grant_application)}}
+                            </div>
+                          </dl>
+
+                         <input type="submit" value="Save"/>
+
+
+                        </form>
+                    </section>
                 </section>
-                <section class="Collaborators" style="width:70%; display:none">
-                    <form action="/Collaborators_form1" id='CollaboratorForm3' method="POST" style="width:70%" id="regForm" role="form">
-                      <dl>
-                        {{ form6.generalForm }}
-        			    {{ form6.hidden_tag() }}
-                        {{ render_field(form6.name) }}
-                        {{ render_field(form6.email) }}
-                        {{ render_field(form6.organization) }}
-                        <div style="visibility:hidden; height:0">
-                            {{ render_field(form6.grant_application)}}
-                        </div>
-                      </dl>
-
-                     <input type="submit" value="Save"/>
 
 
-                    </form>
-                </section>
-                <section class="Collaborators" style="width:70%; display:none">
-                    <form action="/Collaborators_form1" id='CollaboratorForm4' method="POST" style="width:70%" id="regForm" role="form">
-                      <dl>
-                        {{ form6.generalForm }}
-        			    {{ form6.hidden_tag() }}
-                        {{ render_field(form6.name) }}
-                        {{ render_field(form6.email) }}
-                        {{ render_field(form6.organization) }}
-                          <div style="visibility:hidden; height:0">
-                            {{ render_field(form6.grant_application)}}
-                        </div>
-                      </dl>
 
-                     <input type="submit" value="Save"/>
+                <section class="tab">
+                    <bold>
+                        Programme documents:
+                    </bold>
+                    <p>
+                        <bold>
+                            Please submit a pdf
+                        </bold>
+                    </p>
 
+        <!--           <form action="upload" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
-                    </form>
-                </section>
-                <section class="Collaborators" style="width:70%; display:none">
-                    <form action="/Collaborators_form1" id='CollaboratorForm5' method="POST" style="width:70%" id="regForm" role="form">
-                      <dl>
-                        {{ form6.generalForm }}
-        			    {{ form6.hidden_tag() }}
-                        {{ render_field(form6.name) }}
-                        {{ render_field(form6.email) }}
-                        {{ render_field(form6.organization) }}
-                        <div style="visibility:hidden; height:0">
-                            {{ render_field(form6.grant_application)}}
-                        </div>
-                      </dl>
+                        <H2>Programme Documents</H2>
 
-                     <input type="submit" value="Save"/>
+                        {{ dropzone.create(action="upload") }}
+                        {{ dropzone.load_js() }}
+                        {{ dropzone.config() }}
 
 
-                    </form>
-                </section>
-            </section>
 
+                        <input type="submit" id="upload" value="Save">
 
-            {{ dropzone.style('border: 2px dashed #0087F7; margin: 10%; min-height: 400px;') }}
-            <section class="tab">
-                <H2>
-                    Programme doucments:
-                </H2>
-                <p>
-                    Please submit a pdf
-                </p>
+<!--                     </form>  !-->
+                {{ dropzone.load_css() }}
+                {{ dropzone.style('border: 2px dashed #0087F7; margin-left: auto; margin-right:auto;  min-height: 400px; width: 800px') }}
+                {{ dropzone.load_js() }}
 
-                 <button id="upload">Upload</button>
+                    {{ dropzone.create(action=url_for('upload'),action_view=url_for('upload')) }}
+                    <button id="upload">Upload</button>
 
-                    {{ dropzone.create(action=url_for('upload')) }}
-
-
-                    {{ dropzone.load_js() }}
                     {{ dropzone.config() }}
 
-            </section>
+
+
+                </section>
 
 
 
 
 
 
-             <section class="tab">
-                <div class="row">
-                <center>
-                <form action="/submit_Form" id='submitForm' method="POST" style="width:70%" id="regForm" role="form">
+                 <section class="tab">
+                    <div class="row"></div>
+                    <center>
+                    <form action="/submit_Form" id='submitForm' method="POST" style="width:70%" id="regForm" role="form">
 
 
-                  <p>
-                      Submission of an application confirms acceptance of and agreement with the SFI Terms and
-Conditions of Research Grants; that the applicant meets eligibility requirements; that the project
-is in full agreement with all legal and regulatory matters governing research in Ireland; that no
-aspect of this project is already being funded from another source and that all details provided
-are correct
-                  </p>
+                      <p>
+                          Submission of an application confirms acceptance of and agreement with the SFI Terms and
+    Conditions of Research Grants; that the applicant meets eligibility requirements; that the project
+    is in full agreement with all legal and regulatory matters governing research in Ireland; that no
+    aspect of this project is already being funded from another source and that all details provided
+    are correct
+                      </p>
 
-                  <input type="submit" value="I agree"/>
-                </form>
-            </section>
+                      <input type="submit" value="I agree"/>
+                    </form>
+                </section>
+
             <div style="text-align:center;margin-top:40px;">
                 <span class="step"></span>
                 <span class="step"></span>
@@ -659,6 +703,81 @@ are correct
                 <span class="step"></span>
                 <span class="step"></span>
             </div>
+            <style scoped>
+
+
+                    .Collaborators {
+                        display: none;
+                    }
+
+                    .Co_applicants{
+                        display: none;
+                    }
+
+
+                    /* Style the Text Area fields */
+
+                    /* Style the input fields */
+                    input {
+                      padding: 10px;
+                      width: 100%;
+                      font-size: 17px;
+                      font-family: Raleway;
+                      border: 1px solid #aaaaaa;
+                    }
+
+                    /* Mark input boxes that gets an error on validation: */
+                    input.invalid {
+                      background-color: #ffdddd;
+                    }
+
+                    /* Hide all steps by default: */
+                    .tab {
+                      display: none;
+                    }
+
+                    /* Make circles that indicate the steps of the form: */
+                    .step {
+                      height: 15px;
+                      width: 15px;
+                      margin: 0 2px;
+                      background-color: #bbbbbb;
+                      border: none;
+                      border-radius: 50%;
+                      display: inline-block;
+                      opacity: 0.5;
+                    }
+
+                    /* Mark the active step: */
+                    .step.active {
+                      opacity: 1;
+                    }
+
+                    /* Mark the steps that are finished and valid: */
+                    .step.finish {
+                      background-color: #4CAF50;
+                    }
+
+                    /*.btn{
+                        background-color: #4CAF50;
+                    } */
+                    textarea {
+        	            -webkit-box-sizing: border-box;
+        	            -moz-box-sizing: border-box;
+        	            box-sizing: border-box;
+        	            width: 100%;
+                        height: 10em;
+                    }
+
+                    select {
+                        width: 100%;
+                    }
+
+                    label {
+                        margin-top:6px;
+                    }
+                </style>
+        </div>
 
 
 
@@ -671,6 +790,14 @@ are correct
         </main>
         <script>
 
+
+           //function sliderChange() {
+            //    var a = parseInt(document.getElementById("ex21").value);
+            //    var collabs = document.getElementsByClassName("Collaborators");
+//
+ //                }
+//            }
+
             function generateCollaborators() {
                 console.log("IN HER COLLABORATORS");
 
@@ -682,7 +809,7 @@ are correct
                  for (i = 4; i > document.getElementById("numCollaborators").value-1; i--) {
                     collabs[i].style.display = 'none';
                   }
-                 for (i=0; i < document.getElementById("numCollaborators").value; i++)   {
+                 for (i=0; i < document.getElementById("numCollaborators").value - 1; i++)   {
                      collabs[i].style.display = 'inline';
                  }
             }
@@ -704,7 +831,7 @@ are correct
 
             var currentTab = 0; // Current tab is set to be the first tab (0)
 
-             function dropBoxChng(){
+            function dropBoxChng(){
               var collabs = document.getElementsByClassName("Collaborators");
               for (i = 5; i > document.getElementById('dropBox').value; i--) {
                 collabs[i].style.display = 'none';
@@ -722,34 +849,52 @@ are correct
            }
 
             function showTab(n) {
+              console.log(n);
               // This function will display the specified tab of the form ...
 
               //if(contentWrapper.style.display.toString==""){
               var x = document.getElementsByClassName("tab");
 
               x[n].style.display = "block";
-                  // ... and fix the Previous/Next buttons
               if (n == 0) {
-                document.getElementById("prevBtn").style.display = "none";
+                document.getElementById("previous").style.display = "none";
               } else {
-                document.getElementById("prevBtn").style.display = "inline";
+                document.getElementById("previous").style.display = "inline";
               }
               if (n == (x.length - 1)) {
-                document.getElementById("nextBtn").style.display = "none";
+                document.getElementById("next").style.display = "none";
               } else {
-                document.getElementById("nextBtn").innerHTML = "Next";
+                document.getElementById("next").innerHTML = "Next";
               }
               // ... and run a function that displays the correct step indicator:
-              fixStepIndicator(n)
+              //document.getElementById( "slider_value").value = n.toString();
+              //$('#ex21').slider('setValue', n);
+
+
+              fixStepIndicator(n);
             }
 
             function nextPrev(n) {
               var x = document.getElementsByClassName("tab");
               x[currentTab].style.display = "none";
+              document.getElementById( "slider_value").value = n.toString();
               // Increase or decrease the current tab by 1:
-              currentTab = currentTab + n;
+              currentTab = currentTab + parseInt(n);//The issue is probably here.
 
               showTab(currentTab);
+            }
+
+            function sliderChange(n){
+                var tabs = document.getElementsByClassName("tab");
+                before = n - 1
+                after = 7 - n
+                for (i = 0; i-1 < before; i++) {
+                    tabs[i].style.display = 'none';
+                 };
+                for (i=6; i > n ; i--)   {
+                    tabs[i].style.display = 'none';
+                };
+                showTab(n);
             }
 
             function fixStepIndicator(n) {
@@ -764,22 +909,21 @@ are correct
 
 
 
-
-
-
-
-
-
-
         </script>
 
-        <footer class="blur footer">
-        <p>#BelieveInScience</p>
-        <p><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span><small> Wilton Park House, Wilton Place, D02 NT99, Ireland</small></p>
-        <p><span class="glyphicon glyphicon-phone-alt" aria-hidden="true"></span><small> +353 (0)1 607 3200 </small></p>
-        <p><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span><small> info@sfi.ie</small></p>
-	<p><a class="hi" href="https://www.facebook.com/ScienceFoundationIreland/"><i style="font-size:24px" class="fa">&#xf082;</i></a> <a href="https://twitter.com/scienceirel"><i style="font-size:24px" class="fa">&#xf081;</i></a> <a href="https://www.linkedin.com/company/science-foundation-ireland"><i style="font-size:24px" class="fa">&#xf08c;</i></a> <a href="https://www.instagram.com/scienceireland/"><i style="font-size:24px" class="fa">&#xf16d;</i></a> <a href="https://www.flickr.com/photos/sciencefoundationireland/"><i style="font-size:24px" class="fa">&#xf16e;</i></a> <a href="https://www.youtube.com/ScienceFoundationIreland"><i style="font-size:24px" class="fa">&#xf16a;</i></a></p>
-    </footer>
+
+        <footer>
+            <div class="row">
+                <div class="col-xs-6 col-sm-3">
+                    <h4>#BelieveInScience</h4>
+                    <p><a href="https://www.facebook.com/ScienceFoundationIreland/"><i style="font-size:24px" class="fa">&#xf082;</i></a> <a href="https://twitter.com/scienceirel"><i style="font-size:24px" class="fa">&#xf081;</i></a> <a href="https://www.linkedin.com/company/science-foundation-ireland"><i style="font-size:24px" class="fa">&#xf08c;</i></a> <a href="https://www.instagram.com/scienceireland/"><i style="font-size:24px" class="fa">&#xf16d;</i></a> <a href="https://www.flickr.com/photos/sciencefoundationireland/"><i style="font-size:24px" class="fa">&#xf16e;</i></a> <a href="https://www.youtube.com/ScienceFoundationIreland"><i style="font-size:24px" class="fa">&#xf16a;</i></a></p>
+                </div>
+                <div class="col-xs-6 col-sm-9">
+                    <p><span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span><small> Wilton Park House, Wilton Place, D02 NT99, Ireland</small></p>
+                    <p><span class="glyphicon glyphicon-phone-alt" aria-hidden="true"></span><small> +353 (0)1 607 3200 </small></p>
+                    <p><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span><small> info@sfi.ie</small></p>
+                </div>
+        </footer>
 
     </body>
 </html>

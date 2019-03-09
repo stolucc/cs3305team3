@@ -1,15 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-</main>
 <div id="mySidepanel" class="sidepanel">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
-    <a href="{{ url_for('index') }}">Home</a>
+    <a href="{{ url_for('home') }}">Home</a>
     <a href="{{ url_for('user', username=current_user.username) }}">Profile</a>
-    <a href="">Services</a>
-    <a href="">Clients</a>
-    <a href="">Contact</a>
+    <a href="{{ url_for('services') }}">Services</a>
+    <a href="{{ url_for('clients') }}">Clients</a>
+    <a href="{{ url_for('contact') }}">Contact</a>
 </div>
 <button class="openbtn" onclick="openNav()">☰ Grants Menu</button>
 <main>
@@ -19,12 +17,12 @@
     <div class="dc-morph-btns">
         <ul>
             <li><a id="icon-profile" href="{{ url_for('user', username=current_user.username) }}"></a><span>Profile</span></li>
-            <li><a id="icon-APA" href=""></a><span>Applications Pending Action</span></li>
-            <li><a id="icon-SRPA" href=""></a><span>Scientific Reports Pending Action</span></li>
-            <li><a id="icon-FRPA" href=""></a><span>Financial Reports Pending Action</span></li>
-            <li><a id="icon-BPA" href=""></a><span>Budgets Pending Action</span></li>
-            <li><a id="icon-PAARPA" href=""></a><span>Pre Award Applicant Response Pending Action</span></li>
-            <li><a id="icon-OIPA" href=""></a><span>Other Items Pending Action</span></li>
+            <li><a id="icon-APA" href="{{ url_for('pending_applications') }}"></a><span>Applications Pending Action</span></li>
+            <li><a id="icon-SRPA"href="{{ url_for('pending_scientific_reports') }}"></a><span>Scientific Reports Pending Action</span></li>
+            <li><a id="icon-FRPA" href="{{ url_for('pending_financial_reports') }}"></a><span>Financial Reports Pending Action</span></li>
+            <li><a id="icon-BPA" href="{{ url_for('pending_budgets') }}"></a><span>Budgets Pending Action</span></li>
+            <li><a id="icon-PAARPA" href="{{ url_for('pending_pre_award_applicant_response') }}"></a><span>Pre Award Applicant Response Pending Action</span></li>
+            <li><a id="icon-OIPA" href="{{ url_for('pending_other_items') }}"></a><span>Other Items Pending Action</span></li>
         </ul>
     </div>
 </div>
