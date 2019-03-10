@@ -2,7 +2,7 @@
 {% block content %}
 {% from "_formhelpers.html" import render_field %}
 <script src="{{url_for('static', filename='update_profile.js')}}">var csrftoken = "{{ csrf_token() }}"</script>
-    <h2 class="profileTitles">Professional Societies</h2>
+    <h2 class="profileTitles">Most Recent Professional Society</h2>
         <form method="POST">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             {% block content2 %}
@@ -21,7 +21,7 @@
                 {{ render_field(form.name) }}
                 {{ render_field(form.membership_type) }}
                 {{ render_field(form.status) }}
-            <input id="submit_button"  type="submit" value="Submit Education info"/>
+            <input id="submit_button"  type="submit" value="Edit profile"/>
             {% endif %}
             {% endblock %}
         </form>

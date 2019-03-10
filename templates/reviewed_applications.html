@@ -2,10 +2,11 @@
 
 {% block content %}
 
-<h3 id="researchHeading">No. of Grant Applications to be sent for approval: {{application_count}}</h3>
+<h3 id="researchHeading">Applications choosen by Reviewer: {{application_count}}</h3>
 <hr>
         {% for grant in grants %}
             <button class="accordion">{{   grant.proposal_title  }}</button>
+
             <div class="panel">
                 <p><strong>Grant Application ID: </strong>{{ grant.grant_application_id}}</p>
                 <p><strong>User ID: </strong>{{ grant.user_id }}</p>
@@ -18,18 +19,23 @@
                 <p><strong>Scientific Abstract: </strong>{{ grant.scientific_abstract }}</p>
                 <p><strong>Lay Abstract: </strong>{{ grant.lay_abstract }}</p>
                 <p><strong>Programme Documents: </strong>{{ grant.programme_documents }}</p>
-            </div>
-            {% if (current_user.is_authenticated) %}
-                <form action="" method='POST' novalidate>
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                    <button type="submit" name="application_id" type="button" value={{grant.grant_application_id}}><span class="fa fa-edit">Send For Review</button>
-                    <!--<input type="submit" value="Click Me" name="sample"/> !-->
-                </form>
 
-            {% endif %}
+                <!--<form action="" method='POST' novalidate>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <button type="submit" id="edit2" name="grant_id" type="button" value={{grant.grant_application_id}}><span class="fa fa-edit"> Approve</button>
+                </form> !-->
+            </div>
         {% endfor %}
 
+        <!-- Implement functionality to accept/reject the verdict of the international reviewer !-->
+        <form action="" method='POST' novalidate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <input type="submit" name="submit_button" value="Accept verdict">
+            <input type="submit" name="submit_button" value="Reject verdict">
+        </form>
+
         <script>
+            var csrftoken = "{{ csrf_token() }}"
             var acc = document.getElementsByClassName("accordion");
             var i;
             for (i = 0; i < acc.length; i++) {

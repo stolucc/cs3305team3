@@ -21,8 +21,12 @@
                 <p><strong>Programme Documents: </strong>{{ grant.programme_documents }}</p>
                 <form action="" method='POST' novalidate>
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                    <button type="submit" id="edit2" name="grant_id" type="button" value={{grant.grant_application_id}}><span class="fa fa-edit"> Edit</button>
+                    <button type="submit" id="edit2" name="grant_id" type="button" value={{grant.grant_application_id}}><span class="fa fa-edit"> Approve proposal</button>
                 </form>
+                <!--<form action="" method='POST' novalidate>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <button type="submit" id="edit2" name="grant_id" type="button" value={{grant.grant_application_id}}><span class="fa fa-edit"> Approve</button>
+                </form> !-->
             </div>
         {% endfor %}
 

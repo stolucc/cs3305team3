@@ -8,10 +8,12 @@
         {% endif %}
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link rel="icon" href="../static/images/sfifavicon.png" type="image/gif" sizes="32x32">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.1/bootstrap-slider.js"></script>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.1/css/bootstrap-slider.css" rel="stylesheet" type="text/css" />
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"> var csrf_token = "{{ csrf_token() }}"</script>
         <script src="{{url_for('static', filename='bootstrap-slider.js')}}"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
         <link id ="stylesheet" rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/sfihome.css') }}"/>
 
@@ -308,10 +310,12 @@
 
             </div>
 
-             <input type="text" id="val" name="firstname">
-
-
             <h3>Grant Applications</h3>
+            <div id="backbutton" style="float:left;">
+                <p>
+                    <a href="{{ url_for('proposals') }}">Go Back</a>
+                </p>
+            </div>
             <div class="col-sm-12">
             <div class="slider" style="width: 100%;">
                 <input id="ex21" type="text"
@@ -333,11 +337,11 @@
 
                  </style>
             </div>
-            </div
+            </div>
 
             <div style="overflow:auto;">
-
-
+<br><br><br><br>
+<!--
                 <div id="holder">
                     <div onclick="nextPrev(1)" id="next" class="prev_next1" style="float:right;">
                         <p class="btnText">Next</p>
@@ -353,7 +357,7 @@
                         </div>
                      </div>
 
-                    </div>
+                    </div>-->
               <div style="float:right;">
 
                 <!--<button type="button" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
@@ -382,7 +386,7 @@
                         {{ render_field(form1.ethical_issues) }}
                         {{ render_field(form1.applicants_country) }}
 
-                      <input type="submit" value="Save"/>
+                      <input id="general_save" type="submit" value="Save"/>
                     </form>
 
 
@@ -403,7 +407,7 @@
 
                         {{ render_field(form2.scientific_abstract) }}
                       </dl>
-                      <input type="submit" value="Save"/>
+                      <input id="general_save" type="submit" value="Save"/>
 
 
                     </form>
@@ -424,7 +428,7 @@
 
                       </dl>
 
-                     <input type="submit" value="Save"/>
+                     <input id="general_save" type="submit" value="Save"/>
                     </form>
                 </section>
 
@@ -452,7 +456,7 @@
                             </div>
                           </dl>
 
-                         <input type="submit" value="Save"/>
+                         <input id="general_save" type="submit" value="Save"/>
 
 
                         </form>
@@ -470,7 +474,7 @@
                              </div>
                           </dl>
 
-                         <input type="submit" value="Save"/>
+                         <input id="general_save" type="submit" value="Save"/>
 
 
                         </form>
@@ -488,7 +492,7 @@
                              </div>
                           </dl>
 
-                         <input type="submit" value="Save"/>
+                         <input id="general_save" type="submit" value="Save"/>
 
 
                         </form>
@@ -506,7 +510,7 @@
                             </div>
                           </dl>
 
-                         <input type="submit" value="Save"/>
+                         <input id="general_save" type="submit" value="Save"/>
 
 
                         </form>
@@ -525,7 +529,7 @@
 
                           </dl>
 
-                         <input type="submit" value="Save"/>
+                         <input id="general_save" type="submit" value="Save"/>
 
 
                         </form>
@@ -553,7 +557,7 @@
                             </div>
                           </dl>
 
-                         <input type="submit" value="Save"/>
+                         <input id="general_save" type="submit" value="Save"/>
 
 
                         </form>
@@ -571,7 +575,7 @@
                             </div>
                           </dl>
 
-                         <input type="submit" value="Save"/>
+                         <input id="general_save" type="submit" value="Save"/>
 
 
                         </form>
@@ -589,7 +593,7 @@
                             </div>
                           </dl>
 
-                         <input type="submit" value="Save"/>
+                         <input id="general_save" type="submit" value="Save"/>
 
 
                         </form>
@@ -607,7 +611,7 @@
                             </div>
                           </dl>
 
-                         <input type="submit" value="Save"/>
+                         <input id="general_save" type="submit" value="Save"/>
 
 
                         </form>
@@ -625,7 +629,7 @@
                             </div>
                           </dl>
 
-                         <input type="submit" value="Save"/>
+                         <input id="general_save" type="submit" value="Save"/>
 
 
                         </form>
@@ -690,19 +694,9 @@
     are correct
                       </p>
 
-                      <input type="submit" value="I agree"/>
+                      <input id="general_save" type="submit" value="I agree"/>
                     </form>
                 </section>
-
-            <div style="text-align:center;margin-top:40px;">
-                <span class="step"></span>
-                <span class="step"></span>
-                <span class="step"></span>
-                <span class="step"></span>
-                <span class="step"></span>
-                <span class="step"></span>
-                <span class="step"></span>
-            </div>
             <style scoped>
 
 
@@ -912,7 +906,7 @@
         </script>
 
 
-        <footer>
+       <footer>
             <div class="row">
                 <div class="col-xs-6 col-sm-3">
                     <h4>#BelieveInScience</h4>

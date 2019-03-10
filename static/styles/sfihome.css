@@ -3,8 +3,15 @@ html{
     position: relative;
     min-height: 100%;
 }
+
 .institute .dc-morph-btns ul li span{
     color:#E631C8;
+}
+
+.navbar li a:hover {
+    background:#0073e6;
+    color:white;
+    border-radius: 30px;
 }
 
 body{
@@ -246,6 +253,7 @@ p, h1, h2{
     transition:800ms ease all;
     outline:none;
     margin:0em;
+    border-radius: 15px;
 }
 
 .sesame button:hover{
@@ -377,10 +385,6 @@ main .active:after {
     display: none;
 }
 
-input{
-    width: 65%;
-}
-
 #delete-user {
     width: 65%;
 }
@@ -440,6 +444,132 @@ input{
     background-image: url("../images/labwoman.png");
     width:100%;
     border-radius: 20px;
+}
+
+#login button{
+    background:white;
+    border-radius: 10px;
+    border:none;
+    padding:.5em;
+    margin:.5em;
+}
+
+#login button:hover{
+    background:#0073e6;
+    color:white;
+    border:none;
+}
+
+#backbutton a{
+    color:white;
+    background:#0073e6;
+    border:none;
+    cursor:pointer;
+    border-radius: 10px;
+    margin:0em;
+    padding:1em 2em;
+    width:200%;
+    margin:.5em;
+}
+
+#backbutton a:hover{
+    background:#E631C8;
+}
+
+#general_save, #num_coapplicants, #num_collabs{
+    background:#0073e6;
+    border:none;
+    color:white;
+    transition:800ms ease all;
+    outline:none;
+    margin:0em;
+    cursor:pointer;
+    border-radius: 20px;
+}
+
+#num_coapplicants, #num_collabs{
+    padding:1em;
+    border-radius: 20px;
+    margin:.5em;
+    width:100%;
+}
+
+#general_save:hover{
+    background:#E631C8;
+}
+
+#num_coapplicants:hover{
+    background:#E631C8;
+}
+
+#num_collabs:hover{
+    background:#E631C8;
+}
+
+#generaL_save:before, #general_save:after{
+    content:'';
+    position:absolute;
+    top:0;
+    right:0;
+    height:2px;
+    width:0;
+    background: #0073e6;
+    transition:400ms ease all;
+}
+
+#general_save:after{
+    right:inherit;
+    top:inherit;
+    left:0;
+    bottom:0;
+}
+
+#generaL_save:before, #general_save:after{
+    width:100%;
+    transition:800ms ease all;
+}
+
+#upload{
+    background:#0073e6;
+    color:#fff;
+    border:none;
+    position:relative;
+    height:2em;
+    font-size:1.3em;
+    cursor:pointer;
+    transition:800ms ease all;
+    outline:none;
+    margin:1em;
+    width:40%;
+    border-radius: 20px;
+}
+
+#upload:hover{
+    background:#fff;
+    color:#E631C8;
+}
+
+#upload:before, #upload:after{
+    content:'';
+    position:absolute;
+    top:0;
+    right:0;
+    height:2px;
+    width:0;
+    background: #E631C8;
+    transition:400ms ease all;
+}
+
+#upload:after{
+    right:inherit;
+    top:inherit;
+    left:0;
+    bottom:0;
+}
+
+#upload:hover:before, #upload:hover:after{
+    width:100%;
+    transition:800ms ease all;
 }
 
 .box {
@@ -1055,48 +1185,6 @@ input{
 #delete-user {
     width: 65%;
 }
-
-#upload button{
-    background:#E631C8;
-    color:#fff;
-    border:none;
-    position:relative;
-    height:2em;
-    font-size:1.3em;
-    cursor:pointer;
-    transition:800ms ease all;
-    outline:none;
-    margin:0em;
-}
-
-#upload button:hover{
-    background:#fff;
-    color:#0073e6;
-}
-
-#upload button:before, #upload button:after{
-    content:'';
-    position:absolute;
-    top:0;
-    right:0;
-    height:2px;
-    width:0;
-    background: #0073e6;
-    transition:400ms ease all;
-}
-
-#upload button:after{
-    right:inherit;
-    top:inherit;
-    left:0;
-    bottom:0;
-}
-
-#upload button:hover:before, #upload button:hover:after{
-    width:100%;
-    transition:800ms ease all;
-}
-
 
 #holder{
   -moz-user-select: -moz-none;

@@ -1,4 +1,4 @@
-from wtforms import Form, IntegerField, StringField, DateField, PasswordField, BooleanField, SelectField, SubmitField, HiddenField, validators
+from wtforms import Form, IntegerField, StringField, DateField, PasswordField, BooleanField, RadioField, SelectField, SubmitField, HiddenField, validators
 from wtforms.validators import DataRequired, Email, EqualTo
 
 class ResetPasswordRequestForm(Form):
@@ -100,8 +100,8 @@ class AddOrcid(Form):
     orcid = StringField('ORCID', [validators.Length(min=19, max=19)], render_kw={"placeholder": "****-****-****-****"})
 
 class GeneralForm(Form):
-    f_name = StringField('Firstname', [validators.Length(min=4, max=30)])
-    l_name = StringField('Lastname', [validators.Length(min=4, max=30)])
+    f_name = StringField('Firstname', [validators.Length(min=2, max=30)])
+    l_name = StringField('Lastname', [validators.Length(min=2, max=30)])
     job_title = StringField('Job Title', [validators.Length(min=2, max=30)])
     prefix = StringField('Prefix', [validators.Length(min=2, max=30)])
     suffix = StringField('Suffix', [validators.Length(min=2, max=30)])
@@ -120,15 +120,15 @@ class GeneralUpdateForm(Form):
     submit=SubmitField('Edit')
 
 class EducationForm(Form):
-    degree = StringField('Degree Type (bsc/msc.. etc) :', [validators.Length(min=4, max=30)])
+    degree = StringField('Degree Type (bsc/msc.. etc) :', [validators.Length(min=2, max=30)])
     field_of_study = StringField('Field of Study:', [validators.Length(min=4, max=30)])
     institution = StringField('Institution Name:', [validators.Length(min=2, max=30)])
     location = StringField('Location : ', [validators.Length(min=2, max=30)])
     year_of_degree = StringField('Year Degree Awarded :', [validators.Length(min=2, max=30)])
 
 class EducationFormAdd(Form):
-    degree = StringField('Degree Type (bsc/msc.. etc) :', [validators.Length(min=4, max=30)])
-    field_of_study = StringField('Field of Study:', [validators.Length(min=4, max=30)])
+    degree = StringField('Degree Type (bsc/msc.. etc) :', [validators.Length(min=2, max=30)])
+    field_of_study = StringField('Field of Study:', [validators.Length(min=3, max=40)])
     institution = StringField('Institution Name:', [validators.Length(min=2, max=30)])
     location = StringField('Location : ', [validators.Length(min=2, max=30)])
     year_of_degree = StringField('Year Degree Awarded :', [validators.Length(min=2, max=30)])
@@ -178,13 +178,19 @@ class InnovationsForm(Form):
 
 
 class PublicationsForm(Form):
-    year = IntegerField('Publication Year :', [validators.Length(min=4, max=20)])
+    year = IntegerField('Publication Year :')
     title = StringField('Publication Title :', [validators.Length(min=4, max=20)])
     type = StringField('Publication Type :', [validators.Length(min=4, max=20)])
     journal_conference_name = StringField('Journal/Conference Name :', [validators.Length(min=4, max=30)])
-    published = BooleanField('Published :Yes/No')
-    in_press = BooleanField('In Press :Yes/No')
-    doi = IntegerField('DOI :', [validators.Length(min=1, max=20)])
+    #published = RadioField('Published :Yes/No', choices=[(True, 'Yes'), (False, 'No')], default=False)
+    #in_press = RadioField('In Press :Yes/No', choices=[(True, 'Yes'), (False, 'No')], default=False)
+    published = SelectField(u'Published', choices=[
+        ('True', 'Yes'),
+        ('False', 'No')])
+    in_press = SelectField(u'In Press', choices=[
+        ('True', 'Yes'),
+        ('False', 'No')])
+    doi = IntegerField('DOI :')
 
 
 class PresentationsForm(Form):

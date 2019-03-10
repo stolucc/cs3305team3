@@ -1,19 +1,19 @@
 {% extends "user.html" %}
 {% block content %}
 {% from "_formhelpers.html" import render_field %}
-<script src="{{url_for('static', filename='update_profile.js')}}">var csrftoken = "{{ csrf_token() }}"</script>
-    <h2 class="profileTitles">Education & Public Engagement</h2>
+ <script src="{{url_for('static', filename='update_profile.js')}}">var csrftoken = "{{ csrf_token() }}"</script>
+    <h2 class="profileTitles">Most Recent Education & Public Engagement</h2>
         <form method="POST">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             {% block content2 %}
             {% if profile_exists %}
             <fieldset id="fieldset1" disabled="disabled">
-                    {{ render_field(form.project_name) }}
-                    {{ render_field(form.project_topic) }}
-                    {{ render_field(form.activity_type) }}
-                    {{ render_field(form.start_date) }}
-                    {{ render_field(form.end_date) }}
-                    {{ render_field(form.target_area) }}
+                {{ render_field(form.project_name) }}
+                {{ render_field(form.project_topic) }}
+                {{ render_field(form.activity_type) }}
+                {{ render_field(form.start_date) }}
+                {{ render_field(form.end_date) }}
+                {{ render_field(form.target_area) }}
             </fieldset>
             <input id="submit_button" style="display: none;" type="submit" value="Update"/>
             {% else %}
@@ -23,7 +23,7 @@
                 {{ render_field(form.start_date) }}
                 {{ render_field(form.end_date) }}
                 {{ render_field(form.target_area) }}
-                <input id="submit_button"  type="submit" value="Submit Education info"/>
+                <input id="submit_button"  type="submit" value="Submit Engagements info"/>
             {% endif %}
             {% endblock %}
         </form>
@@ -35,8 +35,5 @@
             {% endif %}
 
         {% endblock %}
-
-
-
 
 {% endblock %}

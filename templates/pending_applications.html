@@ -1,6 +1,48 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h3>Applications Pending Action</h3>
-    <p>In the works. Sorry for the inconvenience.</p>
+    <h3 id="researchHeading">{{msg}}</h3>
+    <hr>
+    {% if new_apps %}
+        {% for grant in grant_list %}
+        <button class="accordion">{{   grant.proposal_title  }}</button>
+        <b> Congratulations you have received an offer based on this proposal</b>
+        <div class="panel">
+            <p><strong>Grant Application ID: </strong>{{ grant.grant_application_id}}</p>
+            <p><strong>User ID: </strong>{{ grant.user_id }}</p>
+            <p><strong>Proposal Title: </strong>{{ grant.proposal_title }}</p>
+            <p><strong>Award Duration: </strong>{{ grant.award_duration }}</p>
+            <p><strong>National Research Priority: </strong>{{ grant.national_research_priority }}</p>
+            <p><strong>SFI Legal Remit Justification: </strong>{{ grant.sfi_legal_remit_justification }}</p>
+            <p><strong>Ethical Issues: </strong>{{ grant.ethical_issues }}</p>
+            <p><strong>Applicants Country: </strong>{{ grant.applicants_country }}</p>
+            <p><strong>Scientific Abstract: </strong>{{ grant.scientific_abstract }}</p>
+            <p><strong>Lay Abstract: </strong>{{ grant.lay_abstract }}</p>
+            <p><strong>Programme Documents: </strong>{{ grant.programme_documents }}</p>
+            <form action="" method='POST' novalidate>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <button type="submit" id="edit2" name="grant_id" type="button" value={{grant.grant_application_id}}><span class="fa fa-edit"> Accept Offer</button>
+            </form>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>{{ msg }}</p>
+    {% endif %}
+
+    <script>
+        var csrftoken = "{{ csrf_token() }}"
+        var acc = document.getElementsByClassName("accordion");
+        var i;
+        for (i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.maxHeight) {
+                    panel.style.maxHeight = null;
+                } else {
+                    panel.style.maxHeight = panel.scrollHeight + "px";
+                }
+            });
+        }
+    </script>
 {% endblock %}

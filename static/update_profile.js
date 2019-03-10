@@ -10,5 +10,4 @@ function updateProfile() {
     document.getElementById("fieldset1").style.marginLeft = "10em";
     document.getElementById("fieldset1").style.marginRight = "10em";
     document.getElementById("fieldset1").style.marginBottom = "1em";
-
 }

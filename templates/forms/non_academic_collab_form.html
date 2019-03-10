@@ -2,7 +2,7 @@
 {% block content %}
 {% from "_formhelpers.html" import render_field %}
 <script src="{{url_for('static', filename='update_profile.js')}}">var csrftoken = "{{ csrf_token() }}"</script>
-    <h2 class="profileTitles">Non-Academic Collaborations</h2>
+    <h2 class="profileTitles">Most Recent Non-Academic Collaborations</h2>
         <form method="POST">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             {% block content2 %}

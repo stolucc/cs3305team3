@@ -62,9 +62,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-from models import Researcher_Profile, CFP, User, Grant_Application,SubmittedApplications,Collaborators,Co_Applicants, ResearcherEducation, EmploymentDB, Engagements, AcademicCollabs, NonAcademicCollabs,Publications, FundingRatio, Conferences, Communication, Professional_Societies, TeamMembers, AwardsDB, Funding_Diversification, Impacts, Innovations, Presentations  #moved this
-#Unused models SFIAdmin, Reviewer, Researcher_Account, Research_Centre_Admin, Login_Account, Engagements, Presentations, FundingRatio, TeamMembers, Impacts, Funding_Diversification, EmploymentDB, AwardsDB, Conferences, Publications, Professional_Socities, AcademicCollabs, NonAcademicCollabs, Communication, Innovations, AnnualReports, ResearcherEducation
-
+from models import Researcher_Profile, CFP, User, Grant_Application,SubmittedApplications,Collaborators,Co_Applicants, ResearcherEducation, EmploymentDB, ProposalsAccepted, Engagements, AcademicCollabs, NonAcademicCollabs,Publications, FundingRatio, Conferences, Communication, Professional_Societies, TeamMembers, AwardsDB, Funding_Diversification, Impacts, Innovations, Presentations  #moved this
 
 def make_shell_context():
     return dict(app=app, db=db)
@@ -218,10 +216,11 @@ def proposals1():
 def submit_proposals():
     return render_template('submit_proposals.html', title='Proposals', user=user)
 
+# Redirects to the main page for an SFI admin when they log in
 @app.route('/admin_main')
 @login_required_advanced(role="sfiAdmin")
 def admin_main():
-    return render_template('admin_main_page.html', title='Proposals', user=current_user)
+    return render_template('admin_main_page.html', title='Admin Main Page', user=current_user)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -239,7 +238,6 @@ def register():
             researchers_education = ResearcherEducation(username=form.username.data)
             db.session.add(researcher)
             db.session.add(researchers_education)
-
         db.session.add(user)
         db.session.commit()
         flash('Thanks for registering')
@@ -275,16 +273,19 @@ def delete_user():
         return redirect(url_for('delete_user'))
     return render_template('delete_user.html', title='Delete User', users=users, form=form)
 
+# Redirects to the main page for a research centre when they log in
 @app.route('/research_centre_main')
 @login_required_advanced(role="researchCentre")
 def research_centre_main():
     return render_template('research_centre_main_page.html', title='Research Centre', user=current_user)
 
+# Redirects to the main page for a reviewer when they log in
 @app.route('/reviewer_main')
 @login_required_advanced(role="reviewer")
 def reviewer_main():
     return render_template('reviewer_main.html', title='Reviewer', user=current_user)
 
+# Redirects to the main page for an institution when they log in
 @app.route('/institute_main')
 @login_required_advanced(role="institution")
 def institute_main():
@@ -292,47 +293,16 @@ def institute_main():
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
-    #return "this is the messag" =
-    #iterations = 0
-    #file_loop = False
-    #if request.method == 'POST':
-    #flash('IN HERE THE LOOP')
-     #   #return json.dumps({'status':'OK','ethical_issues':"W"})
-    #file_loop = True
-    #return jsonify({'status':'OK','File loop':"TESTER"});
     for key, f in request.files.items():
-        #iterations += 1
-
         flash('IN SECOND LOOP')
-        #if key.startswith('file'):
-        #save_as = f.filename + current_user.get_id()
-        #directory = current_user.get_id()
         saved_as = str(current_user.id) + str(f.filename)
-        #'filename = secure_filename(file.filename)#ADDED THIS
-        #return jsonify({'status':'OK','File loop':"TESTER"});
         application = Grant_Application.query.filter_by(user_id=current_user.id).first()
-        #return json.dumps({'status':'OK','ethical_issues':application.user_id});
         application.programme_documents = str(saved_as) # url_for('uploaded_file', filename=saved_as)
         db.session.commit()
         f.save(os.path.join(app.config['UPLOADED_PATH'], saved_as))
-
-        #return json.dumps({'status':'OK','ethical_issues':"W"})
-        #application = Grant_Application.query.filter_by(grant_application_id=(request.form['grant_application_id'])).first()
-
-
-        #db.session.add(application)
-
     return "uploading"
-    #filename = secure_filename(file.filename)
-        #return jsonify({'status':'OK','File loop':str(file_loop)});
-    #return json.dumps({'status':'OK','ethical_issues':'No response here'});
-    #return True
-
-    #return render_template('drag_and_drop.html', title='Proposals', user=user)
 
 @app.route('/user/<username>', methods=['GET', 'POST'])
-#@login_required
-#@login_required_advanced(role="researcher")
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     form = ProfileForm(request.form)
@@ -341,7 +311,7 @@ def user(username):
     return render_template('user.html', title='Profile', user=user, form=form)
 
 @app.route('/user/add_orcid', methods=['GET', 'POST'])
-#@login_required_advanced(role="sfiAdmin")
+@login_required#_advanced#(role="sfiAdmin")
 def add_orcid():
     form = AddOrcid(request.form)
     creditName = ""
@@ -466,19 +436,17 @@ def add_orcid():
 
     return render_template('forms/add_orcid.html', title='Education', user=user, form=form, output=output)
 
-
+# Allows a researcher to add their education, update their education, and view their education
 @app.route('/user/education_form', methods=['GET', 'POST'])
-#@login_required_advanced(role="sfiAdmin")
+@login_required#_advanced#role="sfiAdmin")
 def education_form():
     data=ResearcherEducation.query.filter_by(users=current_user.id).first()
-    #users=User.query.filter_by(id=researcher_education.users)
     if data:
         form = EducationForm(request.form,obj=data)
         profile_exists=True;
     else:
         form = EducationForm(request.form)
         profile_exists=False;
-
 
     if request.method == 'POST' and form.validate():
         if data == None:
@@ -499,9 +467,9 @@ def education_form():
             data.year_of_degree=request.form['year_of_degree']
             data.location=request.form['location']
         db.session.commit()
-
     return render_template('forms/education_form.html', title='Education', user=current_user.id, form=form, profile_exists=profile_exists )
 
+"""
 @app.route('/user/education_form_add', methods=['GET', 'POST'])
 #@login_required_advanced(role="sfiAdmin")
 def education_form_add():
@@ -518,9 +486,9 @@ def education_form_add():
         db.session.add(education)
         db.session.commit()
         return redirect(url_for('education_form'))
-    return render_template('forms/education_form.html', title='Education', user=current_user.id, form=form)
+    return render_template('forms/education_form.html', title='Education', user=current_user.id, form=form)"""
 
-
+# Allows a researcher to add their general information, update their general information, and view their general information
 @app.route('/user/general_form', methods=['GET', 'POST'])
 #@login_required_advanced(role="sfiAdmin")
 def general_form():
@@ -532,7 +500,6 @@ def general_form():
     else:
         form = GeneralForm(request.form)
         profile_exists = False;
-
 
     if request.method == 'POST' and form.validate():
         if data == None:
@@ -556,13 +523,10 @@ def general_form():
             data.phone = request.form['phone']
             data.phone_extension = request.form['phone_extension']
         db.session.commit()
-
         #return redirect(url_for('/general_form'))
     return render_template('forms/general_form.html', title='General info', profile_exists= profile_exists, user=current_user.id , form=form)
 
-
-
-
+# Allows a researcher to add their employment, update their employment, and view their employment
 @app.route('/user/employment_form', methods=['GET', 'POST'])
 #@login_required_advanced(role="sfiAdmin")
 def employment_form():
@@ -573,8 +537,6 @@ def employment_form():
     else:
         form = EmploymentForm(request.form)
         profile_exists=False
-
-
     if request.method == 'POST' and form.validate():
         if data==None:
             employment=EmploymentDB(
@@ -589,9 +551,42 @@ def employment_form():
             data.location=request.form['location']
             data.year=request.form['year']
         db.session.commit()
+    return render_template('forms/employment_form.html', title='Employment',  form=form, profile_exists=profile_exists, user=current_user.id )
 
-    return render_template('forms/employment_form.html', title='Employment',  form=form, profile_exists= profile_exists, user=current_user.id )
+# Allows a researcher to add their engagements, update their engagements, and view their engagements
+@app.route('/user/engagements_form', methods=['GET', 'POST'])
+#@login_required_advanced(role="sfiAdmin")
+def engagements_form():
+    data=Engagements.query.filter_by(users=current_user.id).first()
+    if data:
+        form = EngagementsForm(request.form,obj=data)
+        profile_exists=True
+    else:
+        form=EngagementsForm(request.form)
+        profile_exists=False
+    if request.method == 'POST' and form.validate():
+        if data==None:
+            engagements=Engagements(
+                start_date=request.form['start_date'],
+                end_date=request.form['end_date'],
+                project_name=request.form['project_name'],
+                project_topic=request.form['project_topic'],
+                activity_type=request.form['activity_type'],
+                target_area=request.form['target_area'],
+                users=current_user.id
+            )
+            db.session.add(engagements)
+        else:
+            data.start_date=request.form['start_date']
+            data.end_date=request.form['end_date']
+            data.project_name=request.form['project_name']
+            data.project_topic=request.form['project_topic']
+            data.activity_type=request.form['activity_type']
+            data.target_area=request.form['target_area']
+        db.session.commit()
+    return render_template('forms/engagements_form.html', title='Engagements', form=form, profile_exists=profile_exists, user=current_user.id)
 
+"""
 @app.route('/user/employment_form_add', methods=['GET', 'POST'])
 #@login_required_advanced(role="sfiAdmin")
 def employment_form_add():
@@ -606,42 +601,7 @@ def employment_form_add():
         db.session.add(employment)
         db.session.commit()
         return redirect(url_for('employment_form'))
-    return render_template('forms/employment_form.html', title='Employment', user=current_user.id, form=form)
-
-@app.route('/user/engagements_form', methods=['GET', 'POST'])
-#@login_required_advanced(role="sfiAdmin")
-def engagements_form():
-    data=Engagements.query.filter_by(users=current_user.id).first()
-    if data:
-        form = EngagementsForm(request.form,obj=data)
-        profile_exists=True
-    else:
-        form= EngagementsForm(request.form)
-        profile_exists=False
-
-    if request.method == 'POST' and form.validate():
-        if data==None:
-            engagements=Engagements(
-                start_date=request.form['start_date'],
-                end_date=request.form['end_date'],
-                project_name=request.form['project_name'],
-                project_topic=request.form['project_topic'],
-                activity_type=request.form['activity_type'],
-                target_area=request.form['target_area'],
-                users=current_user.id
-                )
-            db.session.add(engagements)
-        else:
-            data.start_date=request.form['start_date']
-            data.end_date=request.form['end_date']
-            data.project_name=request.form['project_name']
-            data.project_topic=request.form['project_topic']
-            data.activity_type=request.form['activity_type']
-            data.target_area=request.form['target_area']
-        db.session.commit()
-
-    return render_template('forms/engagements_form.html', title='Engagements', form=form, profile_exists= profile_exists, user=current_user.id)
-
+    return render_template('forms/employment_form.html', title='Employment', user=current_user.id, form=form)"""
 
 @app.route('/user/team_members_form', methods=['GET', 'POST'])
 #@login_required_advanced(role="sfiAdmin")
@@ -672,6 +632,7 @@ def team_members_form():
         db.session.commit()
     return render_template('forms/team_members_form.html', title='Team-Members', user=current_user.id, form=form, profile_exists= profile_exists)
 
+# Allows a researcher to add their professional societies, update their professional societies, and view their professional societies
 @app.route('/user/professional_societies_form', methods=['GET', 'POST'])
 #@login_required_advanced(role="sfiAdmin")
 def professional_societies_form():
@@ -703,7 +664,8 @@ def professional_societies_form():
         db.session.commit()
     return render_template('forms/professional_societies_form.html', title='Professional Societies', user=current_user.id, form=form, profile_exists= profile_exists)
 
-@app.route('/user/awards_form', methods=['GET', 'POST'])
+# Allows a researcher to add their award, update their awards, and view their awards
+@app.route('/user/awards_form', methods=['GET', 'POST', 'PUT'])
 #@login_required_advanced(role="sfiAdmin")
 def awards_form():
     data=AwardsDB.query.filter_by(users=current_user.id).first()
@@ -714,7 +676,7 @@ def awards_form():
         form= AwardsForm(request.form)
         profile_exists=False
 
-    if request.method == 'POST' and form.validate():
+    if request.method == 'POST' or request.method == 'PUT':
         if data==None:
             award=AwardsDB(
                 awarding_body=request.form['awarding_body'],
@@ -730,6 +692,7 @@ def awards_form():
         db.session.commit()
     return render_template('forms/awards_form.html', title='Awards & Distinctions', user=current_user.id, form=form, profile_exists= profile_exists)
 
+# Allows a researcher to add their funding diversification, update their funding diversification, and view their funding diversification
 @app.route('/user/funding_diversification_form', methods=['GET', 'POST'])
 #@login_required_advanced(role="sfiAdmin")
 def funding_diversification_form():
@@ -763,6 +726,7 @@ def funding_diversification_form():
         db.session.commit()
     return render_template('forms/funding_diversification_form.html', title='Funding Diversification', user=current_user.id, form=form, profile_exists= profile_exists)
 
+# Allows a researcher to add their impacts, update their impacts, and view their impacts
 @app.route('/user/impacts_form', methods=['GET', 'POST'])
 #@login_required_advanced(role="sfiAdmin")
 def impacts_form():
@@ -790,6 +754,7 @@ def impacts_form():
         db.session.commit()
     return render_template('forms/impacts_form.html', title='Impacts', user=current_user.id, form=form, profile_exists= profile_exists)
 
+# Allows a researcher to add their innovations, update their innovations, and view their innovations
 @app.route('/user/innovations_form', methods=['GET', 'POST'])
 #@login_required_advanced(role="sfiAdmin")
 def innovations_form():
@@ -817,6 +782,7 @@ def innovations_form():
         db.session.commit()
     return render_template('forms/innovations_form.html', title='Innovations', user=current_user.id, form=form, profile_exists= profile_exists)
 
+# Allows a researcher to add their publications, update their publications, and view their publications
 @app.route('/user/publications_form', methods=['GET', 'POST'])
 #@login_required_advanced(role="sfiAdmin")
 def publications_form():
@@ -830,29 +796,46 @@ def publications_form():
 
     if request.method == 'POST' and form.validate():
         if data==None:
+            if request.form['published'] == "True":
+                published2= True
+            if request.form['published'] == "False":
+                published2 = False
+            if request.form['in_press']  == "True":
+                in_press2 = True
+            if request.form['in_press'] == "False":
+                in_press2 = False
             publications=Publications(
                 year=request.form['year'],
                 title=request.form['title'],
                 type=request.form['type'],
                 journal_conference_name=request.form['journal_conference_name'],
-                published=request.form['published'],
-                in_press=request.form['in_press'],
+                published=published2,
+                in_press=in_press2,
                 users= current_user.id,
                 doi=request.form['doi']
                 )
             db.session.add(publications)
         else:
+            if request.form['published'] == "True":
+                published2= True
+            if request.form['published'] == "False":
+                published2 = False
+            if request.form['in_press']  == "True":
+                in_press2 = True
+            if request.form['in_press'] == "False":
+                in_press2 = False
             data.year=request.form['year']
             data.title=request.form['title']
             data.type=request.form['type']
             data.journal_conference_name=request.form['journal_conference_name']
-            data.published=request.form['published']
-            data.in_press=request.form['in_press']
+            #if request.form['published']==True
+            data.published= published2
+            data.in_press= in_press2
             data.doi=request.form['doi']
         db.session.commit()
-
     return render_template('forms/publications_form.html', title='Publications', user=current_user.id, form=form, profile_exists= profile_exists)
 
+# Allows a researcher to add their presentations, update their presentations, and view their presentations
 @app.route('/user/presentations_form', methods=['GET', 'POST'])
 #@login_required_advanced(role="sfiAdmin")
 def presentations_form():
@@ -884,6 +867,7 @@ def presentations_form():
         db.session.commit()
     return render_template('forms/presentations_form.html', title='Presentations', user=current_user.id, form=form, profile_exists= profile_exists)
 
+# Allows a researcher to add their academic collaborations, update their academic collaborations, and view their academic collaborations
 @app.route('/user/academic_collab_form', methods=['GET', 'POST'])
 #@login_required_advanced(role="sfiAdmin")
 def academic_collab_form():
@@ -919,10 +903,9 @@ def academic_collab_form():
             data.collaborator_goal=request.form['collaborator_goal']
             data.interaction_frequency=request.form['interaction_frequency']
         db.session.commit()
-
-
     return render_template('forms/academic_collab_form.html', title='Academic Collab', user=current_user.id, form=form, profile_exists= profile_exists)
 
+# Allows a researcher to add their non-academic collaborations, update their non-academic collaborations, and view their non-academic collaborations
 @app.route('/user/non_academic_collab_form', methods=['GET', 'POST'])
 #@login_required_advanced(role="sfiAdmin")
 def non_academic_collab_form():
@@ -958,7 +941,7 @@ def non_academic_collab_form():
         db.session.commit()
     return render_template('forms/non_academic_collab_form.html', title='Non Academic Collab', user=current_user.id, form=form, profile_exists= profile_exists)
 
-
+# Allows a researcher to add their conferences, update their conferences, and view their conferences
 @app.route('/user/conferences_form', methods=['GET', 'POST'])
 #@login_required_advanced(role="sfiAdmin")
 def conferences_form():
@@ -992,6 +975,7 @@ def conferences_form():
         db.session.commit()
     return render_template('forms/conferences_form.html', title='Conferences', user=current_user.id, form=form, profile_exists= profile_exists)
 
+# Allows a researcher to add their communications overview, update their communications overview, and view their communications overview
 @app.route('/user/communication_form', methods=['GET', 'POST'])
 #@login_required_advanced(role="sfiAdmin")
 def communication_form():
@@ -1021,6 +1005,7 @@ def communication_form():
         db.session.commit()
     return render_template('forms/communication_form.html', title='Communication', user=current_user.id, form=form, profile_exists= profile_exists)
 
+# Allows a researcher to add their SFI funding ratio, update their SFI funding ratio, and view their SFI funding ratio
 @app.route('/user/funding_ratio', methods=['GET', 'POST'])
 #@login_required_advanced(role="sfiAdmin")
 def funding_ratio_form():
@@ -1045,8 +1030,6 @@ def funding_ratio_form():
             data.percentage=request.form['percentage']
         db.session.commit()
     return render_template('forms/funding_ratio.html', title='Funding Ratio', user=current_user.id, form=form, profile_exists= profile_exists)
-
-
 
 @app.route('/sample_button',methods=['GET','POST'])
 @login_required
@@ -1076,9 +1059,6 @@ def submit_application(application_id):
     return render_template('grant_application.html', form1= general_app_form, form2 = scientific_abstract_form,
     form3 = lay_abstract_form, form5=co_applicants_form,  form6=collaborators_form)
 
-
-
-
 @app.route('/add_application_general', methods=['POST'])#CHANGED USED TO HAVE GET AS WELL
 @login_required
 def add_application_general():
@@ -1104,20 +1084,10 @@ def add_application_general():
     else:
         return jsonify(data=general_app_form.errors)
 
-
-
 @app.route('/add_scientific_abstract', methods=['POST'])
 @login_required
 def add_scientific_abstract():
-    #return json.dumps({'status':'OK',"ETHICAL_ISSUES":request.form['ethical_issues']});
-    #application = Grant_Application.query.filter_by(user_id=current_user.get_id()).first()
-    #grant_id = request.form[],
-    #application = Grant_Application.query.filter_by(grant_application_id=(request.form['grant_application_id'])).first()#MUST FILTER FOR CASE WHERE A RESEARCHER HAS MULTIPLE APPLICATIONS
-
     scientific_abstract_form = GrantScientificAbstractForm()
-
-
-
     if scientific_abstract_form.validate_on_submit():
         application = Grant_Application.query.filter_by(grant_application_id=(request.form['grant_application_id'])).first()#MUST FILTER FOR CASE WHERE A RESEARCHER HAS MULTIPLE APPLICATIONS
         application.set_scientific_abstract(request.form['scientific_abstract'])
@@ -1149,7 +1119,6 @@ def add_lay_abstract():
 def Co_applicants_form1():
     #Collaborators_form = CollaboratorsForm(request.form)
     co_app =CoApplicantsForm(request.form)
-
     if co_app.validate_on_submit():
         co_app = Co_Applicants(name=request.form['name'],organization=request.form['organization'],
         email=request.form['email'],grant_application=request.form['grant_application'])
@@ -1160,7 +1129,7 @@ def Co_applicants_form1():
         return jsonify(co_app.errors)
 
 @app.route('/Collaborators_form1', methods=['POST'])
-@login_required
+#@login_required_advanced("role
 def Collaborators_form1():
     #Collaborators_form = CollaboratorsForm(request.form)
     co_app =CollaboratorsForm(request.form)
@@ -1173,8 +1142,6 @@ def Collaborators_form1():
         return json.dumps({'status':'OK','ethical_issues':'New addition'});#Will have to change this.
     else:
         return jsonify(co_app.errors)
-
-
 
 @app.route('/submit_Form', methods=['POST'])
 @login_required
@@ -1191,12 +1158,7 @@ def submit_Form():
         return json.dumps({'status':'OK','ethical_issues':'New addition'});#Will have to change this.
     else:
         return jsonify(data=general_app_form.errors)
-
-
-    #db.session.commit()
     return json.dumps({'status':'OK','query:':return_string});
-
-
 
 @app.route("/sample_slider")
 def sample_slider():
@@ -1209,17 +1171,22 @@ def notifications():
     calls= db.session.query(CFP).count()
     return render_template('notifications.html', title='Profile', user=user, grants=grants, calls=calls)
 
-@app.route("/submitted_applications")
+@app.route("/submitted_applications", methods=['GET', 'POST'])
 def submitted_applications():
     application_count = 0
     submittedApps =[]
     applications = SubmittedApplications.query.all()#Change to submited_applications
     for grant in applications:
         application_count = application_count + 1
-        if Grant_Application.query.filter_by(grant_application_id=grant.grant_application_id).first():
-            submittedApps.append(Grant_Application.query.filter_by(grant_application_id=grant.grant_application_id).first())
-        #return json.dumps({'status':'OK','List': len(submittedApps) });#Will have to change this.
-        #GET the
+        new_grant =Grant_Application.query.filter_by(grant_application_id=grant.grant_application_id).first()
+        if new_grant:
+            submittedApps.append(new_grant)
+
+    if request.method == 'POST':
+        application_id =request.form['application_id']
+        app = Grant_Application.query.filter_by(grant_application_id=application_id).first()
+        app.approved = True
+        db.session.commit()
     return render_template('submitted_applications.html', title='Profile', user=user, grants=submittedApps, application_count=application_count)
 
 @app.route("/review_applications", methods=['GET', 'POST'])
@@ -1233,57 +1200,104 @@ def review_applications():
         get_grant = Grant_Application.query.filter_by(grant_application_id=grant_application).first()
         get_grant.reviewer_approved = True
         db.session.commit()
-
     return render_template('review_applications.html', title='Profile', user=user, grants=grants, application_count=application_count)
 
+@app.route("/reviewed_applications", methods=['GET', 'POST'])
+def reviewed_applications():
+    application_count = 0
+    grants = Grant_Application.query.filter_by(reviewer_approved=True).all()
+    for grant in grants:
+        application_count = application_count + 1
 
+    if request.method == 'POST':
+        if request.form['submit_button'] == 'Accept verdict':
+            for approved_grants in grants:
+                accepted_proposal = ProposalsAccepted(grant_number=approved_grants.grant_application_id,confirmed=False,began=False)
+                db.session.add(accepted_proposal)
+                db.session.commit()
+        elif request.form['submit_button'] == 'Reject verdict':
+            pass
+
+        else:
+            return jsonify({'status':'OK','File loop':"TESTER"});
+
+    return render_template('reviewed_applications.html', title='Profile', user=user, grants=grants, application_count=application_count)
+
+# Route to the SFI home page
 @app.route("/home", methods=['GET','POST'])
 def home():
     calls=CFP.query.all()
     date=datetime.now()
     return render_template('home.html', title='Home', user=user, date=date, calls=calls)
 
+# Route to the subscribe page
 @app.route("/subscribe")
 def subscribe():
     return render_template('subscriptions.html', title='Subscribe', user=user)
 
+# Route to the about page
 @app.route("/about")
 def about():
     return render_template('about.html', title='About', user=user)
 
+# Route to the services page
 @app.route("/services")
 def services():
     return render_template('services.html', title='Services', user=user)
 
+# Route to the clients page
 @app.route("/clients")
 def clients():
     return render_template('clients.html', title='Clients', user=user)
 
+# Route to the contact page
 @app.route("/contact")
 def contact():
     return render_template('contact.html', title='Contact', user=user)
 
+#Route for pending applications page
 @app.route("/pending_applications")
 def pending_applications():
-    return render_template('pending_applications.html', title='Applications Pending Action', user=user)
+    #Pseudo-code:
+    #Find all current users' applications
+    #Iterate through them checking to see if they exist in the database:
+    new_msg = ""
+    grants= []
+    new_app = ""
+    applications = Grant_Application.query.filter_by(user_id=current_user.id).all()
+    for grant in applications:
+        accepted_proposals = ProposalsAccepted.query.filter_by(grant_number=grant.grant_application_id).first()
+        if accepted_proposals:
+            if accepted_proposals.confirmed==True:
+                grants.append(grant)
+                new_msg = "Your grant application has been accepted"
+                new_app = True
+            else:
+                new_msg = "You have no new accepted grant applications"
+                new_app = False
+    return render_template('pending_applications.html', title='Applications Pending Action', user=current_user, msg = new_msg, new_apps = new_app, grant_list=grants)
 
+# Route to the Scientific Reports Pending Action page
 @app.route("/pending_scientific_reports")
 def pending_scientific_reports():
     return render_template('pending_scientific_reports.html', title='Scientific Reports Pending Action', user=user)
 
+# Route to the Financial Reports Pending Action page
 @app.route("/pending_financial_reports")
 def pending_financial_reports():
     return render_template('pending_financial_reports.html', title='Financial Reports Pending Action', user=user)
 
+# Route to the Budgets Pending Action page
 @app.route("/pending_budgets")
 def pending_budgets():
     return render_template('pending_budgets.html', title='Budgets Pending Action', user=user)
 
+# Route to the Pre Award Applicant Response Pending Action page
 @app.route("/pending_pre_award_applicant_response")
 def pending_pre_award_applicant_response():
     return render_template('pending_pre_award_applicant_response.html', title='Pre Award Applicant Response Pending Action', user=user)
 
+# Route to the Other Items Pending Action page
 @app.route("/pending_other_items")
 def pending_other_items():
     return render_template('pending_other_items.html', title='Other Items Pending Action', user=user)
-
