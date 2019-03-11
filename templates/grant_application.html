@@ -237,7 +237,37 @@
 
 
         </script>
-
+    <script>
+		function msg(txt, level) {
+		     switch (level) {
+		   	 case 1:
+		         $("#msg-line").html( "<div class='alert alert-success alert-dismissable fade in'><a href='#' class='close' data-dismiss='alert'>&times;</a>" + txt + "</div>");
+		         break;
+             case 2:
+		         $("#msg-line").html( "<div class='alert alert-info alert-dismissable fade in'><a href='#' class='close' data-dismiss='alert'>&times;</a>" + txt + "</div>");
+		         break;
+             case 3:
+		         $("#msg-line").html( "<div class='alert alert-warning alert-dismissable fade in'><a href='#' class='close' data-dismiss='alert'>&times;</a>" + txt + "</div>");
+		         break;
+             case 4:
+		         $("#msg-line").html( "<div class='alert alert-danger alert-dismissable fade in'><a href='#' class='close' data-dismiss='alert'>&times;</a>" + txt + "</div>");
+		         break;
+		     default:
+		         $("#msg-line").html( "<div class='alert alert-info alert-dismissable fade in'><a href='#' class='close' data-dismiss='alert'>&times;</a>" + txt + "</div>");
+		  	  }
+		}
+        function saveStatus() {
+                if ('#generalForm'.submit==true){
+                    if (this.status == 200){
+                        msg('Saved Succesfully', 1);
+                    }else{
+                        msg('Error:' + this.status +' Save Unsuccesfull  ' + xhttp.statusText, 4);
+                    }
+                }else{
+                    msg('Please wait........', 3);
+                };
+        }
+	</script>
 
 
 
@@ -386,7 +416,7 @@
                         {{ render_field(form1.ethical_issues) }}
                         {{ render_field(form1.applicants_country) }}
 
-                      <input id="general_save" type="submit" value="Save"/>
+                      <input id="general_save" onclick="saveStatus()" type="submit" value="Save"/>
                     </form>
 
 
@@ -773,7 +803,11 @@
                 </style>
         </div>
 
-
+        <div class="row3">
+				<div class="col-sm-12" id="msg-line">
+		    		Messages
+		    	</div>
+		</div>
 
 
 

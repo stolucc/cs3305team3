@@ -51,7 +51,7 @@ app.config.update(
 
 mail = Mail(app)
 
-from email1 import send_password_reset_email
+from email1 import send_password_reset_email, send_grant_accepted, send_grant_rejected, notify_of_reviewer_response
 dropzone = Dropzone(app)
 
 db = SQLAlchemy(app)
@@ -1212,16 +1212,23 @@ def reviewed_applications():
     if request.method == 'POST':
         if request.form['submit_button'] == 'Accept verdict':
             for approved_grants in grants:
-                accepted_proposal = ProposalsAccepted(grant_number=approved_grants.grant_application_id,confirmed=False,began=False)
+                accepted_proposal = ProposalsAccepted(grant_number=approved_grants.grant_application_id,confirmed=False,began=False)#Send email.
                 db.session.add(accepted_proposal)
                 db.session.commit()
+                applicant = User.query.filter_by(id = approved_grants.user_id).first()
+                if applicant:
+                    send_grant_accepted(applicant)
         elif request.form['submit_button'] == 'Reject verdict':
-            pass
+            for approved_grants in grants:
+                applicant = User.query.filter_by(id = approved_grants.user_id).first()
+                if applicant:
+                    send_grant_rejected(applicant)
 
         else:
-            return jsonify({'status':'OK','File loop':"TESTER"});
+            pass
+            #return jsonify({'status':'OK','File loop':"TESTER"});
 
-    return render_template('reviewed_applications.html', title='Profile', user=user, grants=grants, application_count=application_count)
+    return render_template('reviewed_applications.html', title='Profile', user=current_user, grants=grants, application_count=application_count)
 
 # Route to the SFI home page
 @app.route("/home", methods=['GET','POST'])
@@ -1256,11 +1263,8 @@ def contact():
     return render_template('contact.html', title='Contact', user=user)
 
 #Route for pending applications page
-@app.route("/pending_applications")
+@app.route("/pending_applications", methods=['GET', 'POST'])
 def pending_applications():
-    #Pseudo-code:
-    #Find all current users' applications
-    #Iterate through them checking to see if they exist in the database:
     new_msg = ""
     grants= []
     new_app = ""
@@ -1268,13 +1272,28 @@ def pending_applications():
     for grant in applications:
         accepted_proposals = ProposalsAccepted.query.filter_by(grant_number=grant.grant_application_id).first()
         if accepted_proposals:
-            if accepted_proposals.confirmed==True:
+            if accepted_proposals.confirmed==False:#Should be checking to see if confirmed and adding form to confirm if true
                 grants.append(grant)
                 new_msg = "Your grant application has been accepted"
                 new_app = True
             else:
                 new_msg = "You have no new accepted grant applications"
                 new_app = False
+
+
+    if request.method == 'POST':
+        if request.form['submit_button'] == 'Accept offer':
+            #user_grant = Grant_Application.query.filter_by(user_id=current_user.id).first()#Will need to iterate through to get the right version.
+            #proposal = ProposalsAccepted.query.filter_by(grant_number=user_grant.grant_application_id).first()#will need to fix this and linke to the above.
+            accepted_proposals.confirmed = True # Should be true
+            db.session.commit()
+        elif request.form['submit_button'] == 'Reject offer':
+            grant_app = Grant_Application.query.filter_by(user_id=current_user.id).first()
+            ProposalsAccepted.query.filter_by(grant_number=grant_app.grant_application_id).delete()
+            Grant_Application.query.filter(user_id  == current_user.id).delete() # Might have to delete from other databases as well
+            pass
+
+
     return render_template('pending_applications.html', title='Applications Pending Action', user=current_user, msg = new_msg, new_apps = new_app, grant_list=grants)
 
 # Route to the Scientific Reports Pending Action page

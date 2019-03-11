@@ -1,0 +1,11 @@
+<p>Dear {{ user.username }},</p>
+<p>
+    The reviewer has reviewed some grant applications. To view them
+    <a href="{{ url_for('reviewed_applications', _external=True) }}">
+        click here
+    </a>.
+</p>
+<p>Alternatively, you can paste the following link in your browser's address bar:</p>
+<p>{{ url_for('reviewed_applications', _external=True) }}</p>
+<p>Sincerely,</p>
+<p>SFI TEAM(GROUP 3)</p>

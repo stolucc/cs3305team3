@@ -5,8 +5,8 @@
     <hr>
     {% if new_apps %}
         {% for grant in grant_list %}
+        <p><b> Congratulations you have received an offer based on this proposal</b></p>
         <button class="accordion">{{   grant.proposal_title  }}</button>
-        <b> Congratulations you have received an offer based on this proposal</b>
         <div class="panel">
             <p><strong>Grant Application ID: </strong>{{ grant.grant_application_id}}</p>
             <p><strong>User ID: </strong>{{ grant.user_id }}</p>
@@ -19,11 +19,12 @@
             <p><strong>Scientific Abstract: </strong>{{ grant.scientific_abstract }}</p>
             <p><strong>Lay Abstract: </strong>{{ grant.lay_abstract }}</p>
             <p><strong>Programme Documents: </strong>{{ grant.programme_documents }}</p>
-            <form action="" method='POST' novalidate>
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                <button type="submit" id="edit2" name="grant_id" type="button" value={{grant.grant_application_id}}><span class="fa fa-edit"> Accept Offer</button>
-            </form>
         </div>
+        <form action="" method='POST' novalidate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <input type="submit" name="submit_button" value="Accept offer">
+            <input type="submit" name="submit_button" value="Reject offer">
+        </form>
         {% endfor %}
     {% else %}
         <p>{{ msg }}</p>

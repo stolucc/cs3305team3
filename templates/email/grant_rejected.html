@@ -1,0 +1,11 @@
+<p>Dear {{ user.username }},</p>
+<p>
+    Commiserations {{ user.username }}, I regret to inform you that your grant application {{grant.proposal_title}} has been unsuccessful.
+</p>
+<p>You can apply for another call for proposal by <a href="{{ url_for('proposals',  _external=True) }}">
+        clicking here
+    </a>.
+
+<p>If you have not submitted a grant application simply ignore this message.</p>
+<p>Sincerely,</p>
+<p>SFI TEAM(GROUP 3)</p>
