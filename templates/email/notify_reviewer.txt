@@ -1,0 +1,7 @@
+Dear {{ user.username }},
+
+There are new grant applications, which require action.
+
+Sincerely,
+
+SFI TEAM(GROUP 3)

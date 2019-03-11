@@ -17,7 +17,10 @@
                 <p><strong>Applicants Country: </strong>{{ grant.applicants_country }}</p>
                 <p><strong>Scientific Abstract: </strong>{{ grant.scientific_abstract }}</p>
                 <p><strong>Lay Abstract: </strong>{{ grant.lay_abstract }}</p>
-                <p><strong>Programme Documents: </strong>{{ grant.programme_documents }}</p>
+                {% if grant.programme_documents != None %}
+                <p><strong>Programme Documents: </strong> <a href={{url_for('static', filename=grant.programme_documents) }}> Submitted PDF</a> </p>
+
+                {% endif %}
             </div>
             {% if (current_user.is_authenticated) %}
                 <form action="" method='POST' novalidate>
@@ -25,7 +28,6 @@
                     <button type="submit" name="application_id" type="button" value={{grant.grant_application_id}}><span class="fa fa-edit">Send For Review</button>
                     <!--<input type="submit" value="Click Me" name="sample"/> !-->
                 </form>
-
             {% endif %}
         {% endfor %}
 

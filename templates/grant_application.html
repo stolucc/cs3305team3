@@ -62,6 +62,7 @@
                         data: $('#generalForm').serialize(), // serializes the form's elements.
                         success: function (data) {
                         console.log(data)  // display the returned data in the console.
+                        saveStatus(data)
                         }
                     });
                     e.preventDefault(); // block the traditional submission of the form.
@@ -75,6 +76,7 @@
                         data: $('#scientificAbstractForm').serialize(), // serializes the form's elements.
                         success: function (data) {
                         console.log(data)  // display the returned data in the console.
+                        saveStatus(data)
                         }
                     });
                     e.preventDefault(); // block the traditional submission of the form.
@@ -88,6 +90,7 @@
                         data: $('#layAbsractForm').serialize(), // serializes the form's elements.
                         success: function (data) {
                         console.log(data)  // display the returned data in the console.
+                        saveStatus(data)
                         }
                     });
                     e.preventDefault(); // block the traditional submission of the form.
@@ -101,6 +104,7 @@
                         data: $('form').serialize(), // serializes the form's elements.
                         success: function (data) {
                         console.log(data)  // display the returned data in the console.
+                        saveStatus(data)
                         }
                     });
                     e.preventDefault(); // block the traditional submission of the form.
@@ -114,6 +118,7 @@
                         data: $('#CoApplicantsForm').serialize(), // serializes the form's elements.
                         success: function (data) {
                         console.log(data)  // display the returned data in the console.
+                        saveStatus(data)
                         }
                     });
                     e.preventDefault(); // block the traditional submission of the form.
@@ -127,6 +132,7 @@
                         data: $('#CoApplicantsForm2').serialize(), // serializes the form's elements.
                         success: function (data) {
                         console.log(data)  // display the returned data in the console.
+                        saveStatus(data)
                         }
                     });
                     e.preventDefault(); // block the traditional submission of the form.
@@ -140,6 +146,7 @@
                         data: $('#CoApplicantsForm3').serialize(), // serializes the form's elements.
                         success: function (data) {
                         console.log(data)  // display the returned data in the console.
+                        saveStatus(data)
                         }
                     });
                     e.preventDefault(); // block the traditional submission of the form.
@@ -153,6 +160,7 @@
                         data: $('#CoApplicantsForm4').serialize(), // serializes the form's elements.
                         success: function (data) {
                         console.log(data)  // display the returned data in the console.
+                        saveStatus(data)
                         }
                     });
                     e.preventDefault(); // block the traditional submission of the form.
@@ -165,6 +173,7 @@
                         data: $('#CoApplicantsForm5').serialize(), // serializes the form's elements.
                         success: function (data) {
                         console.log(data)  // display the returned data in the console.
+                        saveStatus(data)
                         }
                     });
                     e.preventDefault(); // block the traditional submission of the form.
@@ -178,6 +187,7 @@
                         data: $('#CollaboratorForm').serialize(), // serializes the form's elements.
                         success: function (data) {
                         console.log(data)  // display the returned data in the console.
+                        saveStatus(data)
                         }
                     });
                     e.preventDefault(); // block the traditional submission of the form.
@@ -190,6 +200,7 @@
                         data: $('#CollaboratorForm2').serialize(), // serializes the form's elements.
                         success: function (data) {
                         console.log(data)  // display the returned data in the console.
+                        saveStatus(data)
                         }
                     });
                     e.preventDefault(); // block the traditional submission of the form.
@@ -202,6 +213,7 @@
                         data: $('#CollaboratorForm3').serialize(), // serializes the form's elements.
                         success: function (data) {
                         console.log(data)  // display the returned data in the console.
+                        saveStatus(data)
                         }
                     });
                     e.preventDefault(); // block the traditional submission of the form.
@@ -214,6 +226,7 @@
                         data: $('#CollaboratorForm4').serialize(), // serializes the form's elements.
                         success: function (data) {
                         console.log(data)  // display the returned data in the console.
+                        saveStatus(data)
                         }
                     });
                     e.preventDefault(); // block the traditional submission of the form.
@@ -226,6 +239,7 @@
                         data: $('#CollaboratorForm5').serialize(), // serializes the form's elements.
                         success: function (data) {
                         console.log(data)  // display the returned data in the console.
+                        saveStatus(data)
                         }
                     });
                     e.preventDefault(); // block the traditional submission of the form.
@@ -234,10 +248,6 @@
 
 
 
-
-
-        </script>
-    <script>
 		function msg(txt, level) {
 		     switch (level) {
 		   	 case 1:
@@ -255,18 +265,42 @@
 		     default:
 		         $("#msg-line").html( "<div class='alert alert-info alert-dismissable fade in'><a href='#' class='close' data-dismiss='alert'>&times;</a>" + txt + "</div>");
 		  	  }
-		}
-        function saveStatus() {
-                if ('#generalForm'.submit==true){
-                    if (this.status == 200){
-                        msg('Saved Succesfully', 1);
-                    }else{
-                        msg('Error:' + this.status +' Save Unsuccesfull  ' + xhttp.statusText, 4);
-                    }
-                }else{
-                    msg('Please wait........', 3);
-                };
+		};
+
+        function saveStatus(data) {
+            var myJSON = JSON.stringify(data)
+            if  (myJSON == JSON.stringify("{\"success\": \"OK\"}")){
+                msg('Save Successful ', 1);
+            }else if (myJSON == '{"data":{"award_duration":["Field must be less than 100 characters"]}}'){
+                msg('Awards duration must be in the format: x weeks/months/years', 4);
+            }else if (myJSON == '{"data":{"sfi_legal_remit_justification":["Please provide less than 250 words"]}}'){
+                msg('Please tell us how your proposal is aligned with SFIs legal limit in less than 250 words', 4);
+            }else if (myJSON == '{"data":{"ethical_issues":["Must be less than250words"]}}'){
+                msg('Please enter any ethical issues less than 250 words', 4);
+            }else if (myJSON == '{"data":{"applicants_country":["Field must be between 6 and 800 characters long."]}}'){
+                msg('Please enter the Country you are applying from', 4);
+            }else if (myJSON == '{"data":{"scientific_abstract":["Must be less than200words"]}}'){
+                msg('Please provide a Scientific Abstract less than 200 words', 4);
+            }else if (myJSON == '{"data":{"lay_abstract":["Must be less than100words"]}}'){
+                msg('Please provide a Lay Abstract less than 100 words', 4);
+            }else if (myJSON == '{"name":["Field must be between 1 and 300 characters long."]}'){
+                msg('Please provide a name between 1 and 300 characters long', 4);
+            }else if (myJSON == '{"email":["Field must be between 6 and 45 characters long."]}'){
+                msg('Please provide a valid email between 6 and 45 characters long', 4);
+            }else if (myJSON == '{"organization":["Field must be between 6 and 45 characters long."]}'){
+                msg('Please provide a valid Organization name between 6 and 45 characters long', 4);
+            }/*else{
+                msg(Please Wait , 3);
+            }*/
+            else{
+                msg('Please fill in all fields' , 3);
+            }
+        };
+
+        function agree(){
+            msg('Agreed successfully ', 1);
         }
+
 	</script>
 
 
@@ -343,7 +377,7 @@
             <h3>Grant Applications</h3>
             <div id="backbutton" style="float:left;">
                 <p>
-                    <a href="{{ url_for('proposals') }}">Go Back</a>
+                    <a href="{{ url_for('proposals') }}">Back to Proposals</a></a>
                 </p>
             </div>
             <div class="col-sm-12">
@@ -371,28 +405,7 @@
 
             <div style="overflow:auto;">
 <br><br><br><br>
-<!--
-                <div id="holder">
-                    <div onclick="nextPrev(1)" id="next" class="prev_next1" style="float:right;">
-                        <p class="btnText">Next</p>
-                        <div class="btnTwo">
-                          <p class="btnText2">></p>
-                        </div>
-                     </div>
 
-                    <div onclick="nextPrev(-1)" id="previous" class="prev_next2" style="float:left;">
-                        <p class="btnText">Previous</p>
-                        <div class="btnTwo">
-                          <p class="btnText2"><</p>
-                        </div>
-                     </div>
-
-                    </div>-->
-              <div style="float:right;">
-
-                <!--<button type="button" id="prevBtn" onclick="nextPrev(-1)">Previous</button>
-                <button type="button" id="nextBtn" onclick="nextPrev(1)">Next</button> !-->
-              </div>
             </div>
              {% from "_formhelpers.html" import render_field %}
 
@@ -724,7 +737,7 @@
     are correct
                       </p>
 
-                      <input id="general_save" type="submit" value="I agree"/>
+                      <input id="general_save" onclick="agree()" type="submit" value="I agree"/>
                     </form>
                 </section>
             <style scoped>
@@ -805,7 +818,7 @@
 
         <div class="row3">
 				<div class="col-sm-12" id="msg-line">
-		    		Messages
+				    <div class='alert alert-info alert-dismissable fade in'><a href='#' class='close' data-dismiss='alert'>&times;</a>Please fill in all fields correctly</div>
 		    	</div>
 		</div>
 
@@ -833,13 +846,16 @@
                 var collabs = document.getElementsByClassName("Collaborators");
                 console.log(a);
                 console.log(collabs);
-
-                 for (i = 4; i > document.getElementById("numCollaborators").value-1; i--) {
+                if (i > 4){
+                     msg('Max of 5 Collaboratos', 4);
+                     console.log('poop')
+                }
+                for (i = 4; i > document.getElementById("numCollaborators").value-1; i--) {
                     collabs[i].style.display = 'none';
-                  }
-                 for (i=0; i < document.getElementById("numCollaborators").value - 1; i++)   {
-                     collabs[i].style.display = 'inline';
-                 }
+                }
+                for (i=0; i < document.getElementById("numCollaborators").value; i++)   {
+                    collabs[i].style.display = 'inline';
+                }
             }
 
             function generateCoapplicants(){

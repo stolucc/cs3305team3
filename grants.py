@@ -41,7 +41,7 @@ app.config.update(
     MAIL_USE_TLS=1,
     MAIL_USERNAME = 'sfigroup3@gmail.com',
     MAIL_PASSWORD = 'sglarzpjdohssrpu',
-    UPLOADED_PATH=os.path.join(basedir, 'uploads'),
+    UPLOADED_PATH=os.path.join(basedir, 'static/uploads'),
     DROPZONE_ALLOWED_FILE_CUSTOM = True,
     DROPZONE_ALLOWED_FILE_TYPE = '.pdf, .txt',
     DROPZONE_ENABLE_CSRF = True,
@@ -51,7 +51,7 @@ app.config.update(
 
 mail = Mail(app)
 
-from email1 import send_password_reset_email, send_grant_accepted, send_grant_rejected, notify_of_reviewer_response
+from email1 import send_password_reset_email, send_grant_accepted, send_grant_rejected, notify_of_reviewer_response, notify_reviewer, welcomeEmail
 dropzone = Dropzone(app)
 
 db = SQLAlchemy(app)
@@ -233,14 +233,8 @@ def register():
             user_type=form.user_type.data,
             password_hash=generate_password_hash(form.password.data)
             )
-        if form.user_type.data=="researcher":
-            researcher = Researcher_Profile(username=form.username.data)
-            researchers_education = ResearcherEducation(username=form.username.data)
-            db.session.add(researcher)
-            db.session.add(researchers_education)
         db.session.add(user)
         db.session.commit()
-        flash('Thanks for registering')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
@@ -296,8 +290,9 @@ def upload():
     for key, f in request.files.items():
         flash('IN SECOND LOOP')
         saved_as = str(current_user.id) + str(f.filename)
-        application = Grant_Application.query.filter_by(user_id=current_user.id).first()
-        application.programme_documents = str(saved_as) # url_for('uploaded_file', filename=saved_as)
+        application = Grant_Application.query.filter_by(user_id=current_user.id).all()# Grant_Application.query.filter_by(approved=True).all()
+        new_app =application[-1]
+        new_app.programme_documents = "uploads/" + str(saved_as) # url_for('uploaded_file', filename=saved_as)
         db.session.commit()
         f.save(os.path.join(app.config['UPLOADED_PATH'], saved_as))
     return "uploading"
@@ -314,11 +309,9 @@ def user(username):
 @login_required#_advanced#(role="sfiAdmin")
 def add_orcid():
     form = AddOrcid(request.form)
-    creditName = ""
     output=""
     if request.method == 'POST' and form.validate():
         if form.orcid.data:
-
 
             """ ******ORCID IMPLEMENTATION START******** """
             orcidUrl = 'https://pub.orcid.org/v2.0/' + str(form.orcid.data)
@@ -330,22 +323,21 @@ def add_orcid():
             for i in person:
                 firstName = i.getElementsByTagName("personal-details:given-names")[0].firstChild.data #Gets First Name
                 lastName = i.getElementsByTagName("personal-details:family-name")[0].firstChild.data #Gets Last Name
-                creditName = creditName + firstName + " " + lastName #Gets full name
-                output = "ORCID entered of: " + creditName
+                output = "ORCID entered of: " + firstName + " " + lastName
 
-
-            #Create an
             application = Researcher_Profile.query.filter_by(users=current_user.id).first()#MUST FILTER FOR CASE WHERE A RESEARCHER HAS MULTIPLE APPLICATIONS
 
             if application:
                 application.f_name = firstName
                 application.l_name = lastName
+                application.ORCID = form.orcid.data
 
             if not application:
                 profile=Researcher_Profile(
                         f_name=firstName,
                         l_name=lastName,
-                        users=current_user.id
+                        users=current_user.id,
+                        ORCID = form.orcid.data
                     )
                 db.session.add(profile)
             db.session.commit()
@@ -364,16 +356,22 @@ def add_orcid():
             education = ResearcherEducation.query.filter_by(users=current_user.id).first()#MUST FILTER FOR CASE WHERE A RESEARCHER HAS MULTIPLE APPLICATIONS
 
             if education:
-                education.field_of_study = fieldofstudy,
+                education.field_of_study = fieldofstudy
                 education.degree = degree_title
+                education.institution = institution
+                education.location = location
+                education.year_of_degree = awardyear
 
             if not education:
-                profile=ResearcherEducation(
+                education=ResearcherEducation(
                         field_of_study = fieldofstudy,
                         degree = degree_title,
-                        users=current_user.id
+                        users=current_user.id,
+                        institution = institution,
+                        location = location,
+                        year_of_degree = awardyear
                     )
-                db.session.add(profile)
+                db.session.add(education)
             db.session.commit()
 
             #EMPLOYMENT
@@ -388,6 +386,23 @@ def add_orcid():
                 employday = employment.getElementsByTagName("common:day")[0].firstChild.data
                 start_date = (employyear + "-" + employmonth + "-" + employday) #e.g. "2017-09-01"
 
+            employment = EmploymentDB.query.filter_by(users=current_user.id).first()#MUST FILTER FOR CASE WHERE A RESEARCHER HAS MULTIPLE APPLICATIONS
+
+            if employment:
+                employment.institution = company
+                employment.location = employcity + ", " + employcountry
+                employment.year = employyear
+
+            if not employment:
+                employment=EmploymentDB(
+                        institution = company,
+                        location = employcity + ", " + employcountry,
+                        year = employyear,
+                        users=current_user.id
+                    )
+                db.session.add(employment)
+            db.session.commit()
+
             #PUBLICATIONS
             publications = eles.getElementsByTagName("activities:group")
             for pub in publications:
@@ -400,8 +415,18 @@ def add_orcid():
                 try:
                     doiNull = pub.getElementsByTagName("common:external-id-value")[0].firstChild.data
                 except IndexError:
-                    pass #Remove this
+
+                    publication=Publications(
+                        year=year,
+                        title=title,
+                        type=type,
+                        published=True,
+                        users=current_user.id
+                    )
+                    db.session.add(publication)
+                    db.session.commit()
                     #print("\n" + year + "\n" + type + "\n" + title + "\n" + "No doi value here!!!") Add assignements here for publication with no doi
+
                 pubtypes= pub.getElementsByTagName("common:external-ids")
                 doi = " "
                 for pubtype in pubtypes:
@@ -410,7 +435,18 @@ def add_orcid():
                         type1 = pub1.getElementsByTagName("common:external-id-type")[0].firstChild.data
                         if type1 == 'doi' and doi != pub1.getElementsByTagName("common:external-id-value")[0].firstChild.data:
                             doi = pub1.getElementsByTagName("common:external-id-value")[0].firstChild.data      #publication doi if there is one
-                            pass #Remove this
+
+                            publication=Publications(
+                                year=year,
+                                title=title,
+                                type=type,
+                                doi=doi,
+                                published=True,
+                                users=current_user.id
+                            )
+                            db.session.add(publication)
+                            db.session.commit()
+
                             #print("\n" + year + "\n" + type + "\n" + title + "\n" + doi) Add assignements here for publication with no doi
                             type1 = ""
                             break
@@ -419,22 +455,12 @@ def add_orcid():
 
             """ ******ORCID IMPLEMENTATION END******** """
 
-            if current_user.user_type == "researcher":
-                researcher_check = Researcher_Profile.query.filter_by(users=current_user.id).first()
-                if researcher_check == None:
-                    researcher=Researcher_Profile(
-                        f_name = firstName,
-                        l_name = lastName,
-                        ORCID = form.orcid.data
-                    )
-                    db.session.add(researcher)
-                    db.session.commit()
-                #researcher.f_name = firstName
-                #researcher.l_name = lastName
-                #researcher.ORCID = form.orcid.data
-
-
     return render_template('forms/add_orcid.html', title='Education', user=user, form=form, output=output)
+
+#provides success message after submission of blank form in the awards form.
+@app.route('/user/successEducation', methods=['GET', 'POST'])
+def successEducation():
+    return render_template('/forms/success_form.html' , title="success!", url='education_form')
 
 # Allows a researcher to add their education, update their education, and view their education
 @app.route('/user/education_form', methods=['GET', 'POST'])
@@ -460,6 +486,8 @@ def education_form():
 
                 )
             db.session.add(education)
+            db.session.commit()
+            return redirect(url_for('successEducation'))
         else:
             data.field_of_study=request.form['field_of_study']
             data.degree=request.form['degree']
@@ -488,6 +516,11 @@ def education_form_add():
         return redirect(url_for('education_form'))
     return render_template('forms/education_form.html', title='Education', user=current_user.id, form=form)"""
 
+#provides success message after submission of blank form in the awards form.
+@app.route('/user/successGeneral', methods=['GET', 'POST'])
+def successGeneral():
+    return render_template('/forms/success_form.html' , title="success!", url='general_form')
+
 # Allows a researcher to add their general information, update their general information, and view their general information
 @app.route('/user/general_form', methods=['GET', 'POST'])
 #@login_required_advanced(role="sfiAdmin")
@@ -514,6 +547,8 @@ def general_form():
                     phone_extension = request.form['phone_extension']
                 )
             db.session.add(profile)
+            db.session.commit()
+            return redirect(url_for('successGeneral'))
         else:
             data.f_name= request.form['f_name']
             data.l_name= request.form['l_name']
@@ -525,6 +560,11 @@ def general_form():
         db.session.commit()
         #return redirect(url_for('/general_form'))
     return render_template('forms/general_form.html', title='General info', profile_exists= profile_exists, user=current_user.id , form=form)
+
+#provides success message after submission of blank form in the awards form.
+@app.route('/user/successEmployment', methods=['GET', 'POST'])
+def successEmployment():
+    return render_template('/forms/success_form.html' , title="success!", url='employment_form')
 
 # Allows a researcher to add their employment, update their employment, and view their employment
 @app.route('/user/employment_form', methods=['GET', 'POST'])
@@ -546,12 +586,19 @@ def employment_form():
                 users=current_user.id
             )
             db.session.add(employment)
+            db.session.commit()
+            return redirect(url_for('successEmployment'))
         else:
             data.institution=request.form['institution']
             data.location=request.form['location']
             data.year=request.form['year']
         db.session.commit()
     return render_template('forms/employment_form.html', title='Employment',  form=form, profile_exists=profile_exists, user=current_user.id )
+
+#provides success message after submission of blank form in the awards form.
+@app.route('/user/successEngagements', methods=['GET', 'POST'])
+def successEngagements():
+    return render_template('/forms/success_form.html' , title="success!", url='engagements_form')
 
 # Allows a researcher to add their engagements, update their engagements, and view their engagements
 @app.route('/user/engagements_form', methods=['GET', 'POST'])
@@ -576,6 +623,8 @@ def engagements_form():
                 users=current_user.id
             )
             db.session.add(engagements)
+            db.session.commit()
+            return redirect(url_for('successEngagements'))
         else:
             data.start_date=request.form['start_date']
             data.end_date=request.form['end_date']
@@ -632,6 +681,11 @@ def team_members_form():
         db.session.commit()
     return render_template('forms/team_members_form.html', title='Team-Members', user=current_user.id, form=form, profile_exists= profile_exists)
 
+#provides success message after submission of blank form in the awards form.
+@app.route('/user/successProSoc', methods=['GET', 'POST'])
+def successProSoc():
+    return render_template('/forms/success_form.html' , title="success!", url='professional_societies_form')
+
 # Allows a researcher to add their professional societies, update their professional societies, and view their professional societies
 @app.route('/user/professional_societies_form', methods=['GET', 'POST'])
 #@login_required_advanced(role="sfiAdmin")
@@ -655,6 +709,8 @@ def professional_societies_form():
                 users=current_user.id
                 )
             db.session.add(professional_society)
+            db.session.commit()
+            return redirect(url_for('successProSoc'))
         else:
             data.start_date=request.form['start_date']
             data.end_date=request.form['end_date']
@@ -663,6 +719,12 @@ def professional_societies_form():
             data.status=request.form['status']
         db.session.commit()
     return render_template('forms/professional_societies_form.html', title='Professional Societies', user=current_user.id, form=form, profile_exists= profile_exists)
+
+#provides success message after submission of blank form in the awards form.
+@app.route('/user/successAward', methods=['GET', 'POST'])
+def successAward():
+    return render_template('/forms/success_form.html' , title="success!", url='awards_form')
+
 
 # Allows a researcher to add their award, update their awards, and view their awards
 @app.route('/user/awards_form', methods=['GET', 'POST', 'PUT'])
@@ -685,12 +747,19 @@ def awards_form():
                 users=current_user.id
                 )
             db.session.add(award)
+            db.session.commit()
+            return redirect(url_for('successAward'))
         else:
             data.awarding_body=request.form['awarding_body']
             data.awarding_details=request.form['awarding_details']
             data.year=request.form['year']
         db.session.commit()
     return render_template('forms/awards_form.html', title='Awards & Distinctions', user=current_user.id, form=form, profile_exists= profile_exists)
+
+#provides success message after submission of blank form in the funding diversification form.
+@app.route('/user/successFD', methods=['GET', 'POST'])
+def successFD():
+    return render_template('/forms/success_form.html' , title="success!", url='funding_diversification_form')
 
 # Allows a researcher to add their funding diversification, update their funding diversification, and view their funding diversification
 @app.route('/user/funding_diversification_form', methods=['GET', 'POST'])
@@ -716,6 +785,8 @@ def funding_diversification_form():
                 users=current_user.id
                 )
             db.session.add(funding_diversification)
+            db.session.commit()
+            return redirect(url_for('successFD'))
         else:
             data.start_date=request.form['start_date']
             data.end_date =request.form['end_date']
@@ -725,6 +796,11 @@ def funding_diversification_form():
             data.status=request.form['status']
         db.session.commit()
     return render_template('forms/funding_diversification_form.html', title='Funding Diversification', user=current_user.id, form=form, profile_exists= profile_exists)
+
+#provides success message after submission of blank form in the presentations form.
+@app.route('/user/successImpacts', methods=['GET', 'POST'])
+def successImpacts():
+    return render_template('/forms/success_form.html' , title="success!", url='impacts_form')
 
 # Allows a researcher to add their impacts, update their impacts, and view their impacts
 @app.route('/user/impacts_form', methods=['GET', 'POST'])
@@ -747,12 +823,19 @@ def impacts_form():
                 users=current_user.id
                 )
             db.session.add(impact)
+            db.session.commit()
+            return redirect(url_for('successImpacts'))
         else:
             data.impact_title=request.form['impact_title']
             data.impact_category =request.form['impact_category']
             data.primary_beneficiary=request.form['primary_beneficiary']
         db.session.commit()
     return render_template('forms/impacts_form.html', title='Impacts', user=current_user.id, form=form, profile_exists= profile_exists)
+
+#provides success message after submission of blank form in the presentations form.
+@app.route('/user/successInnovation', methods=['GET', 'POST'])
+def successInnovation():
+    return render_template('/forms/success_form.html' , title="success!", url='innovations_form')
 
 # Allows a researcher to add their innovations, update their innovations, and view their innovations
 @app.route('/user/innovations_form', methods=['GET', 'POST'])
@@ -775,12 +858,19 @@ def innovations_form():
                 users=current_user.id
                 )
             db.session.add(innovation)
+            db.session.commit()
+            return redirect(url_for('successInnovation'))
         else:
             data.year=request.form['year']
             data.type =request.form['type']
             data.title=request.form['title']
         db.session.commit()
     return render_template('forms/innovations_form.html', title='Innovations', user=current_user.id, form=form, profile_exists= profile_exists)
+
+#provides success message after submission of blank form in the presentations form.
+@app.route('/user/successPublication', methods=['GET', 'POST'])
+def successPublication():
+    return render_template('/forms/success_form.html' , title="success!", url='publications_form')
 
 # Allows a researcher to add their publications, update their publications, and view their publications
 @app.route('/user/publications_form', methods=['GET', 'POST'])
@@ -815,6 +905,8 @@ def publications_form():
                 doi=request.form['doi']
                 )
             db.session.add(publications)
+            db.session.commit()
+            return redirect(url_for('successPublication'))
         else:
             if request.form['published'] == "True":
                 published2= True
@@ -833,7 +925,19 @@ def publications_form():
             data.in_press= in_press2
             data.doi=request.form['doi']
         db.session.commit()
-    return render_template('forms/publications_form.html', title='Publications', user=current_user.id, form=form, profile_exists= profile_exists)
+
+    publications=Publications.query.filter_by(users=current_user.id).all()
+    return render_template('forms/publications_form.html', title='Publications', user=current_user.id, form=form, publications=publications, profile_exists= profile_exists)
+
+@app.route('/publications', methods=['GET', 'POST'])
+def publications():
+    publications=Publications.query.filter_by(users=current_user.id).all()
+    return render_template('/publications.html' , user=current_user, title="Publications", publications=publications)
+
+#provides success message after submission of blank form in the presentations form.
+@app.route('/user/successPresentation', methods=['GET', 'POST'])
+def successPresentation():
+    return render_template('/forms/success_form.html' , title="success!", url='presentations_form')
 
 # Allows a researcher to add their presentations, update their presentations, and view their presentations
 @app.route('/user/presentations_form', methods=['GET', 'POST'])
@@ -858,6 +962,8 @@ def presentations_form():
                 users= current_user.id
                 )
             db.session.add(presentation)
+            db.session.commit()
+            return redirect(url_for('successPresentation'))
         else:
             data.year=request.form['year']
             data.type=request.form['type']
@@ -866,6 +972,11 @@ def presentations_form():
             data.location=request.form['location']
         db.session.commit()
     return render_template('forms/presentations_form.html', title='Presentations', user=current_user.id, form=form, profile_exists= profile_exists)
+
+#provides success message after submission of blank form in academic collabs form.
+@app.route('/user/successAC', methods=['GET', 'POST'])
+def successAC():
+    return render_template('/forms/success_form.html' , title="success!", url='academic_collab_form')
 
 # Allows a researcher to add their academic collaborations, update their academic collaborations, and view their academic collaborations
 @app.route('/user/academic_collab_form', methods=['GET', 'POST'])
@@ -893,6 +1004,8 @@ def academic_collab_form():
                 interaction_frequency=request.form['interaction_frequency']
                 )
             db.session.add(a_collabs)
+            db.session.commit()
+            return redirect(url_for('successAC'))
         else:
             data.start_date=request.form['start_date']
             data.end_date=request.form['end_date']
@@ -904,6 +1017,11 @@ def academic_collab_form():
             data.interaction_frequency=request.form['interaction_frequency']
         db.session.commit()
     return render_template('forms/academic_collab_form.html', title='Academic Collab', user=current_user.id, form=form, profile_exists= profile_exists)
+
+#provides success message after submission of blank form in non academic collabs form.
+@app.route('/user/successNAC', methods=['GET', 'POST'])
+def successNAC():
+    return render_template('/forms/success_form.html' , title="success!", url='non_academic_collab_form')
 
 # Allows a researcher to add their non-academic collaborations, update their non-academic collaborations, and view their non-academic collaborations
 @app.route('/user/non_academic_collab_form', methods=['GET', 'POST'])
@@ -930,6 +1048,9 @@ def non_academic_collab_form():
                 interaction_frequency=request.form['interaction_frequency']
                 )
             db.session.add(non_a_collabs)
+            db.session.commit()
+            return redirect(url_for('successNAC'))
+
         else:
             data.start_date=request.form['start_date']
             data.end_date=request.form['end_date']
@@ -940,6 +1061,11 @@ def non_academic_collab_form():
             data.interaction_frequency=request.form['interaction_frequency']
         db.session.commit()
     return render_template('forms/non_academic_collab_form.html', title='Non Academic Collab', user=current_user.id, form=form, profile_exists= profile_exists)
+
+#provides success message after submission of blank form in non academic collabs form.
+@app.route('/user/successConf', methods=['GET', 'POST'])
+def successConf():
+    return render_template('/forms/success_form.html' , title="success!", url='conferences_form')
 
 # Allows a researcher to add their conferences, update their conferences, and view their conferences
 @app.route('/user/conferences_form', methods=['GET', 'POST'])
@@ -965,6 +1091,9 @@ def conferences_form():
                 users= current_user.id
                 )
             db.session.add(conferences)
+            db.session.commit()
+            return redirect(url_for('successConf'))
+
         else:
             data.start_date=request.form['start_date']
             data.end_date=request.form['end_date']
@@ -974,6 +1103,11 @@ def conferences_form():
             data.event_location=request.form['event_location']
         db.session.commit()
     return render_template('forms/conferences_form.html', title='Conferences', user=current_user.id, form=form, profile_exists= profile_exists)
+
+#provides success message after submission of blank form in conferences form.
+@app.route('/user/successCommunication', methods=['GET', 'POST'])
+def successCommunication():
+    return render_template('/forms/success_form.html' , title="success!", url='communication_form')
 
 # Allows a researcher to add their communications overview, update their communications overview, and view their communications overview
 @app.route('/user/communication_form', methods=['GET', 'POST'])
@@ -997,6 +1131,8 @@ def communication_form():
                 users= current_user.id
                 )
             db.session.add(communication)
+            db.session.commit()
+            return redirect(url_for('successCommunication'))
         else:
             data.year=request.form['year']
             data.num_lectures=request.form['num_lectures']
@@ -1004,6 +1140,11 @@ def communication_form():
             data.num_media_interactions=request.form['num_media_interactions']
         db.session.commit()
     return render_template('forms/communication_form.html', title='Communication', user=current_user.id, form=form, profile_exists= profile_exists)
+
+#provides success message after submission of blank form in conferences form.
+@app.route('/user/successFR', methods=['GET', 'POST'])
+def successFR():
+    return render_template('/forms/success_form.html' , title="success!", url='funding_ratio_form')
 
 # Allows a researcher to add their SFI funding ratio, update their SFI funding ratio, and view their SFI funding ratio
 @app.route('/user/funding_ratio', methods=['GET', 'POST'])
@@ -1025,6 +1166,8 @@ def funding_ratio_form():
                 users= current_user.id
                 )
             db.session.add(funding_ratio)
+            db.session.commit()
+            return redirect(url_for('successFR'))
         else:
             data.year=request.form['year']
             data.percentage=request.form['percentage']
@@ -1080,7 +1223,7 @@ def add_application_general():
         db.session.add(application)
         db.session.commit()
 
-        return json.dumps({'status':'OK','ethical_issues':'New addition'});
+        return json.dumps({'success':'OK'});
     else:
         return jsonify(data=general_app_form.errors)
 
@@ -1092,7 +1235,7 @@ def add_scientific_abstract():
         application = Grant_Application.query.filter_by(grant_application_id=(request.form['grant_application_id'])).first()#MUST FILTER FOR CASE WHERE A RESEARCHER HAS MULTIPLE APPLICATIONS
         application.set_scientific_abstract(request.form['scientific_abstract'])
         db.session.commit()
-        return json.dumps({'status':'OK','ethical_issues':'New addition'});#Will have to change this.
+        return json.dumps({'success':'OK'});#Will have to change this.
 
     else:
         return jsonify(data=scientific_abstract_form.errors)#EXPAND AND GIVE PROPER ERROR MESSAGE
@@ -1110,7 +1253,7 @@ def add_lay_abstract():
 
         application.set_lay_abstract(request.form['lay_abstract'])
         db.session.commit()
-        return json.dumps({'status':'OK','ethical_issues':'New addition'});#Will have to change this.
+        return json.dumps({'success':'OK'});#Will have to change this.
     else:
         return jsonify(data=lay_abstract_form.errors)
 
@@ -1124,7 +1267,7 @@ def Co_applicants_form1():
         email=request.form['email'],grant_application=request.form['grant_application'])
         db.session.add(co_app)
         db.session.commit()
-        return json.dumps({'status':'OK','ethical_issues':'New addition'});#Will have to change this.
+        return json.dumps({'success':'OK'});#Will have to change this.
     else:
         return jsonify(co_app.errors)
 
@@ -1139,7 +1282,7 @@ def Collaborators_form1():
         email=request.form['email'],grant_application=request.form['grant_application'])
         db.session.add(co_app)
         db.session.commit()
-        return json.dumps({'status':'OK','ethical_issues':'New addition'});#Will have to change this.
+        return json.dumps({'success':'OK'});#Will have to change this.
     else:
         return jsonify(co_app.errors)
 
@@ -1155,7 +1298,7 @@ def submit_Form():
         new_Submitted=SubmittedApplications(grant_application_id=request.form['grant_application_id'],proposal_name=application.proposal_title)
         db.session.add(new_Submitted)
         db.session.commit()
-        return json.dumps({'status':'OK','ethical_issues':'New addition'});#Will have to change this.
+        return json.dumps({'success':'OK'});#Will have to change this.
     else:
         return jsonify(data=general_app_form.errors)
     return json.dumps({'status':'OK','query:':return_string});
@@ -1166,7 +1309,8 @@ def sample_slider():
 
 @app.route("/notifications")
 def notifications():
-    #grants=Grant_Application.query.all()
+    #grants=
+
     grants = db.session.query(Grant_Application).count()
     calls= db.session.query(CFP).count()
     return render_template('notifications.html', title='Profile', user=user, grants=grants, calls=calls)
@@ -1187,6 +1331,10 @@ def submitted_applications():
         app = Grant_Application.query.filter_by(grant_application_id=application_id).first()
         app.approved = True
         db.session.commit()
+        #send email
+        receivers = User.query.filter_by(user_type = "reviewer").all()
+        for reviewer in receivers:
+            notify_reviewer(reviewer)
     return render_template('submitted_applications.html', title='Profile', user=user, grants=submittedApps, application_count=application_count)
 
 @app.route("/review_applications", methods=['GET', 'POST'])
@@ -1199,7 +1347,11 @@ def review_applications():
         grant_application = request.form["grant_id"]
         get_grant = Grant_Application.query.filter_by(grant_application_id=grant_application).first()
         get_grant.reviewer_approved = True
-        db.session.commit()
+        db.session.commit()#Send email notification to each admin for users in user
+        receivers = User.query.filter_by(user_type = "sfiAdmin").all()
+        for admin in receivers:
+            notify_of_reviewer_response(admin)
+
     return render_template('review_applications.html', title='Profile', user=user, grants=grants, application_count=application_count)
 
 @app.route("/reviewed_applications", methods=['GET', 'POST'])

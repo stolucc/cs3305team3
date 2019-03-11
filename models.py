@@ -41,7 +41,6 @@ class Researcher_Account(UserMixin, db.Model):
     username = db.Column(db.String(128))
     password_hash = db.Column(db.String(128))
 
-
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
@@ -78,7 +77,6 @@ class Login_Account(UserMixin, db.Model):
 
     def get_id(self):
         return self.username
-
 
 class Researcher_Profile(UserMixin, db.Model):
 
@@ -197,7 +195,6 @@ class Impacts(UserMixin, db.Model):
     def get_id(self):
         return self.username
 
-
 class Funding_Diversification(UserMixin, db.Model):
 
     __tablename__ = "funding_diversifications"
@@ -224,8 +221,6 @@ class Funding_Diversification(UserMixin, db.Model):
 
     def get_id(self):
         return self.username
-
-
 
 class Grant_Application(UserMixin, db.Model):
     __tablename__ = "grant_application"
@@ -280,7 +275,6 @@ class Collaborators(UserMixin, db.Model):
     email = db.Column(db.String(80))
     grant_application = db.Column(db.Integer, db.ForeignKey('grant_application.grant_application_id'), nullable=True)
     grant_applications = db.relationship('Grant_Application', foreign_keys=grant_application)
-
 
 class EmploymentDB(UserMixin, db.Model):
     __tablename__ = "employment_db"
@@ -341,7 +335,6 @@ class AwardsDB(UserMixin, db.Model):
     def get_id(self):
         return self.username
 
-
 class Conferences(UserMixin, db.Model):
     __tablename__ = "conferences"
     conference_id = db.Column(db.Integer, primary_key=True)
@@ -364,18 +357,16 @@ class Conferences(UserMixin, db.Model):
     def get_id(self):
         return self.username
 
-
-
 class Publications(UserMixin, db.Model):
     __tablename__ = "publications"
     publication_id = db.Column(db.Integer, primary_key=True)
     year = db.Column(db.Integer)
-    title = db.Column(db.String(64))
+    title = db.Column(db.String(120))
     type = db.Column(db.String(64))
     journal_conference_name = db.Column(db.String(64))
     published = db.Column(db.BOOLEAN, default=False)
     in_press = db.Column(db.BOOLEAN, default=False)
-    doi = db.Column(db.Integer)
+    doi = db.Column(db.String(64))
 
     grant_reference = db.Column(db.Integer, db.ForeignKey('submitted_applications.grant_application_id'))
     grant_reference_id = db.relationship('SubmittedApplications', foreign_keys=grant_reference)
@@ -391,7 +382,6 @@ class Publications(UserMixin, db.Model):
 
     def get_id(self):
         return self.username
-
 
 class Professional_Societies(UserMixin, db.Model):
     __tablename__ = "professional_societies"
@@ -412,8 +402,6 @@ class Professional_Societies(UserMixin, db.Model):
 
     def get_id(self):
         return self.username
-
-
 
 class AcademicCollabs(UserMixin, db.Model):
     __tablename__ = "academic_collaborations"
@@ -488,13 +476,10 @@ class Communication(UserMixin, db.Model):
     def get_id(self):
         return self.username
 
-
 class SubmittedApplications(UserMixin, db.Model):
     __tablename__ = "submitted_applications"
     grant_application_id = db.Column(db.Integer, primary_key=True)
     proposal_name = db.Column(db.String(128))
-
-
 
 class Innovations(UserMixin, db.Model):
     __tablename__ = "innovations"
@@ -539,10 +524,10 @@ class AnnualReports(UserMixin, db.Model):
 class ResearcherEducation(UserMixin, db.Model):
     __tablename__ = "researcher_education"
     researcher_education_id = db.Column(db.Integer, primary_key=True)
-    field_of_study = db.Column(db.String(35))
+    field_of_study = db.Column(db.String(60))
     degree = db.Column(db.String(20))
-    institution = db.Column(db.String(20))
-    location = db.Column(db.String(45))
+    institution = db.Column(db.String(60))
+    location = db.Column(db.String(60))
     year_of_degree = db.Column(db.Integer)
     research_Profile = db.Column(db.Integer, db.ForeignKey('researcher_profile.researcher_id'), nullable=True)
     researcher_profile = db.relationship('Researcher_Profile', foreign_keys=research_Profile)
@@ -611,3 +596,8 @@ class User(UserMixin, db.Model):
         except:
             return
         return User.query.get(id)
+
+
+class Test(UserMixin, db.Model):
+    __tablename__ = "test"
+    id = db.Column(db.Integer, primary_key=True)

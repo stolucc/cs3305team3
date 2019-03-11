@@ -1,0 +1,7 @@
+Dear {{ user.username }},
+
+The reviewer has completed the review of the grant applications selected.
+
+Sincerely,
+
+SFI TEAM(GROUP 3)

@@ -1,0 +1,12 @@
+<p>Dear {{ user.username }},</p>
+<p>
+   Thanks for registering with SFI. You can now fill out your profile and apply for grant.
+   To view the call for proposals
+    <a href="{{ url_for('proposals', _external=True) }}">
+        click here
+    </a>.
+</p>
+<p>Alternatively, you can paste the following link in your browser's address bar:</p>
+<p>{{ url_for('proposals', _external=True) }}</p>
+<p>Sincerely,</p>
+<p>SFI TEAM(GROUP 3)</p>

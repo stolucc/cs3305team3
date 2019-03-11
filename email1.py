@@ -1,18 +1,12 @@
 from flask_mail import Message
 from flask import render_template
 from grants import mail,app
-#from threading import Thread
-
-
 
 def send_email(subject, sender, recipients, text_body, html_body):
     msg = Message(subject, sender=sender, recipients=recipients)
     msg.body = text_body
     msg.html = html_body
     mail.send(msg)
-
-
-
 
 def send_password_reset_email(user):
     token = user.get_reset_password_token()
@@ -24,7 +18,6 @@ def send_password_reset_email(user):
                html_body=render_template('email/reset_password.html/',
                                          user=user, token=token))
 
-
 def send_grant_accepted(user):
     #Contacts the applicants to let them know that their grant has been accepted.
     send_email('[SFI] GRANT Application Accepted',
@@ -34,8 +27,6 @@ def send_grant_accepted(user):
                                          user=user),
                html_body=render_template('email/grant_accepted.html/',
                                          user=user))
-
-
 
 def send_grant_rejected(user):
     #Contacts the user to let them know that the grant has been rejected.
@@ -54,6 +45,25 @@ def notify_of_reviewer_response(user):
                sender=app.config["MAIL_USERNAME"],
                recipients=[user.email],
                text_body=render_template('email/reviewed.txt',
-                                         user=user, token=token),
+                                         user=user),
                html_body=render_template('email/reviewed.html/',
-                                         user=user, token=token))
+                                         user=user))
+
+def notify_reviewer(user):
+    if user.email is not None:
+        send_email('[SFI] There are new applications which require reviewing',
+                   sender=app.config["MAIL_USERNAME"],
+                   recipients=[user.email],
+                   text_body=render_template('email/notify_reviewer.txt',
+                                             user=user),
+                   html_body=render_template('email/notify_reviewer.html/',
+                                             user=user))
+
+def welcomeEmail(user):
+    send_email('[SFI] Thanks for creating an account with SFI',
+               sender=app.config["MAIL_USERNAME"],
+               recipients=[user.email],
+               text_body=render_template('email/new_user.txt',
+                                         user=user),
+               html_body=render_template('email/new_user.html/',
+                                         user=user))

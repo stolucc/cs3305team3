@@ -1,14 +1,21 @@
 {% extends "user.html" %}
 {% block content %}
-        <form method=post>
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-            <dl>
-                <div class="form-group">
-                    {{ render_field(form.orcid) }}
-                </div>
-            </dl>
+    <form method=post>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        {% if profile_exists %}
+            <fieldset id="fieldset1" disabled="disabled">
+                {{ render_field(form.orcid) }}
+            </fieldset>
+        {% else %}
+            {{ render_field(form.orcid) }}
             <p><input type=submit value="Add/Update"></p>
-        </form>
+        {% endif %}
+    </form>
+    {% if profile_exists %}
+        <button  id="edit_profile_button" type="button" onclick="updateProfile()">Edit profile</button>
+    {% else %}
+        <button style="display: none;" type="button">No profile</button>
+    {% endif %}
 
-        {{output}}
+    {{output}}
 {% endblock %}

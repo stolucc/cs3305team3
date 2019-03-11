@@ -1,0 +1,8 @@
+Dear {{ user.username }},
+
+Thanks for creating an account. Being a member of our website is the best way to find updates on new grants.
+{{ url_for('proposals', _external=True) }}
+
+Sincerely,
+
+SFI TEAM(GROUP 3)

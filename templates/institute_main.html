@@ -11,7 +11,7 @@
     }
 </style>
 <div style="clear:both;"></div>
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 <div class="row3">
     <div class="Welcome">
         <h2> Welcome {{ user.username }} </h2>
@@ -20,7 +20,7 @@
     <div class="institute">
         <div class="dc-morph-btns">
             <ul>
-                <li><a id="icon-APA" href=""></a><span>Accept/Reject Proposals</span></li>
+                <li><a id="icon-APA" href="{{ url_for('pending_other_items') }}"></a><span>Accept/Reject Proposals</span></li>
             </ul>
         </div>
     </div>

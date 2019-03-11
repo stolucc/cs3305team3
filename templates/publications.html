@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h3 id="proposalsHeading">{{ user.username }}'s Publications</h3>
+
+<small>To update, in your profile, add your ORCID, or add publications manually
+</small>
+<br>
+
+    {% for publication in publications %}
+        <button class="accordion">{{   publication.title  }}</button>
+
+        <div class="panel">
+            <p><strong>Publication Year : </strong>{{ publication.year }}</p>
+            <p><strong>Publication Type : </strong>{{ publication.type }}</p>
+                <p>
+                    <strong>Doi :</strong>
+                    <a href="http://www.doi.org/{{ publication.doi }}" target="_blank">
+                        {{ publication.doi }}
+                    </a>
+                </p>
+        </div>
+    {% endfor %}
+
+    <script>
+        var acc = document.getElementsByClassName("accordion");
+        var i;
+
+        for (i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.maxHeight) {
+                    panel.style.maxHeight = null;
+                } else {
+                    panel.style.maxHeight = panel.scrollHeight + "px";
+                }
+            });
+        }
+    </script>
+{% endblock %}

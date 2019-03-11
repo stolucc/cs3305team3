@@ -1,0 +1,32 @@
+Please enter the amount of collaborators []
+
+getElementsByID('grantapplication')
+getElementByID('tag')
+
+
+On change process function
+
+What if input is 1 from 3:
+	-->Subtract 5 from
+	-->Go down from
+
+for loop backwards from five until it reaches input number and make display equal to None
+
+
+process():
+	-->i = 5
+	--> for num in range i:
+		num -= 1
+		getElementsByID('grantapplication')(num).display None
+	-
+		
+		-
+
+hide():
+ 	--> 
+	-->
+	-->
+show():
+	-->
+	-->
+	-->

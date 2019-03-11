@@ -17,66 +17,65 @@ th, td {
 <h3 id="researchHeading">Delete User</h3>
 <hr>
 
-        {% from "_formhelpers.html" import render_field %}
-        <form method=post>
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-            <dl>
-                <div class="form-group">
-                    {{ render_field(form.user_id) }}
-                </div>
-            </dl>
-            <p><input type=submit value=Delete User></p>
-        </form>
+{% from "_formhelpers.html" import render_field %}
+<form method=post>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <dl>
+        <div class="form-group">
+            {{ render_field(form.user_id) }}
+        </div>
+    </dl>
+    <p><input type=submit value=Delete User></p>
+</form>
 
 <center>
-                <table id="delete-user">
-                    <tr>
-                        <th>User ID</th>
-                        <th>Username</th>
-                        <th>User Type</th>
-                        <th>Email</th>
-                    </tr>
-                    {% for user in users %}
-                    <tr>
-                        <td>{{ user.id }}</td>
-                        <td>{{ user.username }}</td>
-                        <td>{{ user.user_type }}</td>
-                        <td>{{ user.email }}</td>
-                    </tr>
-                    {% endfor %}
-                </table>
+    <table id="delete-user">
+        <tr>
+            <th>User ID</th>
+            <th>Username</th>
+            <th>User Type</th>
+            <th>Email</th>
+        </tr>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.user_type }}</td>
+            <td>{{ user.email }}</td>
+        </tr>
+        {% endfor %}
+    </table>
 </center>
 
-        <script>
-            var csrftoken = "{{ csrf_token() }}"
-            var acc = document.getElementsByClassName("accordion");
+<script>
+    var csrftoken = "{{ csrf_token() }}"
+    var acc = document.getElementsByClassName("accordion");
 
-            var i;
+    var i;
 
 
 
-            for (i = 0; i < acc.length; i++) {
+    for (i = 0; i < acc.length; i++) {
 
-                acc[i].addEventListener("click", function() {
+        acc[i].addEventListener("click", function() {
 
-                    this.classList.toggle("active");
+            this.classList.toggle("active");
 
-                    var panel = this.nextElementSibling;
+            var panel = this.nextElementSibling;
 
-                    if (panel.style.maxHeight) {
+            if (panel.style.maxHeight) {
 
-                        panel.style.maxHeight = null;
+                panel.style.maxHeight = null;
 
-                    } else {
+            } else {
 
-                        panel.style.maxHeight = panel.scrollHeight + "px";
-
-                    }
-                });
+                panel.style.maxHeight = panel.scrollHeight + "px";
 
             }
+        });
 
-        </script>
+    }
 
+</script>
 
 {% endblock %}

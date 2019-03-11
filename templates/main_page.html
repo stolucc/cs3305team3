@@ -17,6 +17,7 @@
     <div class="dc-morph-btns">
         <ul>
             <li><a id="icon-profile" href="{{ url_for('user', username=current_user.username) }}"></a><span>Profile</span></li>
+            <li><a id="icon-profile" href="{{ url_for('publications')}}"></a><span>My Publications</span></li>
             <li><a id="icon-APA" href="{{ url_for('pending_applications') }}"></a><span>Applications Pending Action</span></li>
             <li><a id="icon-SRPA"href="{{ url_for('pending_scientific_reports') }}"></a><span>Scientific Reports Pending Action</span></li>
             <li><a id="icon-FRPA" href="{{ url_for('pending_financial_reports') }}"></a><span>Financial Reports Pending Action</span></li>

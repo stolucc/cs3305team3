@@ -1,0 +1,10 @@
+Getting rid of form:
+<form action="{{ url_for('upload') }}" method="post">
+                    {{ dropzone.create(action=url_for('upload')) }}
+                    <label for="title">Title</label>
+                    <input type="text" id="title" name="title"/><br>
+                    <label for="description">Description</label>
+                    <input type="text" id="description" name="description"/><br>
+                    <input type="submit" id="submit" value="Submit and Upload">
+                    {{ dropzone.config() }}
+                </form>

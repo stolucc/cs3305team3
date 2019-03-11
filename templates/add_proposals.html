@@ -12,49 +12,92 @@
 </div>
 <button class="openbtn" onclick="openNav()">☰ Admin Menu</button>
 <main>
-
+    <script>
+    function validateForm() {
+      var x = document.forms["Call_for_proposals"]["call_for_proposal_title"].value;
+      if (x == "") {
+        alert("Call for Proposal Title must be filled out");
+        return false;
+      }
+      var x = document.forms["Call_for_proposals"]["text_of_call"].value;
+      if (x == "") {
+        alert("Call for Proposal Text must be filled out");
+        return false;
+      }
+      var x = document.forms["Call_for_proposals"]["target_audience"].value;
+      if (x == "") {
+        alert("Call for Proposal Target Audience must be filled out");
+        return false;
+      }
+      var x = document.forms["Call_for_proposals"]["eligibility_criteria"].value;
+      if (x == "") {
+        alert("Call for Proposal Eligibility criteria must be filled out");
+        return false;
+      }
+      var x = document.forms["Call_for_proposals"]["duration_of_award"].value;
+      if (x == "") {
+        alert("Call for Proposal Duration of award must be filled out");
+        return false;
+      }
+      var x = document.forms["Call_for_proposals"]["reporting_guidelines"].value;
+      if (x == "") {
+        alert("Call for Proposal reporting guidlines must be filled out");
+        return false;
+      }
+      var x = document.forms["Call_for_proposals"]["start_date"].value;
+      if (x == "") {
+        alert("Call for Proposal start_date must be filled out");
+        return false;
+      }
+      var x = document.forms["Call_for_proposals"]["deadline"].value;
+      if (x == "") {
+        alert("Call for Proposal deadline must be filled out");
+        return false;
+      }
+    }
+</script>
 <div class="blur">
     <h3>Add Call for Proposals</h3>
-
             <div class="row">
                 <center>
-                <form action="" method="POST" style="width:70%" novalidate>
+                <form name="Call_for_proposals" action="" method="POST" style="width:70%" onsubmit="return validateForm()" novalidate>
                   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                   <div class="form-group">
                     <label style="color:white;" for="call_for_proposal_title">Call for proposal Title:</label>
-                    <input type="text" maxlength="20" class="form-control" id="call_for_proposal_title" name="call_for_proposal_title" placeholder="Enter Title of Proposal" required>
+                    <input type="text" maxlength="20" class="form-control" id="call_for_proposal_title" name="call_for_proposal_title" placeholder="Enter Title of Proposal, minimum of 1 character required">
                   </div>
+                  <form>
                   <div class="form-group">
                     <label style="color:white;" for="text_of_call">Text of call:</label>
-                    <input type="text" maxlength="300" class="form-control" id="text_of_call" name="text_of_call" placeholder="Enter the text of the call" required>
+                    <input type="text" maxlength="300" class="form-control" id="text_of_call" name="text_of_call" placeholder="Enter the text of the call, minimum of 1 character required ">
                   </div>
                   <div class="form-group">
                     <label style="color:white;" for="target_audience">Target Audience:</label>
-                    <input type="text" maxlength="30" class="form-control" id="target_audience" name="target_audience" placeholder="e.g. Research Body, 3rd-Level, Computer Scientists" required>
+                    <input type="text" maxlength="30" class="form-control" id="target_audience" name="target_audience" placeholder="Target Audience: e.g. Research Body, 3rd-Level, Computer Scientists, minimum of 6 characters required" required>
                   </div>
                   <div class="form-group">
-                    <label style="color:white;" for="eligibility_criteria">Target Audience:</label>
-                    <input type="text" maxlength="60" class="form-control" id="eligibility_criteria" name="eligibility_criteria" placeholder="Proven track record, Univerity, researcher, research centre, etc." required>
+                    <label style="color:white;" for="eligibility_criteria">Eligibility Criteria:</label>
+                    <input type="text" maxlength="60" class="form-control" id="eligibility_criteria" name="eligibility_criteria" placeholder="Proven Track Record: e.g Univerity, Researcher, Research Centre, etc., minimum, minimum of 6 characters required" required>
                   </div>
                   <div class="form-group">
-                    <label style="color:white;" for="duration_of_award">Target Audience:</label>
-                    <input type="text" maxlength="30" class="form-control" id="duration_of_award" name="duration_of_award" placeholder="Number of months" required>
+                    <label style="color:white;" for="duration_of_award">Duration of Award:</label>
+                    <input type="text" maxlength="30" class="form-control" id="duration_of_award" name="duration_of_award" placeholder="Number of months of award, e.g: x months" required>
                   </div>
                   <div class="form-group">
-                    <label style="color:white;" for="reporting_guidelines">Target Audience:</label>
-                    <input type="text" maxlength="30" class="form-control" id="reporting_guidelines" name="reporting_guidelines" placeholder="Annual/Monthly reports" required>
+                    <label style="color:white;" for="reporting_guidelines">Reporting Guidelines:</label>
+                    <input type="text" maxlength="30" class="form-control" id="reporting_guidelines" name="reporting_guidelines" placeholder="Reporting Guidelines: e.g. Annual, Monthly" required>
                   </div>
                   <div class="form-group">
-                    <label style="color:white;" for="start_date">Target Audience:</label>
+                    <label style="color:white;" for="start_date">Start Date:</label>
                     <input class="form-control" id="start_date" name="start_date" placeholder="Starting date of call: YYYY-MM-DD HH:MM:SS" required>
                   </div>
                   <div class="form-group">
-                    <label style="color:white;" for="deadline">Target Audience:</label>
-                    <input class="form-control" id="deadline" name="deadline" placeholder="Closing date of call: YYYY-MM-DD HH:MM:SS" required>
+                    <label style="color:white;" for="deadline">Deadline:</label>
+                    <input class="form-control" required pattern="[0-9]{4}[-][0-9]{2}[-][0-9]{2}[ ][0-9]{2}[-][0-9]{2}[-][0-9]{2}" id="deadline" name="deadline" placeholder="Closing date of call: YYYY-MM-DD HH:MM:SS" required>
                   </div>
                   <button type="submit" >Publish</button>
 
-                    <br>
+                  <br>
                   {% if error %}
                     <div class="alert alert-warning" role="alert">
                         Incorrect form entries
@@ -63,28 +106,7 @@
                 </form>
                 </center>
             </div>
-
-
 </div>
-<!--<h3 id="researchHeading">Call for proposals: {{ user.username }}</h3>
-<hr>
-        {% for call in calls %}
-        <button class="accordion">{{ call.target_audience }}</button>
-
-            <div class="panel">
-
-                <p><strong>Call for proposal: </strong>{{ call.text_of_call }}</p>
-                <p><strong>Eligibility Criteria: </strong>{{ call.eligibility_criteria }}</p>
-                <p><strong>Reporting Guidelines: </strong>{{ call.reporting_guidelines }}</p>
-                <p><strong>Start Date: </strong>{{ call.start_date }}</p>
-                <p><strong>Duration of Award: </strong>{{ call.duration_of_award }}</p>
-
-            </div>
-        {% endfor %}
-
--->
-
-
         <script>
             var csrftoken = "{{ csrf_token() }}"
 
@@ -114,8 +136,6 @@
                 });
 
             }
-
         </script>
-
 
 {% endblock %}
